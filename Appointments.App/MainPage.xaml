@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:Appointments.App.ViewModels"
+             xmlns:plugin="clr-namespace:Xamarin.Plugin.Calendar.Controls;assembly=Xamarin.Plugin.Calendar"
+             x:Name="MainCalendarPage"
+             x:Class="Appointments.App.MainPage">
+    <ContentPage.BindingContext>
+        <model:MainPageViewModel />
+    </ContentPage.BindingContext>
+
+    <StackLayout>        
+        <plugin:Calendar     
+            Events="{Binding Events}"
+            SelectedDate="{Binding SelectedDate}"
+            DayTappedCommand="{Binding DaySelectedCommand}"            
+            Day="{Binding Day}"
+            Month="{Binding Month}"
+            Year="{Binding Year}"
+            
+                        
+            DayViewCornerRadius="3"
+            DayViewSize="35"
+            
+            TodayOutlineColor="#2196F3"
+            TodayFillColor="#e9f0f7"
+            
+            SelectedDateColor="#2196F3"
+            
+            
+            EventIndicatorSelectedColor="#fefefe"
+            EventIndicatorColor="#5084ad"
+            
+            VerticalOptions="FillAndExpand"
+            HorizontalOptions="FillAndExpand">
+            <plugin:Calendar.EventTemplate>
+                <DataTemplate>
+                    <StackLayout
+                        BackgroundColor="#c6e1f7"
+                        Padding="5"
+                        Margin="5"
+                        HorizontalOptions="FillAndExpand"
+                        VerticalOptions="FillAndExpand">
+                        <Button
+                                CornerRadius="10"
+                                HeightRequest="10"
+                                BackgroundColor="#5084ad"
+                                TextColor="#fefefe"
+                                Text="{Binding Type}" />
+                        <Label
+                                FontAttributes="Bold"
+                                FontSize="Medium"
+                                Text="{Binding Name}" />
+                        <Label
+                                FontSize="Small"
+                                LineBreakMode="WordWrap"
+                                Text="{Binding Description}" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.EventSelectedCommand, Source={x:Reference MainCalendarPage}}" CommandParameter="{Binding .}" />
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+                </DataTemplate>
+            </plugin:Calendar.EventTemplate>
+        </plugin:Calendar>
+        <Button
+            x:Name="AddAppointmentButton"
+            IsVisible="{Binding SelectedDateIsLessThanToday}"            
+            Margin="5"
+            Text="{Binding AddAppointmentText}" 
+            Command="{Binding ButtonClickCommand}"            
+            
+            BackgroundColor="#2196F3"
+            TextColor="#fefefe">
+        </Button>
+    </StackLayout>
+</ContentPage>

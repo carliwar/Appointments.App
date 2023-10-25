@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:Appointments.App.ViewModels"
+             x:Name="UserListViewModel"
+             x:Class="Appointments.App.Views.Users.UsersPage">
+    <ContentPage.BindingContext>
+        <model:UserListViewModel />
+    </ContentPage.BindingContext>
+
+    <StackLayout>
+        <Entry x:Name="SearchUser"
+               PlaceholderColor="#5084ad"
+               Placeholder="CI ó Nombre ó Apellido"
+               ReturnCommand="{Binding SearchUserCommand}"
+               ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
+        </Entry>
+        <ListView x:Name="UsersListView"
+            ItemsSource="{Binding People}"
+            CachingStrategy="RecycleElement">
+            <!--Built in Cells-->
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Button
+                                CornerRadius="5"
+                                HeightRequest="5"
+                                Margin="2"
+                                BackgroundColor="{StaticResource Tertiary}"
+                                TextColor="{StaticResource BlackText}"
+                                Text="{Binding PersonValue}" />
+                        </Grid>                        
+                        <!--<StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.EventSelectedCommand, Source={x:Reference MainCalendarPage}}" CommandParameter="{Binding .}" />
+                        </StackLayout.GestureRecognizers>-->
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button
+            x:Name="AddUserButton"
+            Margin="5"
+            Text="Nuevo Paciente +"
+            
+            Command="{Binding CreateUserCommand}">
+        </Button>
+    </StackLayout>
+</ContentPage>

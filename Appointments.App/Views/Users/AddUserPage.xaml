@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:Appointments.App.ViewModels"
+             x:Name="CreateUserRequestViewModel"
+             x:Class="Appointments.App.Views.Users.CreateUserPage">
+    <ContentPage.BindingContext>
+        <model:CreateUserRequestViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0">
+            <StackLayout>
+                <Label Text="CI o Pasaporte"></Label>
+                <Entry x:Name="Identificacion" Text="{Binding Identificacion}"></Entry>
+                <Label Text="Nombre"></Label>
+                <Entry x:Name="FirstName" Text="{Binding FirstName}"></Entry>
+                <Label Text="Apellido"></Label>
+                <Entry x:Name="LastName" Text="{Binding LastName}"></Entry>
+                <Label Text="Fecha de Nacimiento"></Label>
+                <DatePicker x:Name="BirthDate" MaximumDate="{Binding Today}" Date="{Binding BirthDate}"></DatePicker>
+                <Button
+                    x:Name="CreateButton"
+                    VerticalOptions="EndAndExpand"
+                    Margin="5"
+                    Text="Guardar">
+                </Button>
+            </StackLayout>
+        </Frame>        
+    </ContentPage.Content>
+</ContentPage>
