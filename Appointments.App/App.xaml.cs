@@ -1,18 +1,22 @@
-﻿using System;
+﻿using Appointments.App.Services;
+using System;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace Appointments.App
 {
     public partial class App : Application
     {
+        protected static IServiceProvider ServiceProvider { get; set; }        
         public App()
         {
             InitializeComponent();
 
+            SetupServices();
+
             MainPage = new AppShell();
         }
 
+        #region Overrides
         protected override void OnStart()
         {
         }
@@ -24,5 +28,13 @@ namespace Appointments.App
         protected override void OnResume()
         {
         }
+        #endregion
+
+        #region Private Methods
+        private void SetupServices()
+        {
+            
+        } 
+        #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using Appointments.App.ViewModels;
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace Appointments.App.Views.Users
@@ -10,5 +11,11 @@ namespace Appointments.App.Views.Users
         {
             InitializeComponent();
         }
+
+        protected override void OnAppearing()
+        {
+            (BindingContext as UserListViewModel)?.InitializePeople();
+        }
+
     }
 }

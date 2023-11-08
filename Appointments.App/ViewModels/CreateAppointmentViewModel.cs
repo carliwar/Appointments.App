@@ -13,32 +13,32 @@ namespace Appointments.App.ViewModels
     {
         #region Temp Properties
 
-        List<Person> people = new List<Person>
+        List<User> people = new List<User>
             {
                 //create 5 random Person
 
-                new Person
+                new User
                 {
                     Id = 1,
                     Identification = "1234567890",
                     Name = "Name1",
                     LastName = "LastName1"
                 },
-                new Person
+                new User
                 {
                     Id = 2,
                     Identification = "333444111",
                     Name = "Juan",
                     LastName = "Armas"
                 },
-                new Person
+                new User
                 {
                     Id = 3,
                     Identification = "6699003311",
                     Name = "Luis",
                     LastName = "Loza"
                 },
-                new Person
+                new User
                 {
                     Id = 4,
                     Identification = "7775551112",
@@ -54,7 +54,7 @@ namespace Appointments.App.ViewModels
         public string PersonValue { get; set; }
         public DateTime GivenDate { get; set; }
         public ObservableCollection<AppointmentType> Types { get; set; } = new ObservableCollection<AppointmentType>();
-        public ObservableCollection<Person> People { get; set; }
+        public ObservableCollection<User> People { get; set; }
 
         public AppointmentType SelectedType { get; set; }
 
@@ -64,7 +64,7 @@ namespace Appointments.App.ViewModels
             //Initialize Dictionary with all values from enum AppointmentType
             Types = new ObservableCollection<AppointmentType>(Enum.GetValues(typeof(AppointmentType)).OfType<AppointmentType>().ToList());
 
-            People = new ObservableCollection<Person>();
+            People = new ObservableCollection<User>();
             InitializePeople();
         }
 

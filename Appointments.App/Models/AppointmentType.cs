@@ -7,4 +7,10 @@
         Endodoncia,
         Ortodoncia
     }
+
+    public enum UserType
+    {
+        Doctor,
+        Paciente        
+    }
 }
