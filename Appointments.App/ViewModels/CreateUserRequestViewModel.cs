@@ -1,8 +1,6 @@
 ﻿using Appointments.App.Models;
 using Appointments.App.Services;
 using System;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -10,14 +8,11 @@ namespace Appointments.App.ViewModels
 {
     public class CreateUserRequestViewModel : BasePageViewModel
     {
-        public ObservableCollection<UserType> UserTypes { get; set; } = new ObservableCollection<UserType>();
-
         public CreateUserRequestViewModel()
         {
+            //UserTypes = new ObservableCollection<UserType>(Enum.GetValues(typeof(UserType)).OfType<UserType>().ToList());
             _dataService = new DataService();
-            UserTypes = new ObservableCollection<UserType>(Enum.GetValues(typeof(UserType)).OfType<UserType>().ToList());            
         }
-
 
         #region Properties
         private string _identification;
@@ -25,7 +20,7 @@ namespace Appointments.App.ViewModels
         private string _lastName;
         private DateTime _birthDate = DateTime.Today;
         private readonly IDataService _dataService;
-        
+        //public ObservableCollection<UserType> UserTypes { get; set; } = new ObservableCollection<UserType>();
         private UserType _selectedUserType;
 
         public string Identificacion
@@ -42,7 +37,7 @@ namespace Appointments.App.ViewModels
         public string LastName
         {
             get => _lastName;
-            set => SetProperty(ref _firstName, value);
+            set => SetProperty(ref _lastName, value);
         }
         public DateTime BirthDate
         {
@@ -74,7 +69,8 @@ namespace Appointments.App.ViewModels
                 Name = FirstName,
                 LastName = LastName,
                 BirthDate = BirthDate,
-                UserType = SelectedUserType
+                //UserType = SelectedUserType
+                UserType = UserType.Paciente
             };
             var result = await _dataService.CreateUser(person);
 

@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -33,6 +34,16 @@ namespace Appointments.App.Services
             var db = new Repository<User>(_database);
 
             return await db.Get();
+        }
+
+        public async Task<IEnumerable<User>> GetUsersByType(UserType userType)
+        {
+            await _database.CreateTablesAsync<User, User>();
+            var db = new Repository<User>(_database);
+
+            List<User> users = await db.Get();
+
+            return users.Where(t => t.UserType == userType);
         }
 
         public async Task<IEnumerable<PersonType>> GetPersonTypes()

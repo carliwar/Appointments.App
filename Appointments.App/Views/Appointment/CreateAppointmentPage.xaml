@@ -53,8 +53,8 @@
                         BackgroundColor="#e9f0f7"
                         Title="Escoja el paciente"
                     
-                        ItemsSource="{Binding People}"
-                        ItemDisplayBinding="{Binding PersonValue}">
+                        ItemsSource="{Binding Users}"
+                        ItemDisplayBinding="{Binding UserValue}">
                 </Picker>
             </StackLayout>
         </Frame>

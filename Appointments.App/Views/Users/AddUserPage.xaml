@@ -10,13 +10,13 @@
     <ContentPage.Content>
         <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0">
             <StackLayout>
-                <Picker 
+                <!--<Picker 
                         TextColor="{StaticResource Primary}"
                         BackgroundColor="{StaticResource Tertiary}"
                         Title="Escoja el tipo de Usuario"
                         SelectedIndex="{Binding SelectUserTypeCommand}"                                        
                         ItemsSource="{Binding UserTypes}">
-                </Picker>
+                </Picker>-->
                 <Label Text="CI o Pasaporte"></Label>
                 <Entry x:Name="Identificacion" Text="{Binding Identificacion}"></Entry>
                 <Label Text="Nombre"></Label>

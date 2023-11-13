@@ -1,9 +1,7 @@
 ﻿using Appointments.App.Models;
 using Appointments.App.Services;
-using Appointments.App.Views.Appointment;
 using Appointments.App.Views.Users;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,22 +12,47 @@ namespace Appointments.App.ViewModels
 {
     public class UserListViewModel : BasePageViewModel
     {
+        public UserListViewModel() : base()
+        {
+            _dataService = new DataService();
+            People = new ObservableCollection<User>();
+        }
         #region Temp Properties
         private readonly IDataService _dataService;
 
         #endregion
 
         #region Properties
-        public int Id { get; set; }
-        public string PersonValue { get; set; }
-        public DateTime GivenDate { get; set; }
-        public ObservableCollection<User> People { get; set; } = new ObservableCollection<User>();
+        private int _id;
+        private string _personValue;
+        private DateTime _givenDate;
+        private ObservableCollection<User> _people;
 
-        #endregion
-        public UserListViewModel() : base()
+        public int Id
         {
-            _dataService = new DataService();
+            get => _id;
+            set => SetProperty(ref _id, value);
         }
+
+        public string PersonValue
+        {
+            get => _personValue;
+            set => SetProperty(ref _personValue, value);
+        }
+
+        public DateTime GivenDate
+        {
+            get => _givenDate;
+            set => SetProperty(ref _givenDate, value);
+        }
+
+        public ObservableCollection<User> People
+        {
+            get => _people;
+            set => SetProperty(ref _people, value);
+        }
+
+        #endregion        
 
         #region Commands
 
@@ -70,11 +93,9 @@ namespace Appointments.App.ViewModels
         {
             People.Clear();
             
-            var users = await _dataService.GetUsers();
-
-            users = users.Where(t => t.UserType == UserType.Paciente).ToList();
-
+            var users = await _dataService.GetUsersByType(UserType.Paciente);
             users = users.OrderBy(t => t.LastName).ToList();
+
             foreach (var person in users)
             {
                 People.Add(person);

@@ -21,14 +21,5 @@ namespace Appointments.App.Views.Appointment
 
             Content.BindingContext = viewModel;
         }
-
-        private async void CreateAppointment(object sender, EventArgs e)
-        {
-        }
-
-        private void Entry_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
     }
 }

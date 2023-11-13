@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using Appointments.App.Models;
+using Appointments.App.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 

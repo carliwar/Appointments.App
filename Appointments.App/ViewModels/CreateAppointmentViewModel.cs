@@ -1,6 +1,6 @@
 ﻿using Appointments.App.Models;
+using Appointments.App.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,100 +11,103 @@ namespace Appointments.App.ViewModels
 {
     public class CreateAppointmentViewModel : BasePageViewModel
     {
-        #region Temp Properties
-
-        List<User> people = new List<User>
-            {
-                //create 5 random Person
-
-                new User
-                {
-                    Id = 1,
-                    Identification = "1234567890",
-                    Name = "Name1",
-                    LastName = "LastName1"
-                },
-                new User
-                {
-                    Id = 2,
-                    Identification = "333444111",
-                    Name = "Juan",
-                    LastName = "Armas"
-                },
-                new User
-                {
-                    Id = 3,
-                    Identification = "6699003311",
-                    Name = "Luis",
-                    LastName = "Loza"
-                },
-                new User
-                {
-                    Id = 4,
-                    Identification = "7775551112",
-                    Name = "Jess",
-                    LastName = "Villas"
-                }
-            };
-
-        #endregion
-
-        #region Properties
-        public int Id { get; set; }
-        public string PersonValue { get; set; }
-        public DateTime GivenDate { get; set; }
-        public ObservableCollection<AppointmentType> Types { get; set; } = new ObservableCollection<AppointmentType>();
-        public ObservableCollection<User> People { get; set; }
-
-        public AppointmentType SelectedType { get; set; }
-
-        #endregion
         public CreateAppointmentViewModel() : base()
         {
             //Initialize Dictionary with all values from enum AppointmentType
+            _dataService = new DataService();
             Types = new ObservableCollection<AppointmentType>(Enum.GetValues(typeof(AppointmentType)).OfType<AppointmentType>().ToList());
+            Users = new ObservableCollection<User>();
+            Task.Run(() => this.InitializePeople()).Wait();
+        }
+        #region Temp Properties
 
-            People = new ObservableCollection<User>();
-            InitializePeople();
+        private readonly IDataService _dataService;        
+        #endregion
+
+        #region Properties
+
+        private int _id;
+        private string _userValue;
+        private DateTime _givenDate;
+        private ObservableCollection<User> _users = new ObservableCollection<User>();
+        private ObservableCollection<AppointmentType> _types = new ObservableCollection<AppointmentType>();
+        private AppointmentType _selectedType;      
+
+        public int Id
+        {
+            get => _id;
+            set => SetProperty(ref _id, value);
         }
 
+        public string UserValue   
+        {
+            get => _userValue;
+            set => SetProperty(ref _userValue, value);
+        }
+
+        public DateTime GivenDate
+        {
+            get => _givenDate;
+            set => SetProperty(ref _givenDate, value);
+        }
+
+        public ObservableCollection<User> Users
+        {
+            get => _users;
+            set => SetProperty(ref _users, value);
+        }
+
+        public ObservableCollection<AppointmentType> Types
+        {
+            get => _types;
+            set => SetProperty(ref _types, value);
+        }
+        public AppointmentType SelectedType
+        {
+            get => _selectedType;
+            set => SetProperty(ref _selectedType, value);
+        }
+        #endregion
+       
         #region Commands
 
         //SearchUserCommand
-        public ICommand SearchUserCommand => new Command((item) =>  SearchUser(item));
+        public ICommand SearchUserCommand => new Command(async (item) =>  await SearchUserAsync(item));
 
-        private void SearchUser(object sender)
+        private async Task SearchUserAsync(object sender)
         {
 
             if (sender == null)
             {
-                InitializePeople();
+                await InitializePeople();
             }
             else
             {
 
-                var peopleSearched = people.Where(p =>
+                var peopleSearched = Users.Where(p =>
                     p.Identification.ToUpper().Contains(sender.ToString().ToUpper())
                     || p.Name.ToUpper().Contains(sender.ToString().ToUpper())
                     || p.LastName.ToUpper().Contains(sender.ToString().ToUpper())).ToList();
 
-                People.Clear();
+                Users.Clear();
 
                 foreach (var person in peopleSearched)
                 {
-                    People.Add(person);
+                    Users.Add(person);
                 }
             }
         }
 
-        private void InitializePeople()
+        public async Task InitializePeople()
         {
-            People.Clear();
-            //create a list with 5 random objects values of type person            
+            Users.Clear();
 
-            foreach (var person in people)
+            var users = await _dataService.GetUsersByType(UserType.Paciente);
+            users = users.OrderBy(t => t.LastName).ToList();
+
+            foreach (var person in users)
             {
-                People.Add(person);
+                Users.Add(person);
             }
         }
 

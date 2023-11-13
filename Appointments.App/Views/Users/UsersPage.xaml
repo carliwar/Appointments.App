@@ -29,7 +29,7 @@
                                 Margin="2"
                                 BackgroundColor="{StaticResource Tertiary}"
                                 TextColor="{StaticResource BlackText}"
-                                Text="{Binding PersonValue}" />
+                                Text="{Binding UserValue}" />
                         </Grid>                        
                         <!--<StackLayout.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.EventSelectedCommand, Source={x:Reference MainCalendarPage}}" CommandParameter="{Binding .}" />
