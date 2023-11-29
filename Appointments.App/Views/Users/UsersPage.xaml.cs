@@ -15,7 +15,7 @@ namespace Appointments.App.Views.Users
 
         protected override void OnAppearing()
         {
-            (BindingContext as UserListViewModel)?.InitializePeople();
+            (BindingContext as UserListViewModel)?.InitializeUsers();
         }
 
     }

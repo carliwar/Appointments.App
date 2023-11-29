@@ -12,6 +12,6 @@ namespace Appointments.App.Services
 
         Task<User> CreateUser(User person);
         Task<IEnumerable<User>> GetUsers();
-        Task<IEnumerable<User>> GetUsersByType(UserType userType);
+        Task<IEnumerable<User>> GetUsersByType(UserType userType, string searchText="");
     }
 }

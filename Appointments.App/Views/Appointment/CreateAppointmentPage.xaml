@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:model="clr-namespace:Appointments.App.ViewModels"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
              x:Name="CreateAppointmentViewModel"
              x:Class="Appointments.App.Views.Appointment.CreateAppointmentPage">
     <ContentPage.BindingContext>
@@ -46,6 +47,12 @@
                            Placeholder="CI ó Nombre ó Apellido"
                            ReturnCommand="{Binding SearchUserCommand}"
                            ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
+                    <Entry.Behaviors>
+                        <xct:EventToCommandBehavior
+                            EventName="TextChanged"
+                            Command="{Binding SearchUserCommand}"
+                            />
+                    </Entry.Behaviors>
                 </Entry>
 
                 <Picker 

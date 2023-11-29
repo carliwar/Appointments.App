@@ -17,7 +17,7 @@ namespace Appointments.App.ViewModels
             _dataService = new DataService();
             Types = new ObservableCollection<AppointmentType>(Enum.GetValues(typeof(AppointmentType)).OfType<AppointmentType>().ToList());
             Users = new ObservableCollection<User>();
-            Task.Run(() => this.InitializePeople()).Wait();
+            Task.Run(() => InitializeUsers()).Wait();
         }
         #region Temp Properties
 
@@ -79,30 +79,30 @@ namespace Appointments.App.ViewModels
 
             if (sender == null)
             {
-                await InitializePeople();
+                await InitializeUsers();
             }
             else
             {
+                var searchText = string.Empty;
 
-                var peopleSearched = Users.Where(p =>
-                    p.Identification.ToUpper().Contains(sender.ToString().ToUpper())
-                    || p.Name.ToUpper().Contains(sender.ToString().ToUpper())
-                    || p.LastName.ToUpper().Contains(sender.ToString().ToUpper())).ToList();
-
-                Users.Clear();
-
-                foreach (var person in peopleSearched)
+                if (sender is TextChangedEventArgs search)
                 {
-                    Users.Add(person);
+                    searchText = search.NewTextValue;
                 }
+                else if (sender is string @string)
+                {
+                    searchText = @string;
+                }
+
+                await InitializeUsers(searchText);
             }
         }
 
-        public async Task InitializePeople()
+        public async Task InitializeUsers(string searchText = "")
         {
             Users.Clear();
 
-            var users = await _dataService.GetUsersByType(UserType.Paciente);
+            var users = await _dataService.GetUsersByType(UserType.Paciente, searchText);
             users = users.OrderBy(t => t.LastName).ToList();
 
             foreach (var person in users)

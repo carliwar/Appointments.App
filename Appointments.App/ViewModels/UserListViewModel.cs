@@ -15,7 +15,7 @@ namespace Appointments.App.ViewModels
         public UserListViewModel() : base()
         {
             _dataService = new DataService();
-            People = new ObservableCollection<User>();
+            Users = new ObservableCollection<User>();
         }
         #region Temp Properties
         private readonly IDataService _dataService;
@@ -26,7 +26,7 @@ namespace Appointments.App.ViewModels
         private int _id;
         private string _personValue;
         private DateTime _givenDate;
-        private ObservableCollection<User> _people;
+        private ObservableCollection<User> _users;
 
         public int Id
         {
@@ -46,10 +46,10 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _givenDate, value);
         }
 
-        public ObservableCollection<User> People
+        public ObservableCollection<User> Users
         {
-            get => _people;
-            set => SetProperty(ref _people, value);
+            get => _users;
+            set => SetProperty(ref _users, value);
         }
 
         #endregion        
@@ -57,49 +57,49 @@ namespace Appointments.App.ViewModels
         #region Commands
 
         //SearchUserCommand
-        public ICommand SearchUserCommand => new Command(async (item) =>  await SearchUser(item));
+        public ICommand SearchUserCommand => new Command(async (item) =>  await SearchUserAsync(item));
         public ICommand CreateUserCommand => new Command(async (item) => await CreateUser());
 
-        private async Task SearchUser(object sender)
+        private async Task SearchUserAsync(object sender)
         {
 
             if (sender == null)
             {
-                await InitializePeople();
+                await InitializeUsers();
             }
             else
             {
+                var searchText = string.Empty;
 
-                var peopleSearched = People.Where(p =>
-                    p.Identification.ToUpper().Contains(sender.ToString().ToUpper())
-                    || p.Name.ToUpper().Contains(sender.ToString().ToUpper())
-                    || p.LastName.ToUpper().Contains(sender.ToString().ToUpper())).OrderBy(t=> t.LastName).ToList();
-
-                People.Clear();
-
-                foreach (var person in peopleSearched)
+                if (sender is TextChangedEventArgs search)
                 {
-                    People.Add(person);
+                    searchText = search.NewTextValue;
                 }
+                else if (sender is string @string)
+                {
+                    searchText = @string;
+                }
+
+                await InitializeUsers(searchText);
+            }
+        }
+
+        public async Task InitializeUsers(string searchText = "")
+        {
+            Users.Clear();
+
+            var users = await _dataService.GetUsersByType(UserType.Paciente, searchText);
+            users = users.OrderBy(t => t.LastName).ToList();
+
+            foreach (var person in users)
+            {
+                Users.Add(person);
             }
         }
 
         private async Task CreateUser()
         {
             await Application.Current.MainPage.Navigation.PushAsync(new CreateUserPage());
-        }
-
-        public async Task InitializePeople()
-        {
-            People.Clear();
-            
-            var users = await _dataService.GetUsersByType(UserType.Paciente);
-            users = users.OrderBy(t => t.LastName).ToList();
-
-            foreach (var person in users)
-            {
-                People.Add(person);
-            }
         }
 
         #endregion

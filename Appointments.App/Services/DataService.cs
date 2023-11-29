@@ -36,14 +36,21 @@ namespace Appointments.App.Services
             return await db.Get();
         }
 
-        public async Task<IEnumerable<User>> GetUsersByType(UserType userType)
+        public async Task<IEnumerable<User>> GetUsersByType(UserType userType, string searchText="")
         {
             await _database.CreateTablesAsync<User, User>();
             var db = new Repository<User>(_database);
-
             List<User> users = await db.Get();
 
-            return users.Where(t => t.UserType == userType);
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                users = users.Where(t => (!string.IsNullOrWhiteSpace(t.Identification) && t.Identification.Contains(searchText))
+                        || (!string.IsNullOrWhiteSpace(t.Name) && t.Name.Contains(searchText))
+                        || (!string.IsNullOrWhiteSpace(t.LastName) && t.LastName.Contains(searchText))
+                ).ToList();
+            }
+            
+            return users.Where(t => t.UserType == userType).ToList();
         }
 
         public async Task<IEnumerable<PersonType>> GetPersonTypes()
