@@ -1,10 +1,9 @@
 ﻿using Appointments.App.Models;
+using Appointments.App.Services;
 using Appointments.App.Views.Appointment;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -14,42 +13,21 @@ namespace Appointments.App.ViewModels
 {
     public class MainPageViewModel : BasePageViewModel
     {
+        #region Temp Properties
+
+        private readonly IDataService _dataService;
+
+        #endregion
+
         public MainPageViewModel():base() 
         {
+            _dataService = new DataService();
+            Events = new EventCollection();
+
+            Task.Run(() => GetEvents()).Wait();            
+
             SelectedDate = DateTime.Today;
-            SelectedDateIsLessThanToday = true;
-
-            // testing all kinds of adding events
-            // when initializing collection
-            Events = new EventCollection
-            {
-                [DateTime.Now.AddDays(-3)] = new List<EventModel>(GenerateEvents(10, AppointmentType.Endodoncia.ToString())),
-                [DateTime.Now.AddDays(4)] = new List<EventModel>(GenerateEvents(2, AppointmentType.Consulta.ToString())),
-                [DateTime.Now.AddDays(2)] = new List<EventModel>(GenerateEvents(1, AppointmentType.Consulta.ToString())),
-                [DateTime.Now.AddDays(1)] = new List<EventModel>(GenerateEvents(3, AppointmentType.Consulta.ToString())),
-            };
-
-            // with add method
-            Events.Add(DateTime.Now.AddDays(-1), new List<EventModel>(GenerateEvents(5, AppointmentType.Endodoncia.ToString())));
-
-            // with indexer
-            Events[DateTime.Now] = new List<EventModel>(GenerateEvents(2, AppointmentType.Ortodoncia.ToString()));
-
-            Task.Delay(5000).ContinueWith(_ =>
-            {
-                // indexer - update later
-                Events[DateTime.Now] = new ObservableCollection<EventModel>(GenerateEvents(10, AppointmentType.Endodoncia.ToString()));
-
-                // add later
-                Events.Add(DateTime.Now.AddDays(3), new List<EventModel>(GenerateEvents(5, AppointmentType.Endodoncia.ToString())));
-
-                // indexer later
-                Events[DateTime.Now.AddDays(10)] = new List<EventModel>(GenerateEvents(10, AppointmentType.Ortodoncia.ToString()));
-
-                // add later
-                Events.Add(DateTime.Now.AddDays(15), new List<EventModel>(GenerateEvents(10, AppointmentType.Endodoncia.ToString())));
-                
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+            SelectedDateIsLessThanToday = true;            
         }
 
         #region Constants
@@ -58,12 +36,12 @@ namespace Appointments.App.ViewModels
         #endregion
 
         #region Properties
-        public EventCollection Events { get; }
         private int _month = DateTime.Today.Month;
         private int _year = DateTime.Today.Year;
         private int _day = DateTime.Today.Day;
         private bool _selectedDateIsLessThanToday = false;
         private string _addAppointmentText = _enabledAddAppointmentButton;
+        private EventCollection _events;
 
         public int Day
         {
@@ -98,6 +76,11 @@ namespace Appointments.App.ViewModels
         {
             get => _addAppointmentText;
             set => SetProperty(ref _addAppointmentText, value);
+        }
+
+        public EventCollection Events {
+            get => _events;
+            set => SetProperty(ref _events, value);
         }
         #endregion
 
@@ -143,13 +126,42 @@ namespace Appointments.App.ViewModels
         #endregion
 
         #region Methods
-        private IEnumerable<EventModel> GenerateEvents(int count, string name)
+
+        private List<EventModel> GenerateEvents(List<Appointment> appointments)
         {
-            return Enumerable.Range(1, count).Select(x => new EventModel
+            var results = new List<EventModel>();
+            foreach(Appointment appointment in appointments)
             {
-                Name = $"{name} {x}",
-                Description = $"Paciente: {name} {x}",                
-            });
+                results.Add(new EventModel 
+                { 
+                    Description = appointment.UserId,
+                    Name = appointment.AppointmentType.ToString(),
+                    Type = appointment.AppointmentType
+                });
+            }
+
+            return results;
+        }
+
+        private async Task GetEvents()
+        {
+            Events.Clear();
+
+            var results = await _dataService.GetAppointments(DateTime.Today.AddMonths(-1), DateTime.Today.AddMonths(1));
+
+            var datesWithEvents = results.Select(x => x.AppointmentDate.Date).Distinct();
+
+            foreach (var groupDate in datesWithEvents) {
+
+                List<Appointment> events = results.Where(x => x.AppointmentDate.Date == groupDate).ToList();                
+
+                Events.Add(groupDate, GenerateEvents(events));
+            }
+
+            if(Events == null)
+            {
+                Events = new EventCollection();
+            }
         }
         #endregion
     }

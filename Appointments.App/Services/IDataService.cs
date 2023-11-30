@@ -13,5 +13,10 @@ namespace Appointments.App.Services
         Task<User> CreateUser(User person);
         Task<IEnumerable<User>> GetUsers();
         Task<IEnumerable<User>> GetUsersByType(UserType userType, string searchText="");
+
+        // Appointment
+        Task<Appointment> CreateAppointment(Appointment person);
+        Task<List<Appointment>> GetAppointments(DateTime start, DateTime end);
+
     }
 }

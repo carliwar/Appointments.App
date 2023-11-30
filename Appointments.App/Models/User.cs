@@ -5,7 +5,7 @@ namespace Appointments.App.Models
 {
     public class User
     {
-        public string UserValue
+        public string UserFullName
         {
             get
             {

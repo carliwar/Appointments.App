@@ -10,16 +10,18 @@
     </ContentPage.BindingContext>
 
     <StackLayout>
-        <Frame BackgroundColor="#2196F3" Padding="10" CornerRadius="0">
+        <Frame BackgroundColor="{StaticResource Primary}" Padding="10" CornerRadius="0">
             <Label Text="Nueva Cita" HorizontalTextAlignment="Start" TextColor="White" FontSize="18"/>
+        </Frame>
+        <Frame BackgroundColor="{StaticResource ErrorText}" IsVisible="{Binding ShowError}">
+            <Label Text="Por favor llena todos los campos requeridos!" HorizontalTextAlignment="Start" TextColor="White" FontSize="18"/>
         </Frame>
         <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">            
             <StackLayout>
                 <Label Padding="1" Text="Datos de la Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
 
                 <DatePicker
-                    TextColor="#2196F3"
-                    
+                    TextColor="#2196F3"                    
                     Date="{Binding GivenDate}"
                     MinimumDate="{Binding Today}"
                     Format="MM/dd/yyyy">
@@ -31,8 +33,7 @@
                     TitleColor="#5084ad"
                     TextColor="#2196F3"
                     BackgroundColor="#e9f0f7"
-                    Title="Tipo de cita"
-                    
+                    Title="Tipo de cita *Requerido"                    
                     ItemsSource="{Binding Types}"
                     ItemDisplayBinding="{Binding .}">
                 </Picker>
@@ -44,7 +45,7 @@
 
                 <Entry x:Name="SearchUser"
                            PlaceholderColor="#5084ad"
-                           Placeholder="CI ó Nombre ó Apellido"
+                           Placeholder="Buscar por CI ó Nombre ó Apellido"
                            ReturnCommand="{Binding SearchUserCommand}"
                            ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
                     <Entry.Behaviors>
@@ -58,8 +59,7 @@
                 <Picker 
                         TextColor="#2196F3"
                         BackgroundColor="#e9f0f7"
-                        Title="Escoja el paciente"
-                    
+                        Title="Escoja el paciente *Requerido"                    
                         ItemsSource="{Binding Users}"
                         ItemDisplayBinding="{Binding UserValue}">
                 </Picker>
@@ -98,6 +98,7 @@
             Text="Guardar Cita" 
             BackgroundColor="#4BB543"
             TextColor="#fefefe"
+            Command="{Binding CreateAppointmentCommand}"
             VerticalOptions="EndAndExpand"/>
     </StackLayout>    
 </ContentPage>

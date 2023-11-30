@@ -31,7 +31,9 @@ namespace Appointments.App.ViewModels
         private DateTime _givenDate;
         private ObservableCollection<User> _users = new ObservableCollection<User>();
         private ObservableCollection<AppointmentType> _types = new ObservableCollection<AppointmentType>();
-        private AppointmentType _selectedType;      
+        private AppointmentType _selectedType;
+        private User _selectedUser;
+        private bool _showError = false;
 
         public int Id
         {
@@ -67,12 +69,22 @@ namespace Appointments.App.ViewModels
             get => _selectedType;
             set => SetProperty(ref _selectedType, value);
         }
+        public User SelectedUser
+        {
+            get => _selectedUser;
+            set => SetProperty(ref _selectedUser, value);
+        }
+        public bool ShowError
+        {
+            get => _showError;
+            set => SetProperty(ref _showError, value);
+        }
         #endregion
-       
-        #region Commands
 
+        #region Commands
         //SearchUserCommand
         public ICommand SearchUserCommand => new Command(async (item) =>  await SearchUserAsync(item));
+        public ICommand CreateAppointmentCommand => new Command(async (item) =>  await CreateAppointment(item));
 
         private async Task SearchUserAsync(object sender)
         {
@@ -95,6 +107,37 @@ namespace Appointments.App.ViewModels
                 }
 
                 await InitializeUsers(searchText);
+            }
+        }
+
+        private async Task CreateAppointment(object sender)
+        {
+            if(SelectedType == AppointmentType.None || SelectedUser == null)
+            {
+                ShowError = true;
+            }
+            else
+            {
+                ShowError = false;
+            }
+
+            var appointment = new Appointment
+            { 
+                AppointmentDate = GivenDate,
+                UserId = SelectedUser.Identification,
+                AppointmentType = SelectedType,
+            };
+
+            var result = await _dataService.CreateAppointment(appointment);
+
+            if (result != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Cita agendada", "Ok");
+                await Application.Current.MainPage.Navigation.PopAsync();
+            }
+            else
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Contacte al administrador", "Ok");
             }
         }
 

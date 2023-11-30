@@ -60,8 +60,28 @@ namespace Appointments.App.Services
 
             return await db.Get();
         }
-        
 
+        public async Task<Appointment> CreateAppointment(Appointment appointment)
+        {
+            await _database.CreateTablesAsync<Appointment, Appointment>();
+            var db = new Repository<Appointment>(_database);
+            await db.Insert(appointment);
+            return appointment;
+        }
+
+        public async Task<List<Appointment>> GetAppointments(DateTime start, DateTime end)
+        {
+            await _database.CreateTablesAsync<Appointment, Appointment>();
+            var db = new Repository<Appointment>(_database);
+            var appointments = await db.Get();
+
+            // get appointments from start and end dates
+            appointments = appointments.Where(t => 
+                    (t.AppointmentDate.Date >= start.Date)
+                 && t.AppointmentDate.Date <= end.Date).ToList();
+
+            return appointments;
+        }
 
         #region API Call implementation
         //private readonly string _apiURL;
