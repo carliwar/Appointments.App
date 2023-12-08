@@ -151,9 +151,10 @@ namespace Appointments.App.ViewModels
 
             var appointment = new Appointment
             {
+                UserId = SelectedUser.Id,
                 AppointmentDate = GivenDate.Add(GivenTime),
                 AppointmentEnd = GivenDate.Add(GivenTime).AddMinutes((double)SelectedAppointmentDuration),
-                UserIdentification = SelectedUser.Identification,
+                UserInformation = SelectedUser.UserFullName,
                 AppointmentType = SelectedType,
             };
 

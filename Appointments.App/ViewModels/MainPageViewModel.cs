@@ -7,8 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Plugin.Calendar.Models;
+using static Xamarin.Essentials.Permissions;
 
 namespace Appointments.App.ViewModels
 {
@@ -88,12 +90,18 @@ namespace Appointments.App.ViewModels
         #region Commands
         public ICommand EventSelectedCommand => new Command(async (item) => await ExecuteEventSelectedCommand(item));
         public ICommand ButtonClickCommand => new Command(async (item) => await ButtonClicked(item));
+        public ICommand CallPhoneCommand => new Command(async (phone) => await CallPhoneClicked(phone));
 
         private async Task ExecuteEventSelectedCommand(object item)
         {
             if (item is EventModel eventModel)
             {
-                await App.Current.MainPage.DisplayAlert(eventModel.AppointmentType, eventModel.UserId, "Ok");
+                var result = await App.Current.MainPage.DisplayAlert(eventModel.AppointmentType, $"{eventModel.UserInformation}", "Contactar", "Cerrar");
+                if(result == true)
+                {
+                    var phone = new string(eventModel.UserPhone.ToString().Where(c => char.IsDigit(c)).ToArray());
+                    await Browser.OpenAsync(new Uri($"https://wa.me/{phone}"), BrowserLaunchMode.SystemPreferred);
+                }
             }
         }
 
@@ -103,7 +111,7 @@ namespace Appointments.App.ViewModels
             {
                 return new Command<DateTime>((date) => DaySelected(date));
             }
-        }        
+        }
 
         private void DaySelected(DateTime date)
         {
@@ -132,6 +140,12 @@ namespace Appointments.App.ViewModels
                 SelectedDate = DateTime.Today;
             }
             await Application.Current.MainPage.Navigation.PushAsync(new CreateAppointmentPage(SelectedDate.Value));
+        }
+
+        private async Task CallPhoneClicked(object phone)
+        {
+            phone = new string(phone.ToString().Where(c => char.IsDigit(c)).ToArray());
+            await Browser.OpenAsync(new Uri($"https://wa.me/{phone}"), BrowserLaunchMode.SystemPreferred);
         }
         #endregion
 
@@ -164,7 +178,8 @@ namespace Appointments.App.ViewModels
                 }
                 results.Add(new EventModel 
                 { 
-                    UserId = appointment.UserIdentification,
+                    UserInformation = appointment.UserName,
+                    UserPhone = appointment.UserPhone,
                     AppointmentType = appointment.AppointmentType.ToString(),
                     EventDate = appointment.AppointmentDate,
                     AppointmentColor = appointmentColor

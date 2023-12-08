@@ -11,7 +11,12 @@ namespace Appointments.App.Models.DataModels
         public DateTime AppointmentDate { get; set; }
         public DateTime AppointmentEnd { get; set; }
         public AppointmentType? AppointmentType { get; set; }
-        public string UserIdentification { get; set; }
+        public string UserInformation { get; set; }
         public int UserId { get; set; }
+
+        [Ignore]
+        public string UserPhone { get; set; }
+        [Ignore]
+        public string UserName { get; set; }
     }
 }

@@ -9,7 +9,7 @@
         <model:MainPageViewModel />
     </ContentPage.BindingContext>
 
-    <StackLayout>        
+    <StackLayout>
         <plugin:Calendar     
             Events="{Binding Events}"
             SelectedDate="{Binding SelectedDate}"
@@ -58,7 +58,16 @@
                         <Label
                                 FontSize="Small"
                                 LineBreakMode="WordWrap"
-                                Text="{Binding UserId}" />
+                                Text="{Binding UserInformation}" />
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="Small"
+                            LineBreakMode="WordWrap"
+                            Text="{Binding UserPhone}" >
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding CallPhoneCommand}" CommandParameter="{Binding UserPhone}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.EventSelectedCommand, Source={x:Reference MainCalendarPage}}" CommandParameter="{Binding .}" />
                         </StackLayout.GestureRecognizers>
