@@ -1,4 +1,5 @@
 ﻿using Appointments.App.Models;
+using Appointments.App.Models.DataModels;
 using Appointments.App.Services;
 using Appointments.App.Views.Appointment;
 using System;
@@ -27,7 +28,7 @@ namespace Appointments.App.ViewModels
             Task.Run(() => GetEvents()).Wait();            
 
             SelectedDate = DateTime.Today;
-            SelectedDateIsLessThanToday = true;            
+            EnableAddAppointmentButton = true;            
         }
 
         #region Constants
@@ -39,7 +40,7 @@ namespace Appointments.App.ViewModels
         private int _month = DateTime.Today.Month;
         private int _year = DateTime.Today.Year;
         private int _day = DateTime.Today.Day;
-        private bool _selectedDateIsLessThanToday = false;
+        private bool _enableAddAppointmentButton = false;
         private string _addAppointmentText = _enabledAddAppointmentButton;
         private EventCollection _events;
 
@@ -58,10 +59,10 @@ namespace Appointments.App.ViewModels
             get => _year;
             set => SetProperty(ref _year, value);
         }
-        public bool SelectedDateIsLessThanToday
+        public bool EnableAddAppointmentButton
         {
-            get => _selectedDateIsLessThanToday;
-            set => SetProperty(ref _selectedDateIsLessThanToday, value);
+            get => _enableAddAppointmentButton;
+            set => SetProperty(ref _enableAddAppointmentButton, value);
         }
 
         private DateTime? _selectedDate = DateTime.Today;
@@ -92,7 +93,7 @@ namespace Appointments.App.ViewModels
         {
             if (item is EventModel eventModel)
             {
-                await App.Current.MainPage.DisplayAlert(eventModel.Name, eventModel.Description, "Ok");
+                await App.Current.MainPage.DisplayAlert(eventModel.AppointmentType, eventModel.UserId, "Ok");
             }
         }
 
@@ -100,27 +101,36 @@ namespace Appointments.App.ViewModels
         {            
             get
             {
-                return new Command<DateTime>((date) => DaySelected(SelectedDate.Value));
+                return new Command<DateTime>((date) => DaySelected(date));
             }
         }        
 
         private void DaySelected(DateTime date)
         {
+            if(SelectedDate is null)
+            {
+                EnableAddAppointmentButton = false;
+                AddAppointmentText = _disabledAddAppointmentButton;
+            }
             // disable AddAppointmentButton if the date is less than today
             if (date.Date >= DateTime.Today)
             {
-                SelectedDateIsLessThanToday = true;
+                EnableAddAppointmentButton = true;
                 AddAppointmentText = _enabledAddAppointmentButton;
             }
             else
             {
-                SelectedDateIsLessThanToday = false;
+                EnableAddAppointmentButton = false;
                 AddAppointmentText = _disabledAddAppointmentButton;
             }
         }
 
         private async Task ButtonClicked(object sender)
         {
+            if(SelectedDate is null)
+            {
+                SelectedDate = DateTime.Today;
+            }
             await Application.Current.MainPage.Navigation.PushAsync(new CreateAppointmentPage(SelectedDate.Value));
         }
         #endregion
@@ -132,18 +142,44 @@ namespace Appointments.App.ViewModels
             var results = new List<EventModel>();
             foreach(Appointment appointment in appointments)
             {
+                var appointmentColor = Color.FromHex("#2196F3");
+                switch (appointment.AppointmentType)
+                {
+                    case Models.Enum.AppointmentType.Descanso:
+                        appointmentColor = Color.FromHex("#2196F3");
+                        break;
+                    case Models.Enum.AppointmentType.Extraccion:
+                        appointmentColor = Color.FromHex("#ff0000");
+                        break;
+                    case Models.Enum.AppointmentType.Consulta:
+                        appointmentColor = Color.FromHex("#5084ad");
+                        break;
+                    case Models.Enum.AppointmentType.Endodoncia:
+                        appointmentColor = Color.FromHex("#00ff00");
+                        break;
+                    case Models.Enum.AppointmentType.Ortodoncia:
+                        appointmentColor = Color.FromHex("#ff00ff");
+                        break;
+
+                }
                 results.Add(new EventModel 
                 { 
-                    Description = appointment.UserId,
-                    Name = appointment.AppointmentType.ToString(),
-                    Type = appointment.AppointmentType
+                    UserId = appointment.UserIdentification,
+                    AppointmentType = appointment.AppointmentType.ToString(),
+                    EventDate = appointment.AppointmentDate,
+                    AppointmentColor = appointmentColor
                 });
+            }
+
+            if(results.Any())
+            {
+                results = results.OrderBy(t => t.EventDate.TimeOfDay).ToList();
             }
 
             return results;
         }
 
-        private async Task GetEvents()
+        public async Task GetEvents()
         {
             Events.Clear();
 

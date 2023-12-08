@@ -1,9 +1,19 @@
-﻿namespace Appointments.App.Models
+﻿using System;
+using System.Drawing;
+
+namespace Appointments.App.Models
 {
     public class EventModel
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public AppointmentType Type { get; set; }
+        public string AppointmentType { get; set; }
+        public string UserId { get; set; }
+        public DateTime EventDate { get; set; }
+        public Color AppointmentColor { get; set; }
+        public string Time 
+        {   get 
+            {
+                return EventDate.ToString("HH:mm");
+            } 
+        }
     }
 }

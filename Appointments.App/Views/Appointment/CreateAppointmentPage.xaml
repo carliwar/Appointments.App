@@ -21,22 +21,34 @@
                 <Label Padding="1" Text="Datos de la Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
 
                 <DatePicker
-                    TextColor="#2196F3"                    
+                    TextColor="{StaticResource Primary}"                    
                     Date="{Binding GivenDate}"
                     MinimumDate="{Binding Today}"
                     Format="MM/dd/yyyy">
                 </DatePicker>
                 <TimePicker
-                    TextColor="#2196F3">
+                    Time="{Binding GivenTime}"
+                    TextColor="{StaticResource Primary}"
+                    >
                 </TimePicker>
                 <Picker 
-                    TitleColor="#5084ad"
-                    TextColor="#2196F3"
-                    BackgroundColor="#e9f0f7"
+                    TitleColor="{StaticResource Primary}"
+                    TextColor="{StaticResource Secondary}"
+                    BackgroundColor="{StaticResource Tertiary}"
                     Title="Tipo de cita *Requerido"                    
                     ItemsSource="{Binding Types}"
+                    SelectedItem="{Binding SelectedType}"
                     ItemDisplayBinding="{Binding .}">
                 </Picker>
+                <Picker 
+                    TitleColor="{StaticResource Primary}"
+                    TextColor="{StaticResource Secondary}"
+                    BackgroundColor="{StaticResource Tertiary}"
+                    Title="Duración de la cita"                    
+                    ItemsSource="{Binding AppointmentDurations}"
+                    SelectedItem="{Binding SelectedAppointmentDuration}"
+                    ItemDisplayBinding="{Binding .}">
+                </Picker>                
             </StackLayout>
         </Frame>
         <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
@@ -57,11 +69,12 @@
                 </Entry>
 
                 <Picker 
-                        TextColor="#2196F3"
+                        TextColor="{StaticResource Primary}"
                         BackgroundColor="#e9f0f7"
                         Title="Escoja el paciente *Requerido"                    
                         ItemsSource="{Binding Users}"
-                        ItemDisplayBinding="{Binding UserValue}">
+                        SelectedItem="{Binding SelectedUser}"
+                        ItemDisplayBinding="{Binding UserFullName}">
                 </Picker>
             </StackLayout>
         </Frame>

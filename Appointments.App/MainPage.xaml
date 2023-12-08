@@ -22,7 +22,7 @@
             DayViewCornerRadius="3"
             DayViewSize="35"
             
-            TodayOutlineColor="#2196F3"
+            TodayOutlineColor="{StaticResource Primary}"
             TodayFillColor="#e9f0f7"
             
             SelectedDateColor="#2196F3"
@@ -44,17 +44,21 @@
                         <Button
                                 CornerRadius="10"
                                 HeightRequest="10"
-                                BackgroundColor="#5084ad"
+                                BackgroundColor="{Binding AppointmentColor}"
                                 TextColor="#fefefe"
-                                Text="{Binding Type}" />
+                                Text="{Binding AppointmentType}" />
                         <Label
                                 FontAttributes="Bold"
                                 FontSize="Medium"
-                                Text="{Binding Name}" />
+                                Text="{Binding AppointmentType}" />
+                        <Label
+                                FontAttributes="Bold"
+                                FontSize="Medium"
+                                Text="{Binding Time}" />
                         <Label
                                 FontSize="Small"
                                 LineBreakMode="WordWrap"
-                                Text="{Binding Description}" />
+                                Text="{Binding UserId}" />
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.EventSelectedCommand, Source={x:Reference MainCalendarPage}}" CommandParameter="{Binding .}" />
                         </StackLayout.GestureRecognizers>
@@ -64,7 +68,7 @@
         </plugin:Calendar>
         <Button
             x:Name="AddAppointmentButton"
-            IsVisible="{Binding SelectedDateIsLessThanToday}"            
+            IsVisible="{Binding EnableAddAppointmentButton}"            
             Margin="5"
             Text="{Binding AddAppointmentText}" 
             Command="{Binding ButtonClickCommand}"            

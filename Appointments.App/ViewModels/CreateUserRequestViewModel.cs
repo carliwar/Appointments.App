@@ -1,4 +1,5 @@
-﻿using Appointments.App.Models;
+﻿using Appointments.App.Models.DataModels;
+using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using System;
 using System.Windows.Input;
@@ -16,17 +17,22 @@ namespace Appointments.App.ViewModels
 
         #region Properties
         private string _identification;
+        private string _phone;
         private string _firstName;
         private string _lastName;
         private DateTime _birthDate = DateTime.Today;
         private readonly IDataService _dataService;
-        //public ObservableCollection<UserType> UserTypes { get; set; } = new ObservableCollection<UserType>();
         private UserType _selectedUserType;
 
         public string Identificacion
         {
             get => _identification;
             set => SetProperty(ref _identification, value);
+        }
+        public string Phone
+        {
+            get => _phone;
+            set => SetProperty(ref _phone, value);
         }
 
         public string FirstName
@@ -69,7 +75,7 @@ namespace Appointments.App.ViewModels
                 Name = FirstName,
                 LastName = LastName,
                 BirthDate = BirthDate,
-                //UserType = SelectedUserType
+                Phone = Phone,
                 UserType = UserType.Paciente
             };
             var result = await _dataService.CreateUser(person);

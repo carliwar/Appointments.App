@@ -1,4 +1,7 @@
 ﻿using Appointments.App.Models;
+using Appointments.App.Models.DataModels;
+using Appointments.App.Models.Enum;
+using Appointments.App.Models.TransactionModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,8 +18,14 @@ namespace Appointments.App.Services
         Task<IEnumerable<User>> GetUsersByType(UserType userType, string searchText="");
 
         // Appointment
-        Task<Appointment> CreateAppointment(Appointment person);
+        Task<Appointment> CreateAppointment(Appointment appointment);
+        Task<AppointmentCreationResponse> CreateValidatedAppointment(Appointment appointment);
         Task<List<Appointment>> GetAppointments(DateTime start, DateTime end);
+
+        // Settings
+        Task<Setting> CreateSetting(Setting setting);
+        Task<List<Setting>> GetSettingsByCatalog(string catalog);
+
 
     }
 }

@@ -1,7 +1,8 @@
-﻿
+﻿using Appointments.App.Models.Enum;
+using SQLite;
 using System;
 
-namespace Appointments.App.Models
+namespace Appointments.App.Models.DataModels
 {
     public class User
     {
@@ -13,8 +14,10 @@ namespace Appointments.App.Models
             }
         }
 
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
         public string Identification { get; set; }
+        public string Phone { get; set; }
         public string Name { get; set; }
         public string LastName { get; set; }
         public DateTime? BirthDate { get; set; }

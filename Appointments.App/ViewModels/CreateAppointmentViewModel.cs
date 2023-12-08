@@ -1,6 +1,8 @@
-﻿using Appointments.App.Models;
+﻿using Appointments.App.Models.DataModels;
+using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,25 +15,28 @@ namespace Appointments.App.ViewModels
     {
         public CreateAppointmentViewModel() : base()
         {
-            //Initialize Dictionary with all values from enum AppointmentType
             _dataService = new DataService();
             Types = new ObservableCollection<AppointmentType>(Enum.GetValues(typeof(AppointmentType)).OfType<AppointmentType>().ToList());
             Users = new ObservableCollection<User>();
+            AppointmentDurations = new ObservableCollection<AppointmentDuration>(Enum.GetValues(typeof(AppointmentDuration)).OfType<AppointmentDuration>().ToList());
             Task.Run(() => InitializeUsers()).Wait();
         }
         #region Temp Properties
 
-        private readonly IDataService _dataService;        
+        private readonly IDataService _dataService;
         #endregion
 
         #region Properties
 
         private int _id;
-        private string _userValue;
+        private string _userFullName;
         private DateTime _givenDate;
+        private TimeSpan _givenTime;
         private ObservableCollection<User> _users = new ObservableCollection<User>();
         private ObservableCollection<AppointmentType> _types = new ObservableCollection<AppointmentType>();
-        private AppointmentType _selectedType;
+        private ObservableCollection<AppointmentDuration>  _appointmentDurations = new ObservableCollection<AppointmentDuration>();
+        private AppointmentType? _selectedType;
+        private AppointmentDuration? _selectedAppointmentDuration;
         private User _selectedUser;
         private bool _showError = false;
 
@@ -41,16 +46,22 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _id, value);
         }
 
-        public string UserValue   
+        public string UserFullName
         {
-            get => _userValue;
-            set => SetProperty(ref _userValue, value);
+            get => _userFullName;
+            set => SetProperty(ref _userFullName, value);
         }
 
         public DateTime GivenDate
         {
             get => _givenDate;
             set => SetProperty(ref _givenDate, value);
+        }
+
+        public TimeSpan GivenTime
+        {
+            get => _givenTime;
+            set => SetProperty(ref _givenTime, value);
         }
 
         public ObservableCollection<User> Users
@@ -64,10 +75,22 @@ namespace Appointments.App.ViewModels
             get => _types;
             set => SetProperty(ref _types, value);
         }
-        public AppointmentType SelectedType
+
+        public ObservableCollection<AppointmentDuration> AppointmentDurations
+        {
+            get => _appointmentDurations;
+            set => SetProperty(ref _appointmentDurations, value);
+        }
+
+        public AppointmentType? SelectedType
         {
             get => _selectedType;
             set => SetProperty(ref _selectedType, value);
+        }
+        public AppointmentDuration? SelectedAppointmentDuration
+        {
+            get => _selectedAppointmentDuration;
+            set => SetProperty(ref _selectedAppointmentDuration, value);
         }
         public User SelectedUser
         {
@@ -83,8 +106,8 @@ namespace Appointments.App.ViewModels
 
         #region Commands
         //SearchUserCommand
-        public ICommand SearchUserCommand => new Command(async (item) =>  await SearchUserAsync(item));
-        public ICommand CreateAppointmentCommand => new Command(async (item) =>  await CreateAppointment(item));
+        public ICommand SearchUserCommand => new Command(async (item) => await SearchUserAsync(item));
+        public ICommand CreateAppointmentCommand => new Command(async (item) => await CreateAppointment(item));
 
         private async Task SearchUserAsync(object sender)
         {
@@ -112,7 +135,7 @@ namespace Appointments.App.ViewModels
 
         private async Task CreateAppointment(object sender)
         {
-            if(SelectedType == AppointmentType.None || SelectedUser == null)
+            if (SelectedType == null || SelectedUser == null)
             {
                 ShowError = true;
             }
@@ -121,19 +144,34 @@ namespace Appointments.App.ViewModels
                 ShowError = false;
             }
 
+            if (ShowError)
+            {
+                return;
+            }
+
             var appointment = new Appointment
-            { 
-                AppointmentDate = GivenDate,
-                UserId = SelectedUser.Identification,
+            {
+                AppointmentDate = GivenDate.Add(GivenTime),
+                AppointmentEnd = GivenDate.Add(GivenTime).AddMinutes((double)SelectedAppointmentDuration),
+                UserIdentification = SelectedUser.Identification,
                 AppointmentType = SelectedType,
             };
 
-            var result = await _dataService.CreateAppointment(appointment);
+            var result = await _dataService.CreateValidatedAppointment(appointment);
 
             if (result != null)
             {
-                await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Cita agendada", "Ok");
-                await Application.Current.MainPage.Navigation.PopAsync();
+                if (result.Success)
+                {
+
+                    await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Cita agendada", "Ok");
+                    await Application.Current.MainPage.Navigation.PopAsync();
+                }
+                else
+                {
+                    // display all errors from list as a single string from result
+                    await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
+                }
             }
             else
             {
@@ -153,7 +191,6 @@ namespace Appointments.App.ViewModels
                 Users.Add(person);
             }
         }
-
         #endregion
     }
 }

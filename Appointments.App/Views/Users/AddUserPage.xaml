@@ -19,6 +19,8 @@
                 </Picker>-->
                 <Label Text="CI o Pasaporte"></Label>
                 <Entry x:Name="Identificacion" Text="{Binding Identificacion}"></Entry>
+                <Label Text="Teléfono"></Label>
+                <Entry x:Name="Phone" Text="{Binding Phone}"></Entry>
                 <Label Text="Nombre"></Label>
                 <Entry x:Name="FirstName" Text="{Binding FirstName}"></Entry>
                 <Label Text="Apellido"></Label>

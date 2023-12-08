@@ -1,6 +1,9 @@
 ﻿using Appointments.App.Data;
 using Appointments.App.Infrastructure;
 using Appointments.App.Models;
+using Appointments.App.Models.DataModels;
+using Appointments.App.Models.Enum;
+using Appointments.App.Models.TransactionModels;
 using Newtonsoft.Json;
 using SQLite;
 using System;
@@ -20,6 +23,7 @@ namespace Appointments.App.Services
 
         }
 
+        #region Users
         public async Task<User> CreateUser(User person)
         {
             await _database.CreateTablesAsync<User, User>();
@@ -36,7 +40,7 @@ namespace Appointments.App.Services
             return await db.Get();
         }
 
-        public async Task<IEnumerable<User>> GetUsersByType(UserType userType, string searchText="")
+        public async Task<IEnumerable<User>> GetUsersByType(UserType userType, string searchText = "")
         {
             await _database.CreateTablesAsync<User, User>();
             var db = new Repository<User>(_database);
@@ -49,7 +53,7 @@ namespace Appointments.App.Services
                         || (!string.IsNullOrWhiteSpace(t.LastName) && t.LastName.Contains(searchText))
                 ).ToList();
             }
-            
+
             return users.Where(t => t.UserType == userType).ToList();
         }
 
@@ -60,13 +64,29 @@ namespace Appointments.App.Services
 
             return await db.Get();
         }
+        #endregion
 
+        #region Appointments
         public async Task<Appointment> CreateAppointment(Appointment appointment)
         {
             await _database.CreateTablesAsync<Appointment, Appointment>();
             var db = new Repository<Appointment>(_database);
             await db.Insert(appointment);
             return appointment;
+        }
+
+        public async Task<AppointmentCreationResponse> CreateValidatedAppointment(Appointment appointment)
+        {
+            var result = await ValidateAppointmentDateTime(appointment);
+
+            if (result.Success)
+            {
+                await _database.CreateTablesAsync<Appointment, Appointment>();
+                var db = new Repository<Appointment>(_database);
+                await db.Insert(appointment);
+            }
+            
+            return result;
         }
 
         public async Task<List<Appointment>> GetAppointments(DateTime start, DateTime end)
@@ -76,9 +96,53 @@ namespace Appointments.App.Services
             var appointments = await db.Get();
 
             // get appointments from start and end dates
-            appointments = appointments.Where(t => 
+            appointments = appointments.Where(t =>
                     (t.AppointmentDate.Date >= start.Date)
                  && t.AppointmentDate.Date <= end.Date).ToList();
+
+            return appointments;
+        }
+
+        private async Task<AppointmentCreationResponse> ValidateAppointmentDateTime(Appointment appointment)
+        {
+            var response = new AppointmentCreationResponse();
+            var appointmentsOfDay = await GetAppointments(appointment.AppointmentDate.Date, appointment.AppointmentDate.Date.AddDays(1));
+
+            // check if appointment.Date is at the start or end of any other appointment
+            var sameStartingDateTime = appointmentsOfDay.Any(t => t.AppointmentDate == appointment.AppointmentDate);
+            
+            if (sameStartingDateTime)
+            {
+                response.Errors.Add($"Ya existe una cita para la hora escogida el: {appointment.AppointmentDate:dd/MMM/yyyy}");
+            }
+
+            var crossingStartingDateTime = appointmentsOfDay.Any(t => appointment.AppointmentEnd > t.AppointmentDate && appointment.AppointmentEnd <= t.AppointmentEnd);
+
+            if(crossingStartingDateTime)
+            {
+                response.Errors.Add($"Ya existe una cita para la hora escogida el: {appointment.AppointmentDate:dd/MMM/yyyy}");
+            }
+
+            return response;
+        }
+        #endregion
+
+        public async Task<Setting> CreateSetting(Setting setting)
+        {
+            await _database.CreateTablesAsync<Setting, Setting>();
+            var db = new Repository<Setting>(_database);
+            await db.Insert(setting);
+            return setting;
+        }
+
+        public async Task<List<Setting>> GetSettingsByCatalog(string catalog)
+        {
+            await _database.CreateTablesAsync<Setting, Setting>();
+            var db = new Repository<Setting>(_database);
+            var appointments = await db.Get();
+
+            // get appointments from start and end dates
+            appointments = appointments.Where(t => t.Catalog == catalog).ToList();
 
             return appointments;
         }
