@@ -1,19 +1,19 @@
 ﻿using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using Appointments.App.Views.Users;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Appointments.App.ViewModels
 {
-    public class UserListViewModel : BasePageViewModel
+    public class PhoneContactsViewModel : BasePageViewModel
     {
-        public UserListViewModel() : base()
+        public PhoneContactsViewModel() : base()
         {
             _dataService = new DataService();
             Users = new ObservableCollection<User>();
@@ -58,8 +58,7 @@ namespace Appointments.App.ViewModels
         #region Commands
 
         //SearchUserCommand
-        public ICommand SearchUserCommand => new Command(async (item) =>  await SearchUserAsync(item));
-        public ICommand CreateUserCommand => new Command(async (item) => await CreateUser());
+        public ICommand SearchUserCommand => new Command(async (item) => await SearchUserAsync(item));        
 
         private async Task SearchUserAsync(object sender)
         {
@@ -87,22 +86,33 @@ namespace Appointments.App.ViewModels
 
         public async Task InitializeUsers(string searchText = "")
         {
-            Users.Clear();
+            Users.Clear();            
 
-            var users = await _dataService.GetUsersByType(UserType.Paciente, searchText);
-            users = users.OrderBy(t => t.LastName).ToList();
+            var contacts = await Contacts.PickContactAsync();
+            
 
-            foreach (var user in users)
-            {
-                Users.Add(user);
-            }
+            //if(contacts != null)
+            //{
+            //    if (!string.IsNullOrWhiteSpace(searchText))
+            //    {
+            //        contacts = contacts.Where(t => (t.FamilyName != null && t.FamilyName.ToLower().Contains(searchText))
+            //        || (t.GivenName != null && t.GivenName.ToLower().Contains(searchText))
+            //        || (t.Phones.Any() && t.Phones.Any(u => u.PhoneNumber.Contains(searchText))));
+            //    }
+
+            //    foreach (var contact in contacts)
+            //    {
+            //        Users.Add(new User
+            //        {
+            //            Phone = contact.Phones.FirstOrDefault()?.PhoneNumber,
+            //            Name = contact.GivenName,
+            //            LastName = contact.FamilyName,
+            //            UserType = UserType.Paciente
+            //        });
+            //    }
+            //}
         }
-
-        private async Task CreateUser()
-        {
-            await Application.Current.MainPage.Navigation.PushAsync(new CreateUserPage());
-        }
-
         #endregion
     }
+
 }

@@ -10,7 +10,12 @@ namespace Appointments.App.Models.DataModels
         {
             get
             {
-                return Identification + " - " + Name + " " + LastName;
+                var id = string.Empty;
+                if(Identification != null)
+                {
+                    id = $"{Identification} - ";
+                }
+                return id + Name + " " + LastName;
             }
         }
 

@@ -39,6 +39,7 @@ namespace Appointments.App.ViewModels
         #endregion
 
         #region Properties
+        public DateTime Today {  get => DateTime.Now; } 
         private int _month = DateTime.Today.Month;
         private int _year = DateTime.Today.Year;
         private int _day = DateTime.Today.Day;
@@ -91,6 +92,12 @@ namespace Appointments.App.ViewModels
         public ICommand EventSelectedCommand => new Command(async (item) => await ExecuteEventSelectedCommand(item));
         public ICommand ButtonClickCommand => new Command(async (item) => await ButtonClicked(item));
         public ICommand CallPhoneCommand => new Command(async (phone) => await CallPhoneClicked(phone));
+        public ICommand TodayCommand => new Command(async (item) => await SetToday());
+
+        private async Task SetToday()
+        {
+            SelectedDate = Today;
+        }
 
         private async Task ExecuteEventSelectedCommand(object item)
         {

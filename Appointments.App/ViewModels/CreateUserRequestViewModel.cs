@@ -1,8 +1,12 @@
 ﻿using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
+using Appointments.App.Views.Users;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Appointments.App.ViewModels
@@ -61,7 +65,18 @@ namespace Appointments.App.ViewModels
         #region Commands
         public ICommand CreatePersonCommand => new Command((item) => CreatePerson(item));
         public ICommand SelectUserTypeCommand => new Command((item) => SelectUserType(item));
+        public ICommand ImportContactCommand => new Command(async (item) => await ImportContactAsync(item));
 
+        private async Task ImportContactAsync(object item)
+        {
+            var contact = await Contacts.PickContactAsync();
+            if(contact != null)
+            {
+                FirstName = contact.GivenName;
+                LastName = contact.FamilyName;
+                Phone = contact.Phones.FirstOrDefault()?.PhoneNumber?.Replace(" ", "");                
+            }
+        }
         private void SelectUserType(object item)
         {
             SelectedUserType = (UserType)item;
