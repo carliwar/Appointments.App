@@ -20,7 +20,7 @@
                 <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
                     <StackLayout>                                               
                         <Label Text="CI o Pasaporte"></Label>
-                        <Entry x:Name="Identificacion" Text="{Binding Identificacion}"></Entry>
+                        <Entry x:Name="Identificacion" Text="{Binding Identification}"></Entry>
                         <Label Text="Teléfono"></Label>
                         <Entry x:Name="Phone" Text="{Binding Phone}"></Entry>
                         <Label Text="Nombre"></Label>
@@ -36,7 +36,7 @@
             <Button
                 Grid.Row="1"
                 x:Name="CreateButton"
-                Command="{Binding CreatePersonCommand}"
+                Command="{Binding CreateUserCommand}"
                 VerticalOptions="EndAndExpand"
                 Margin="5"
                 Text="Guardar"> 

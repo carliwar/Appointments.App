@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using static SQLite.SQLite3;
+using static Xamarin.Essentials.Permissions;
 
 namespace Appointments.App.Services
 {
@@ -25,12 +26,47 @@ namespace Appointments.App.Services
         }
 
         #region Users
-        public async Task<User> CreateUser(User person)
+        public async Task<User> CreateUser(User user)
         {
             await _database.CreateTablesAsync<User, User>();
             var db = new Repository<User>(_database);
-            await db.Insert(person);
-            return person;
+            await db.Insert(user);
+            return user;
+        }
+
+        public async Task<UserCreationResponse> CreateValidatedUser(User user)
+        {
+            var result = await ValidateUser(user);
+
+            if (result.Success)
+            {
+                await CreateUser(user);
+            }
+
+            return result;
+        }
+
+        private async Task<UserCreationResponse> ValidateUser(User user)
+        {
+            var result = new UserCreationResponse();
+
+            // validate if user exists in _database.User
+            if (string.IsNullOrWhiteSpace(user.Identification))
+            {
+                if (await UserByIdentification(user.Identification) != null)
+                {
+                    result.Errors.Add($"Ya existe un paciente con la Cédula/Identificación ingresada. Paciente: {user.UserFullName}");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(user.Phone))
+            {
+                if (user.Phone.StartsWith("09") && user.Phone.Length < 10)
+                {
+                    result.Errors.Add($"Teléfono incorrecto. Paciente: {user.UserFullName}");
+                }
+            }
+            return result;
         }
 
         public async Task<IEnumerable<User>> GetUsers()
@@ -58,6 +94,23 @@ namespace Appointments.App.Services
             return users.Where(t => t.UserType == userType).ToList();
         }
 
+        private async Task<User> UserByIdentification(string identification)
+        {
+            await _database.CreateTablesAsync<User, User>();
+            var db = new Repository<User>(_database);
+            List<User> users = await db.Get();
+            User user = null;
+
+            if (!string.IsNullOrWhiteSpace(identification))
+            {
+                user = users.FirstOrDefault(t => (!string.IsNullOrWhiteSpace(t.Identification)
+                    && t.Identification == identification)
+                );
+            }
+
+            return user;
+        }
+
         public async Task<IEnumerable<PersonType>> GetPersonTypes()
         {
             await _database.CreateTablesAsync<PersonType, PersonType>();
@@ -77,7 +130,7 @@ namespace Appointments.App.Services
         {
             await _database.CreateTablesAsync<User, User>();
             var db = new Repository<User>(_database);
-            var users =  await db.Get();
+            var users = await db.Get();
             return users.Where(t => ids.Contains(t.Id)).ToList();
         }
         #endregion
@@ -101,7 +154,7 @@ namespace Appointments.App.Services
                 var db = new Repository<Appointment>(_database);
                 await db.Insert(appointment);
             }
-            
+
             return result;
         }
 
@@ -135,17 +188,17 @@ namespace Appointments.App.Services
 
             // check if appointment.Date is at the start or end of any other appointment
             var sameStartingDateTime = appointmentsOfDay.Any(t => t.AppointmentDate == appointment.AppointmentDate);
-            
+
             if (sameStartingDateTime)
             {
                 response.Errors.Add($"Ya existe una cita para la hora escogida el: {appointment.AppointmentDate:dd/MMM/yyyy}");
-            }            
+            }
 
             var crossingStartingDateTime = appointmentsOfDay.Where(t => appointment.AppointmentEnd > t.AppointmentDate && appointment.AppointmentEnd <= t.AppointmentEnd).ToList();
 
-            if(crossingStartingDateTime.Any())
+            if (crossingStartingDateTime.Any())
             {
-                var conflictDates =  string.Join("/", crossingStartingDateTime.Select(t => t.AppointmentDate.ToString("HH:mm")));
+                var conflictDates = string.Join("/", crossingStartingDateTime.Select(t => t.AppointmentDate.ToString("HH:mm")));
                 response.Errors.Add($"Conflicto con citas en los siguientes horarios: {appointment.AppointmentDate:HH:mm}");
             }
 

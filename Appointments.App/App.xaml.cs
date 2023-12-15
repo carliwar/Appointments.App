@@ -1,4 +1,5 @@
 ﻿using Appointments.App.Services;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xamarin.Forms;
 
@@ -31,9 +32,12 @@ namespace Appointments.App
         #endregion
 
         #region Private Methods
-        private void SetupServices()
+        private void SetupServices(Action<IServiceCollection> addPlatformServices = null)
         {
-            
+            var services = new ServiceCollection();
+            addPlatformServices?.Invoke(services);
+
+            services.AddSingleton<IDeviceContactService, AndroidContactService>();
         } 
         #endregion
     }
