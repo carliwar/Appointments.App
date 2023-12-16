@@ -32,12 +32,8 @@ namespace Appointments.App
         #endregion
 
         #region Private Methods
-        private void SetupServices(Action<IServiceCollection> addPlatformServices = null)
+        private void SetupServices()
         {
-            var services = new ServiceCollection();
-            addPlatformServices?.Invoke(services);
-
-            services.AddSingleton<IDeviceContactService, AndroidContactService>();
         } 
         #endregion
     }

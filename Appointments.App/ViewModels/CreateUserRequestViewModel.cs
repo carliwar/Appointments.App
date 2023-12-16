@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using static SQLite.SQLite3;
 
 namespace Appointments.App.ViewModels
 {
@@ -80,6 +81,19 @@ namespace Appointments.App.ViewModels
 
         private async Task ImportContactAsync(object item)
         {
+            var status = await Permissions.CheckStatusAsync<Permissions.ContactsRead>();
+            
+            if (status != PermissionStatus.Granted)
+            {
+                var request = await Permissions.RequestAsync<Permissions.ContactsRead>();
+
+                if (request != PermissionStatus.Granted)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error:", "No se puede acceder a los contactos. Por favor, agrega el permiso desde la Configuración > Apps.", "Ok");
+                }
+                    
+            }
+            
             var contact = await Contacts.PickContactAsync();
             if (contact != null)
             {
@@ -112,6 +126,7 @@ namespace Appointments.App.ViewModels
                 //create user as a new phone contact
                 var deviceContact = new Contact
                 {
+                    NamePrefix = UserType.Paciente.ToString(),
                     GivenName = FirstName,
                     FamilyName = LastName,
                     Phones = new List<ContactPhone>
@@ -127,6 +142,19 @@ namespace Appointments.App.ViewModels
                 {
                     if (!IsImported)
                     {
+                        var status = await Permissions.CheckStatusAsync<Permissions.ContactsWrite>();
+
+                        if (status != PermissionStatus.Granted)
+                        {
+                            var request = await Permissions.RequestAsync<Permissions.ContactsWrite>();
+
+                            if(request != PermissionStatus.Granted)
+                            {
+                                await Application.Current.MainPage.DisplayAlert("Error:", "No se puede crear contactos. Por favor, agrega el permiso desde la Configuración > Apps.", "Ok");
+                            }
+                            
+                        }
+
                         DependencyService.Get<IDeviceContactService>().CreateContact(deviceContact);
                     }
                 }
