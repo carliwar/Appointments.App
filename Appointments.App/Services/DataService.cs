@@ -226,6 +226,28 @@ namespace Appointments.App.Services
             return appointments;
         }
 
+        #region User Appointments
+        public async Task<List<Appointment>> GetAppointmentsByUser(User user, DateTime? start, DateTime? end)
+        {
+            await _database.CreateTablesAsync<Appointment, Appointment>();
+            var db = new Repository<Appointment>(_database);
+            var appointments = await db.Get();
+
+            // get appointments from start and end dates
+            appointments = appointments
+                .Where(t => t.UserId == user.Id).ToList();
+
+            if(start.HasValue && end.HasValue)
+            {
+                appointments = appointments
+                .Where(t => t.AppointmentDate.Date >= start.Value.Date
+                 && t.AppointmentDate.Date <= end.Value.Date).ToList();
+            }
+
+            return appointments;
+        } 
+        #endregion
+
         #region API Call implementation
         //private readonly string _apiURL;
         //private HttpClient _client;

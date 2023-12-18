@@ -103,7 +103,7 @@ namespace Appointments.App.ViewModels
         {
             if (item is EventModel eventModel)
             {
-                var result = await App.Current.MainPage.DisplayAlert(eventModel.AppointmentType, $"{eventModel.UserInformation}", "Contactar", "Cerrar");
+                var result = await App.Current.MainPage.DisplayAlert(eventModel.AppointmentType, $"{eventModel.UserInformation}\n{eventModel.AppointmentType} a las {eventModel.Time}", "Contactar", "Cerrar");
                 if(result == true)
                 {
                     var phone = new string(eventModel.UserPhone.ToString().Where(c => char.IsDigit(c)).ToArray());

@@ -2,7 +2,6 @@
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using Appointments.App.Views.Appointment;
-using Appointments.App.Views.UserAppointment;
 using Appointments.App.Views.Users;
 using System;
 using System.Collections.ObjectModel;
@@ -13,12 +12,12 @@ using Xamarin.Forms;
 
 namespace Appointments.App.ViewModels
 {
-    public class UserListViewModel : BasePageViewModel
+    public class UserAppointmentsViewModel : BasePageViewModel
     {
-        public UserListViewModel() : base()
+        public UserAppointmentsViewModel() : base()
         {
             _dataService = new DataService();
-            Users = new ObservableCollection<User>();
+            Appointments = new ObservableCollection<Appointment>();
         }
         #region Temp Properties
         private readonly IDataService _dataService;
@@ -29,7 +28,8 @@ namespace Appointments.App.ViewModels
         private int _id;
         private string _userValue;
         private DateTime _givenDate;
-        private ObservableCollection<User> _users;
+        private User _selectedUser;
+        private ObservableCollection<Appointment> _appointments;
 
         public int Id
         {
@@ -49,27 +49,33 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _givenDate, value);
         }
 
-        public ObservableCollection<User> Users
+        public ObservableCollection<Appointment> Appointments
         {
-            get => _users;
-            set => SetProperty(ref _users, value);
+            get => _appointments;
+            set => SetProperty(ref _appointments, value);
         }
 
+        public User SelectedUser
+        {
+            get => _selectedUser;
+            set => SetProperty(ref _selectedUser, value);
+        }
         #endregion        
 
         #region Commands
 
         //SearchUserCommand
-        public ICommand SearchUserCommand => new Command(async (item) =>  await SearchUserAsync(item));
-        public ICommand CreateUserCommand => new Command(async (item) => await CreateUser());
-        public ICommand UserAppointmentsCommand => new Command(async (item) => await LoadUserAppointments(item));
+        public ICommand SearchAppointmentCommand => new Command(async (item) => await SearchAppointment(item));
+        public ICommand AddAppointmentCommand => new Command(async () => await NewAppointment());
 
-        private async Task SearchUserAsync(object sender)
+
+        // TODO
+        private async Task SearchAppointment(object sender)
         {
 
             if (sender == null)
             {
-                await InitializeUsers();
+                await GetAppointments();
             }
             else
             {
@@ -84,37 +90,31 @@ namespace Appointments.App.ViewModels
                     searchText = @string;
                 }
 
-                await InitializeUsers(searchText);
+                await GetAppointments();
             }
         }
 
-        public async Task InitializeUsers(string searchText = "")
+        public async Task GetAppointments(string searchText = null)
         {
-            Users.Clear();
-
-            var users = await _dataService.GetUsersByType(UserType.Paciente, searchText);
-            users = users.OrderBy(t => t.LastName).ToList();
-
-            foreach (var user in users)
+            Appointments.Clear();
+            if(SelectedUser == null)
             {
-                Users.Add(user);
+                return;
             }
-        }
 
-        private async Task CreateUser()
-        {
-            await Application.Current.MainPage.Navigation.PushAsync(new CreateUserPage());
-        }
+            var appointments = await _dataService.GetAppointmentsByUser(SelectedUser, null, null);
+            appointments = appointments.OrderBy(t => t.AppointmentDate).ToList();
 
-        private async Task LoadUserAppointments(object user)
-        {
-            if(user is User)
+            foreach (var user in appointments)
             {
-                await Application.Current.MainPage.Navigation.PushAsync(new UserAppointmentsPage((User)user));
+                Appointments.Add(user);
             }
-            
         }
 
+        public async Task NewAppointment()
+        {
+            await Application.Current.MainPage.Navigation.PushAsync(new CreateAppointmentPage(DateTime.Now, SelectedUser));
+        }
         #endregion
     }
 }

@@ -29,14 +29,17 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Grid>
+                        <Grid  x:Name="User">
                             <Button
                                 CornerRadius="5"
                                 HeightRequest="5"
                                 Margin="2"
                                 BackgroundColor="{StaticResource Tertiary}"
                                 TextColor="{StaticResource BlackText}"
-                                Text="{Binding UserFullName}" />
+                                Text="{Binding UserFullName}"
+                                Command="{Binding BindingContext.UserAppointmentsCommand, Source={x:Reference Name=UserListViewModel}}"                                
+                                CommandParameter="{Binding .}">                                
+                            </Button>
                         </Grid>                        
                         <!--<StackLayout.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.EventSelectedCommand, Source={x:Reference MainCalendarPage}}" CommandParameter="{Binding .}" />

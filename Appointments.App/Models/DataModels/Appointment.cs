@@ -15,6 +15,9 @@ namespace Appointments.App.Models.DataModels
         public int UserId { get; set; }
 
         [Ignore]
+        public string AppointmentInformation { get => $"{AppointmentDate.ToString("dd/MM/yyyy")} {AppointmentDate.ToString("HH:mm")} - {AppointmentType}"; }
+
+        [Ignore]
         public string UserPhone { get; set; }
         [Ignore]
         public string UserName { get; set; }

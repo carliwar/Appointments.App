@@ -23,6 +23,9 @@ namespace Appointments.App.Services
         Task<AppointmentCreationResponse> CreateValidatedAppointment(Appointment appointment);
         Task<List<Appointment>> GetAppointments(DateTime start, DateTime end);
 
+        // User Appointments
+        Task<List<Appointment>> GetAppointmentsByUser(User user, DateTime? start, DateTime? end);
+
         // Settings
         Task<Setting> CreateSetting(Setting setting);
         Task<List<Setting>> GetSettingsByCatalog(string catalog);
