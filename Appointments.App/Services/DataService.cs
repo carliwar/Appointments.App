@@ -83,11 +83,14 @@ namespace Appointments.App.Services
             var db = new Repository<User>(_database);
             List<User> users = await db.Get();
 
-            if (!string.IsNullOrWhiteSpace(searchText))
+            var formattedSearch = searchText?.ToLower();
+
+            if (!string.IsNullOrWhiteSpace(formattedSearch))
             {
-                users = users.Where(t => (!string.IsNullOrWhiteSpace(t.Identification) && t.Identification.Contains(searchText))
-                        || (!string.IsNullOrWhiteSpace(t.Name) && t.Name.Contains(searchText))
-                        || (!string.IsNullOrWhiteSpace(t.LastName) && t.LastName.Contains(searchText))
+                users = users.Where(
+                    t =>  (t.Identification != null && t.Identification.ToLower().Contains(formattedSearch))
+                    || (t.Name != null && t.Name.ToLower().Contains(formattedSearch))
+                    || (t.LastName != null && t.LastName.ToLower().Contains(formattedSearch))
                 ).ToList();
             }
 

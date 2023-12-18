@@ -18,8 +18,7 @@ namespace Appointments.App.ViewModels
             _dataService = new DataService();
             Types = new ObservableCollection<AppointmentType>(Enum.GetValues(typeof(AppointmentType)).OfType<AppointmentType>().ToList());
             Users = new ObservableCollection<User>();
-            AppointmentDurations = new ObservableCollection<AppointmentDuration>(Enum.GetValues(typeof(AppointmentDuration)).OfType<AppointmentDuration>().ToList());
-            Task.Run(() => InitializeUsers()).Wait();
+            AppointmentDurations = new ObservableCollection<AppointmentDuration>(Enum.GetValues(typeof(AppointmentDuration)).OfType<AppointmentDuration>().ToList());            
         }
         #region Temp Properties
 
@@ -152,8 +151,8 @@ namespace Appointments.App.ViewModels
             var appointment = new Appointment
             {
                 UserId = SelectedUser.Id,
-                AppointmentDate = GivenDate.Add(GivenTime),
-                AppointmentEnd = GivenDate.Add(GivenTime).AddMinutes((double)SelectedAppointmentDuration),
+                AppointmentDate = GivenDate.Date.Add(GivenTime),
+                AppointmentEnd = GivenDate.Date.Add(GivenTime).AddMinutes((double)SelectedAppointmentDuration),
                 UserInformation = SelectedUser.UserFullName,
                 AppointmentType = SelectedType,
             };
@@ -180,8 +179,8 @@ namespace Appointments.App.ViewModels
             }
         }
 
-        public async Task InitializeUsers(string searchText = "")
-        {
+        public async Task InitializeUsers(string searchText = "", User user = null)
+        {            
             Users.Clear();
 
             var users = await _dataService.GetUsersByType(UserType.Paciente, searchText);
@@ -191,6 +190,13 @@ namespace Appointments.App.ViewModels
             {
                 Users.Add(person);
             }
+
+            if(user != null)
+            {
+                var userFromList = users.FirstOrDefault(t => t.Id == user.Id);
+                SelectedUser = userFromList;
+            }
+            
         }
         #endregion
     }

@@ -30,6 +30,7 @@ namespace Appointments.App.ViewModels
         private DateTime _givenDate;
         private User _selectedUser;
         private ObservableCollection<Appointment> _appointments;
+        private bool _showNoAppointmentsMessage;
 
         public int Id
         {
@@ -59,6 +60,12 @@ namespace Appointments.App.ViewModels
         {
             get => _selectedUser;
             set => SetProperty(ref _selectedUser, value);
+        }
+
+        public bool ShowNoAppointmentsMessage
+        {
+            get => _showNoAppointmentsMessage;
+            set => SetProperty(ref _showNoAppointmentsMessage, value);
         }
         #endregion        
 
@@ -104,6 +111,11 @@ namespace Appointments.App.ViewModels
 
             var appointments = await _dataService.GetAppointmentsByUser(SelectedUser, null, null);
             appointments = appointments.OrderBy(t => t.AppointmentDate).ToList();
+
+            if(!appointments.Any())
+            {
+                ShowNoAppointmentsMessage = true;
+            }
 
             foreach (var user in appointments)
             {

@@ -11,6 +11,7 @@
             <Color x:Key="BlackText">#0c0c0c</Color>
             <Color x:Key="DisabledText">#C0C0C0</Color>
             <Color x:Key="ErrorText">#ff0000</Color>
+            <Color x:Key="Success">#4BB543</Color>
 
             <Style TargetType="Button">
                 <Setter Property="TextColor" Value="White"></Setter>

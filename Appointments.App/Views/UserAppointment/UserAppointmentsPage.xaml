@@ -10,11 +10,11 @@
         <model:UserAppointmentsViewModel />
     </ContentPage.BindingContext>
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding AddAppointmentCommand}" Text="Nueva Cita" />
+        <ToolbarItem Command="{Binding AddAppointmentCommand}" Text="Nueva Cita +" />
     </ContentPage.ToolbarItems>
     <StackLayout>
         <StackLayout HorizontalOptions="FillAndExpand"                      
-                     BackgroundColor="{StaticResource Tertiary}">
+                     BackgroundColor="{StaticResource WhiteText}">
             <Label Text="{Binding SelectedUser.UserFullName}"
                    HorizontalOptions="Center"
                    TextColor="{StaticResource Secondary}"
@@ -35,6 +35,15 @@
                         />
             </Entry.Behaviors>
         </Entry>-->
+        
+        <StackLayout HorizontalOptions="FillAndExpand"                      
+              BackgroundColor="{StaticResource WhiteText}">
+            <Label Text="Paciente sin citas!" IsVisible="{Binding ShowNoAppointmentsMessage}"
+                   HorizontalOptions="CenterAndExpand"
+                   VerticalOptions="CenterAndExpand"
+                   TextColor="{StaticResource DisabledText}"
+                   FontSize="Large"/>
+        </StackLayout>
         <ListView x:Name="UsersListView"
                   ItemsSource="{Binding Appointments}"
                   CachingStrategy="RecycleElement">

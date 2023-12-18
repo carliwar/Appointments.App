@@ -13,9 +13,9 @@ namespace Appointments.App.Models.DataModels
                 var id = string.Empty;
                 if(Identification != null)
                 {
-                    id = $"{Identification} - ";
+                    id = $" - {Identification}";
                 }
-                return id + Name + " " + LastName;
+                return $"{LastName} {Name} {id}";
             }
         }
 

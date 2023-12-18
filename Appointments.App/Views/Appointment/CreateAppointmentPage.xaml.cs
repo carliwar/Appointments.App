@@ -9,18 +9,26 @@ namespace Appointments.App.Views.Appointment
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CreateAppointmentPage : ContentPage
     {
+        public User SelectedUser { get; set; }
+        public DateTime GivenDate { get; set; }
+        public TimeSpan GivenTime { get; set; }
         public CreateAppointmentPage(DateTime date, User user = null)
         {            
             InitializeComponent();
+            SelectedUser = user;
+            GivenDate = date;
+            GivenTime = new TimeSpan(8, 0, 0);
+        }
 
-            var viewModel = new CreateAppointmentViewModel
-            {
-                GivenDate = date,
-                GivenTime = new TimeSpan(7, 0, 0),
-                SelectedUser = user
-            };
+        protected override void OnAppearing()
+        {
+            CreateAppointmentViewModel userAppointmentsViewModel = (BindingContext as CreateAppointmentViewModel);
+            userAppointmentsViewModel.SelectedUser = SelectedUser;
+            userAppointmentsViewModel.GivenDate = GivenDate;
+            userAppointmentsViewModel.GivenTime = GivenTime;
+            (BindingContext as CreateAppointmentViewModel)?.InitializeUsers(user:SelectedUser);
 
-            Content.BindingContext = viewModel;
+
         }
     }
 }

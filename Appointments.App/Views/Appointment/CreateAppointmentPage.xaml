@@ -8,110 +8,116 @@
     <ContentPage.BindingContext>
         <model:CreateAppointmentViewModel />
     </ContentPage.BindingContext>
-
     <StackLayout>
-        <Frame BackgroundColor="{StaticResource Primary}" Padding="10" CornerRadius="0">
-            <Label Text="Nueva Cita" HorizontalTextAlignment="Start" TextColor="White" FontSize="18"/>
-        </Frame>
-        <Frame BackgroundColor="{StaticResource ErrorText}" IsVisible="{Binding ShowError}">
-            <Label Text="Por favor llena todos los campos requeridos!" HorizontalTextAlignment="Start" TextColor="White" FontSize="18"/>
-        </Frame>
-        <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">            
+        <ScrollView>
             <StackLayout>
-                <Label Padding="1" Text="Datos de la Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
+                <Frame BackgroundColor="{StaticResource Primary}" Padding="10" CornerRadius="0">
+                    <Label Text="Nueva Cita" HorizontalTextAlignment="Start" TextColor="White" FontSize="18"/>
+                </Frame>
+                <Frame BackgroundColor="{StaticResource ErrorText}" IsVisible="{Binding ShowError}">
+                    <Label Text="Por favor llena todos los campos requeridos!" HorizontalTextAlignment="Start" TextColor="White" FontSize="18"/>
+                </Frame>
+                <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
+                    <StackLayout>
+                        <Label Padding="1" Text="Datos de la Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
 
-                <DatePicker
-                    TextColor="{StaticResource Primary}"                    
-                    Date="{Binding GivenDate}"
-                    MinimumDate="{Binding Today}"
-                    Format="MM/dd/yyyy">
-                </DatePicker>
-                <TimePicker
-                    Time="{Binding GivenTime}"
+                        <DatePicker
+                TextColor="{StaticResource Primary}"                    
+                Date="{Binding GivenDate}"
+                MinimumDate="{Binding Today}"
+                Format="MM/dd/yyyy">
+                        </DatePicker>
+                        <TimePicker
+                Time="{Binding GivenTime}"
+                TextColor="{StaticResource Primary}"
+                >
+                        </TimePicker>
+                        <Picker 
+                TitleColor="{StaticResource Primary}"
+                TextColor="{StaticResource Secondary}"
+                BackgroundColor="{StaticResource Tertiary}"
+                Title="Tipo de cita *Requerido"                    
+                ItemsSource="{Binding Types}"
+                SelectedItem="{Binding SelectedType}"
+                ItemDisplayBinding="{Binding .}">
+                        </Picker>
+                        <Picker 
+                TitleColor="{StaticResource Primary}"
+                TextColor="{StaticResource Secondary}"
+                BackgroundColor="{StaticResource Tertiary}"
+                Title="Duración de la cita"                    
+                ItemsSource="{Binding AppointmentDurations}"
+                SelectedItem="{Binding SelectedAppointmentDuration}"
+                ItemDisplayBinding="{Binding .}">
+                        </Picker>
+                    </StackLayout>
+                </Frame>
+                <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
+                    <StackLayout>
+                        <Label Padding="1" Text="Datos del paciente" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
+
+                        <Entry x:Name="SearchUser"
+                       PlaceholderColor="#5084ad"
+                       Placeholder="Buscar por CI ó Nombre ó Apellido"
+                       ReturnCommand="{Binding SearchUserCommand}"
+                       ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
+                            <Entry.Behaviors>
+                                <xct:EventToCommandBehavior
+                        EventName="TextChanged"
+                        Command="{Binding SearchUserCommand}"
+                        />
+                            </Entry.Behaviors>
+                        </Entry>
+
+                        <Picker 
                     TextColor="{StaticResource Primary}"
-                    >
-                </TimePicker>
-                <Picker 
-                    TitleColor="{StaticResource Primary}"
-                    TextColor="{StaticResource Secondary}"
-                    BackgroundColor="{StaticResource Tertiary}"
-                    Title="Tipo de cita *Requerido"                    
-                    ItemsSource="{Binding Types}"
-                    SelectedItem="{Binding SelectedType}"
-                    ItemDisplayBinding="{Binding .}">
-                </Picker>
-                <Picker 
-                    TitleColor="{StaticResource Primary}"
-                    TextColor="{StaticResource Secondary}"
-                    BackgroundColor="{StaticResource Tertiary}"
-                    Title="Duración de la cita"                    
-                    ItemsSource="{Binding AppointmentDurations}"
-                    SelectedItem="{Binding SelectedAppointmentDuration}"
-                    ItemDisplayBinding="{Binding .}">
-                </Picker>                
-            </StackLayout>
-        </Frame>
-        <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
-            <StackLayout>
-                <Label Padding="1" Text="Datos del paciente" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
+                    BackgroundColor="#e9f0f7"
+                    Title="Escoja el paciente *Requerido"                    
+                    ItemsSource="{Binding Users}"
+                    SelectedItem="{Binding SelectedUser}"
+                    ItemDisplayBinding="{Binding UserFullName}">
+                        </Picker>
+                    </StackLayout>
+                </Frame>
+                <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
 
-                <Entry x:Name="SearchUser"
-                           PlaceholderColor="#5084ad"
-                           Placeholder="Buscar por CI ó Nombre ó Apellido"
-                           ReturnCommand="{Binding SearchUserCommand}"
-                           ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
-                    <Entry.Behaviors>
-                        <xct:EventToCommandBehavior
-                            EventName="TextChanged"
-                            Command="{Binding SearchUserCommand}"
-                            />
-                    </Entry.Behaviors>
-                </Entry>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Padding="1" Text="Notas" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
+                        <Switch Grid.Column="1" x:Name="AddNotesSwitch"
+                    IsToggled="False">
+                        </Switch>
+                        <StackLayout Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding Source={x:Reference AddNotesSwitch}, Path=IsToggled}">
+                            <Editor
+                PlaceholderColor="#5084ad"
+                TextColor="#2196F3"
+                AutoSize="TextChanges"
+                MaxLength="100"                    
+                Placeholder="Notas de la cita">
+                            </Editor>
+                        </StackLayout>
 
-                <Picker 
-                        TextColor="{StaticResource Primary}"
-                        BackgroundColor="#e9f0f7"
-                        Title="Escoja el paciente *Requerido"                    
-                        ItemsSource="{Binding Users}"
-                        SelectedItem="{Binding SelectedUser}"
-                        ItemDisplayBinding="{Binding UserFullName}">
-                </Picker>
+                    </Grid>
+                </Frame>
+
             </StackLayout>
-        </Frame>
-        <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
-            
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Padding="1" Text="Notas" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
-                <Switch Grid.Column="1" x:Name="AddNotesSwitch"
-                        IsToggled="False">
-                </Switch>
-                <StackLayout Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding Source={x:Reference AddNotesSwitch}, Path=IsToggled}">
-                    <Editor
-                    PlaceholderColor="#5084ad"
-                    TextColor="#2196F3"
-                    AutoSize="TextChanges"
-                    MaxLength="100"                    
-                    Placeholder="Notas de la cita">
-                    </Editor>
-                </StackLayout>
-                               
-            </Grid>
-        </Frame>
-        <Button
-            x:Name="SaveAppointmentButton"
-            Margin="5"
-            Text="Guardar Cita" 
-            BackgroundColor="#4BB543"
-            TextColor="#fefefe"
-            Command="{Binding CreateAppointmentCommand}"
-            VerticalOptions="EndAndExpand"/>
-    </StackLayout>    
+        </ScrollView>
+        <StackLayout>
+            <Button
+                x:Name="SaveAppointmentButton"
+                Margin="5"
+                Text="Guardar Cita" 
+                BackgroundColor="{StaticResource Primary}"
+                TextColor="#fefefe"
+                Command="{Binding CreateAppointmentCommand}"
+                VerticalOptions="EndAndExpand"/>
+        </StackLayout>
+    </StackLayout>
 </ContentPage>
