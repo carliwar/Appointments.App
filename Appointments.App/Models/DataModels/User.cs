@@ -26,6 +26,6 @@ namespace Appointments.App.Models.DataModels
         public string Name { get; set; }
         public string LastName { get; set; }
         public DateTime? BirthDate { get; set; }
-        public UserType UserType { get; set; }
+        public UserTypeEnum UserType { get; set; }
     }
 }

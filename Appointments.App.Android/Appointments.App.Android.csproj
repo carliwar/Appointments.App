@@ -90,7 +90,9 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\icon.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\call.png" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Appointments.App\Appointments.App.csproj">
       <Project>{34B3FD51-F524-47A7-88BB-938B40605A9E}</Project>

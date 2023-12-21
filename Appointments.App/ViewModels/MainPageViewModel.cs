@@ -103,11 +103,35 @@ namespace Appointments.App.ViewModels
         {
             if (item is EventModel eventModel)
             {
-                var result = await App.Current.MainPage.DisplayAlert(eventModel.AppointmentType, $"{eventModel.UserInformation}\n{eventModel.AppointmentType} a las {eventModel.Time}", "Contactar", "Cerrar");
-                if(result == true)
+                //create a list of strings
+                var options = new List<string> { ConstantValues.MARK_NOT_ATTENDED_OPTION };
+
+                if(eventModel.UserPhone != null)
                 {
-                    var phone = new string(eventModel.UserPhone.ToString().Where(c => char.IsDigit(c)).ToArray());
-                    await Browser.OpenAsync(new Uri($"https://wa.me/{phone}"), BrowserLaunchMode.SystemPreferred);
+                    options.Add(ConstantValues.CALL_OPTION);
+                    options.Add(ConstantValues.CONTACT_WHATSAPP_OPTION);
+                }
+
+
+                string action = await App.Current.MainPage.DisplayActionSheet($"{eventModel.AppointmentType} - {eventModel.UserInformation}", "", "Cerrar",
+                    options.ToArray());
+
+
+                var phone = new string(eventModel.UserPhone.ToString().Where(c => char.IsDigit(c)).ToArray());
+
+                switch (action)
+                {
+                    case ConstantValues.CONTACT_WHATSAPP_OPTION:
+                        await Browser.OpenAsync(new Uri($"https://wa.me/{phone}"), BrowserLaunchMode.SystemPreferred);
+                        break;
+                    case ConstantValues.CALL_OPTION:
+                        PhoneDialer.Open(phone);
+                        break;
+                    case ConstantValues.MARK_NOT_ATTENDED_OPTION:
+                        var appointment = await _dataService.GetAppointment(eventModel.Id);
+                        appointment.Attended = false;
+                        await _dataService.UpdateAppointment(appointment);
+                        break;
                 }
             }
         }
@@ -166,28 +190,36 @@ namespace Appointments.App.ViewModels
                 var appointmentColor = Color.FromHex("#2196F3");
                 switch (appointment.AppointmentType)
                 {
-                    case Models.Enum.AppointmentType.Descanso:
+                    case Models.Enum.AppointmentTypeEnum.Descanso:
                         appointmentColor = Color.FromHex("#2196F3");
                         break;
-                    case Models.Enum.AppointmentType.Extraccion:
+                    case Models.Enum.AppointmentTypeEnum.Extraccion:
                         appointmentColor = Color.FromHex("#ff0000");
                         break;
-                    case Models.Enum.AppointmentType.Consulta:
+                    case Models.Enum.AppointmentTypeEnum.Consulta:
                         appointmentColor = Color.FromHex("#5084ad");
                         break;
-                    case Models.Enum.AppointmentType.Endodoncia:
+                    case Models.Enum.AppointmentTypeEnum.Endodoncia:
                         appointmentColor = Color.FromHex("#00ff00");
                         break;
-                    case Models.Enum.AppointmentType.Ortodoncia:
+                    case Models.Enum.AppointmentTypeEnum.Ortodoncia:
                         appointmentColor = Color.FromHex("#ff00ff");
                         break;
-
                 }
+
+                var attendedFlag = string.Empty;
+                if (!appointment.Attended)
+                {
+                    attendedFlag = $" - {ConstantValues.NOT_ATTENDED}";
+                    appointmentColor = Color.FromHex("800000");
+                }
+
                 results.Add(new EventModel 
                 { 
+                    Id = appointment.Id,
                     UserInformation = appointment.UserName,
                     UserPhone = appointment.UserPhone,
-                    AppointmentType = appointment.AppointmentType.ToString(),
+                    AppointmentType = $"{appointment.AppointmentType} {attendedFlag}",
                     EventDate = appointment.AppointmentDate,
                     AppointmentColor = appointmentColor
                 });

@@ -16,10 +16,12 @@ namespace Appointments.App.Services
         Task<User> CreateUser(User person);
         Task<UserCreationResponse> CreateValidatedUser(User user);
         Task<IEnumerable<User>> GetUsers();
-        Task<IEnumerable<User>> GetUsersByType(UserType userType, string searchText="");
+        Task<IEnumerable<User>> GetUsersByType(UserTypeEnum userType, string searchText="");
 
         // Appointment
+        Task<Appointment> GetAppointment(int id);
         Task<Appointment> CreateAppointment(Appointment appointment);
+        Task<Appointment> UpdateAppointment(Appointment appointment);
         Task<AppointmentCreationResponse> CreateValidatedAppointment(Appointment appointment);
         Task<List<Appointment>> GetAppointments(DateTime start, DateTime end);
 

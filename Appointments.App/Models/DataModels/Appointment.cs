@@ -1,7 +1,6 @@
 ﻿using Appointments.App.Models.Enum;
 using SQLite;
 using System;
-using System.Drawing;
 
 namespace Appointments.App.Models.DataModels
 {
@@ -11,12 +10,22 @@ namespace Appointments.App.Models.DataModels
         public int Id { get; set; }
         public DateTime AppointmentDate { get; set; }
         public DateTime AppointmentEnd { get; set; }
-        public AppointmentType? AppointmentType { get; set; }
+        public AppointmentTypeEnum? AppointmentType { get; set; }
         public string UserInformation { get; set; }
         public int UserId { get; set; }
+        public bool Attended { get; set; }
 
         [Ignore]
-        public string AppointmentInformation { get => $"{AppointmentDate.ToString("dd/MM/yyyy")} {AppointmentDate.ToString("HH:mm")} - {AppointmentType}"; }
+        public string AppointmentInformation { 
+            get {
+                var attendedFlag = string.Empty;
+                if (!Attended)
+                {
+                    attendedFlag = $"{ConstantValues.NOT_ATTENDED} **";
+                }
+                return $"{attendedFlag} {AppointmentDate:dd/MM/yyyy} {AppointmentDate:HH:mm} - {AppointmentType}"; 
+            } 
+        }
 
         [Ignore]
         public string UserPhone { get; set; }
@@ -25,7 +34,10 @@ namespace Appointments.App.Models.DataModels
         public string UserName { get; set; }
         
         [Ignore]
-        public Color AppointmentColor { get; set; }
+        public System.Drawing.Color AppointmentColor { get; set; }
+
+        [Ignore]
+        public System.Drawing.Color TextColor { get; set; }
     }
 
     public class AndroidAppointment
@@ -35,8 +47,7 @@ namespace Appointments.App.Models.DataModels
         public DateTime EndDate { get; set; }
         public string Description { get; set; }
         public string Location { get; set; }
-        public AppointmentType AppointmentType { get; set; }
+        public AppointmentTypeEnum? AppointmentType { get; set; }
         public int ReminderMinutes { get; set; }
-
     }
 }

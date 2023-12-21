@@ -5,6 +5,7 @@ namespace Appointments.App.Models
 {
     public class EventModel
     {
+        public int Id { get; set; }
         public string AppointmentType { get; set; }
         public string UserInformation { get; set; }
         public string UserPhone { get; set; }

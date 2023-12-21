@@ -48,7 +48,7 @@
                 Title="Duración de la cita"                    
                 ItemsSource="{Binding AppointmentDurations}"
                 SelectedItem="{Binding SelectedAppointmentDuration}"
-                ItemDisplayBinding="{Binding .}">
+                ItemDisplayBinding="{Binding Description}">
                         </Picker>
                     </StackLayout>
                 </Frame>

@@ -16,7 +16,7 @@ namespace Appointments.App.ViewModels
         private string _catalog;
         private string _name;
         private string _value;
-        private ObservableCollection<AppointmentType> _appointmentTypes = new ObservableCollection<AppointmentType>();
+        private ObservableCollection<AppointmentTypeEnum> _appointmentTypes = new ObservableCollection<AppointmentTypeEnum>();
         private readonly IDataService _dataService;
 
         public string Catalog
@@ -36,7 +36,7 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _value, value);
         }
 
-        public ObservableCollection<AppointmentType> AppointmentTypes
+        public ObservableCollection<AppointmentTypeEnum> AppointmentTypes
         {
             get => _appointmentTypes;
             set => SetProperty(ref _appointmentTypes, value);

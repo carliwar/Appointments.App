@@ -77,7 +77,7 @@ namespace Appointments.App.Services
             return await db.Get();
         }
 
-        public async Task<IEnumerable<User>> GetUsersByType(UserType userType, string searchText = "")
+        public async Task<IEnumerable<User>> GetUsersByType(UserTypeEnum userType, string searchText = "")
         {
             await _database.CreateTablesAsync<User, User>();
             var db = new Repository<User>(_database);
@@ -139,11 +139,26 @@ namespace Appointments.App.Services
         #endregion
 
         #region Appointments
+        public async Task<Appointment> GetAppointment(int id)
+        {
+            await _database.CreateTablesAsync<Appointment, Appointment>();
+            var db = new Repository<Appointment>(_database);
+            var appointment = await db.Get(t => t.Id == id);
+            return appointment;
+        }
         public async Task<Appointment> CreateAppointment(Appointment appointment)
         {
             await _database.CreateTablesAsync<Appointment, Appointment>();
             var db = new Repository<Appointment>(_database);
             await db.Insert(appointment);
+            return appointment;
+        }
+
+        public async Task<Appointment> UpdateAppointment(Appointment appointment)
+        {
+            await _database.CreateTablesAsync<Appointment, Appointment>();
+            var db = new Repository<Appointment>(_database);
+            await db.Update(appointment);
             return appointment;
         }
 

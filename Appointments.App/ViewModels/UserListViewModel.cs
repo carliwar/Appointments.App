@@ -92,7 +92,7 @@ namespace Appointments.App.ViewModels
         {
             Users.Clear();
 
-            var users = await _dataService.GetUsersByType(UserType.Paciente, searchText);
+            var users = await _dataService.GetUsersByType(UserTypeEnum.Paciente, searchText);
             users = users.OrderBy(t => t.LastName).ToList();
 
             foreach (var user in users)

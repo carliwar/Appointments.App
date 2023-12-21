@@ -4,6 +4,7 @@ using Appointments.App.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -17,9 +18,23 @@ namespace Appointments.App.ViewModels
         public CreateAppointmentViewModel() : base()
         {
             _dataService = new DataService();
-            Types = new ObservableCollection<AppointmentType>(Enum.GetValues(typeof(AppointmentType)).OfType<AppointmentType>().ToList());
-            Users = new ObservableCollection<User>();
-            AppointmentDurations = new ObservableCollection<AppointmentDuration>(Enum.GetValues(typeof(AppointmentDuration)).OfType<AppointmentDuration>().ToList());
+
+            Types = new ObservableCollection<AppointmentTypeEnum>(Enum.GetValues(typeof(AppointmentTypeEnum)).OfType<AppointmentTypeEnum>().ToList());
+
+
+            foreach (AppointmentDurationEnum enumValue in Enum.GetValues(typeof(Models.Enum.AppointmentDurationEnum)))
+            {
+                string customString = GetEnumDescription(enumValue);
+
+                var appointmentDuration = new Models.DataModels.AppointmentDuration
+                {
+                    Name = enumValue,
+                    Description = customString
+                };
+                AppointmentDurations.Add(appointmentDuration);
+            }
+
+            Users = new ObservableCollection<User>();            
         }
         #region Temp Properties
 
@@ -33,10 +48,10 @@ namespace Appointments.App.ViewModels
         private DateTime _givenDate;
         private TimeSpan _givenTime;
         private ObservableCollection<User> _users = new ObservableCollection<User>();
-        private ObservableCollection<AppointmentType> _types = new ObservableCollection<AppointmentType>();
+        private ObservableCollection<AppointmentTypeEnum> _types = new ObservableCollection<AppointmentTypeEnum>();
         private ObservableCollection<AppointmentDuration> _appointmentDurations = new ObservableCollection<AppointmentDuration>();
-        private AppointmentType? _selectedType;
-        private AppointmentDuration? _selectedAppointmentDuration;
+        private AppointmentTypeEnum? _selectedType;
+        private AppointmentDuration _selectedAppointmentDuration;
         private User _selectedUser;
         private bool _showError = false;
 
@@ -70,7 +85,7 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _users, value);
         }
 
-        public ObservableCollection<AppointmentType> Types
+        public ObservableCollection<AppointmentTypeEnum> Types
         {
             get => _types;
             set => SetProperty(ref _types, value);
@@ -82,12 +97,12 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _appointmentDurations, value);
         }
 
-        public AppointmentType? SelectedType
+        public AppointmentTypeEnum? SelectedType
         {
             get => _selectedType;
             set => SetProperty(ref _selectedType, value);
         }
-        public AppointmentDuration? SelectedAppointmentDuration
+        public AppointmentDuration SelectedAppointmentDuration
         {
             get => _selectedAppointmentDuration;
             set => SetProperty(ref _selectedAppointmentDuration, value);
@@ -153,9 +168,10 @@ namespace Appointments.App.ViewModels
             {
                 UserId = SelectedUser.Id,
                 AppointmentDate = GivenDate.Date.Add(GivenTime),
-                AppointmentEnd = GivenDate.Date.Add(GivenTime).AddMinutes((double)SelectedAppointmentDuration),
+                AppointmentEnd = GivenDate.Date.Add(GivenTime).AddMinutes((double)SelectedAppointmentDuration.Name),
                 UserInformation = SelectedUser.UserFullName,
                 AppointmentType = SelectedType,
+                Attended = true
             };
 
             var result = await _dataService.CreateValidatedAppointment(appointment);
@@ -176,13 +192,13 @@ namespace Appointments.App.ViewModels
                         var requestR = await Permissions.RequestAsync<Permissions.CalendarRead>();
                         var requestW = await Permissions.RequestAsync<Permissions.CalendarWrite>();
 
-                        if(requestR == PermissionStatus.Granted && requestW == PermissionStatus.Granted)
+                        if (requestR == PermissionStatus.Granted && requestW == PermissionStatus.Granted)
                         {
                             await CreateDeviceAppointment(appointment);
                         }
                     }
 
-                    await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Cita agendada", "Ok");
+                    await Application.Current.MainPage.DisplayAlert("Éxito!", "Cita agendada", "Ok");
                     await Application.Current.MainPage.Navigation.PopAsync();
                 }
                 else
@@ -204,8 +220,8 @@ namespace Appointments.App.ViewModels
                 Title = $"{appointment.AppointmentType}: {appointment.UserInformation} Tel: {appointment.UserPhone}",
                 StartDate = appointment.AppointmentDate,
                 EndDate = appointment.AppointmentEnd,
-                Location = "JeDent",
-                AppointmentType = appointment.AppointmentType.Value,
+                Location = ConstantValues.APPOINTMENT_BRAND,
+                AppointmentType = appointment.AppointmentType,
                 ReminderMinutes = 10
             };
 
@@ -216,7 +232,7 @@ namespace Appointments.App.ViewModels
         {
             Users.Clear();
 
-            var users = await _dataService.GetUsersByType(UserType.Paciente, searchText);
+            var users = await _dataService.GetUsersByType(UserTypeEnum.Paciente, searchText);
             users = users.OrderBy(t => t.LastName).ToList();
 
             foreach (var person in users)
@@ -232,5 +248,16 @@ namespace Appointments.App.ViewModels
 
         }
         #endregion
+
+        private string GetEnumDescription(Models.Enum.AppointmentDurationEnum value)
+        {
+            var fieldInfo = value.GetType().GetField(value.ToString());
+
+            var attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(
+                typeof(DescriptionAttribute), false);
+
+            return attributes.Length > 0 ? attributes[0].Description : value.ToString();
+        }
     }
+
 }

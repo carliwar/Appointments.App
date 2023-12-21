@@ -29,7 +29,7 @@ namespace Appointments.App.ViewModels
         private string _lastName;
         private DateTime _birthDate = DateTime.Today;
         private readonly IDataService _dataService;
-        private UserType _selectedUserType;
+        private UserTypeEnum _selectedUserType;
         private bool _isImported = false;
 
 
@@ -61,7 +61,7 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _birthDate, value);
         }
 
-        public UserType SelectedUserType
+        public UserTypeEnum SelectedUserType
         {
             get => _selectedUserType;
             set => SetProperty(ref _selectedUserType, value);
@@ -105,7 +105,7 @@ namespace Appointments.App.ViewModels
         }
         private void SelectUserType(object item)
         {
-            SelectedUserType = (UserType)item;
+            SelectedUserType = (UserTypeEnum)item;
         }
 
         private async void CreateUser(object item)
@@ -117,7 +117,7 @@ namespace Appointments.App.ViewModels
                 LastName = LastName,
                 BirthDate = BirthDate,
                 Phone = FormatPhone(Phone),
-                UserType = UserType.Paciente
+                UserType = UserTypeEnum.Paciente
             };
             var result = await _dataService.CreateValidatedUser(user);
 
@@ -126,7 +126,7 @@ namespace Appointments.App.ViewModels
                 //create user as a new phone contact
                 var deviceContact = new Contact
                 {
-                    NamePrefix = UserType.Paciente.ToString(),
+                    NamePrefix = UserTypeEnum.Paciente.ToString(),
                     GivenName = FirstName,
                     FamilyName = LastName,
                     Phones = new List<ContactPhone>
@@ -176,6 +176,9 @@ namespace Appointments.App.ViewModels
 
         private string FormatPhone(string phone)
         {
+            if (phone == null)
+                return string.Empty;
+
             string formattedString = phone.Trim();
 
             if(formattedString.Length > 0)
