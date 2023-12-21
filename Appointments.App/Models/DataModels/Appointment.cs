@@ -1,6 +1,7 @@
 ﻿using Appointments.App.Models.Enum;
 using SQLite;
 using System;
+using System.Drawing;
 
 namespace Appointments.App.Models.DataModels
 {
@@ -19,8 +20,12 @@ namespace Appointments.App.Models.DataModels
 
         [Ignore]
         public string UserPhone { get; set; }
+        
         [Ignore]
         public string UserName { get; set; }
+        
+        [Ignore]
+        public Color AppointmentColor { get; set; }
     }
 
     public class AndroidAppointment

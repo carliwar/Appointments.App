@@ -52,11 +52,12 @@
                 <DataTemplate>
                     <ViewCell>
                         <Grid HorizontalOptions="FillAndExpand">
-                            <Button                                
+                            <Button               
+                                WidthRequest="10"
                                 CornerRadius="5"
                                 HeightRequest="5"
                                 Margin="2,2,2,2"
-                                BackgroundColor="{StaticResource Tertiary}"
+                                BackgroundColor="{Binding AppointmentColor}"
                                 TextColor="{StaticResource BlackText}"
                                 Text="{Binding AppointmentInformation}" />
                         </Grid>

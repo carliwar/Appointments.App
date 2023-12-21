@@ -117,9 +117,31 @@ namespace Appointments.App.ViewModels
                 ShowNoAppointmentsMessage = true;
             }
 
-            foreach (var user in appointments)
+            foreach (var appointment in appointments)
             {
-                Appointments.Add(user);
+                var appointmentColor = Color.FromHex("#2196F3");
+                switch (appointment.AppointmentType)
+                {
+                    case Models.Enum.AppointmentType.Descanso:
+                        appointmentColor = Color.FromHex("#2196F3");
+                        break;
+                    case Models.Enum.AppointmentType.Extraccion:
+                        appointmentColor = Color.FromHex("#ffb3b3");
+                        break;
+                    case Models.Enum.AppointmentType.Consulta:
+                        appointmentColor = Color.FromHex("#cbdbe7");
+                        break;
+                    case Models.Enum.AppointmentType.Endodoncia:
+                        appointmentColor = Color.FromHex("#b3ffb3");
+                        break;
+                    case Models.Enum.AppointmentType.Ortodoncia:
+                        appointmentColor = Color.FromHex("#ffe6ff");
+                        break;
+
+                }
+                appointment.AppointmentColor = appointmentColor;
+
+                Appointments.Add(appointment);
             }
         }
 
