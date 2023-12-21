@@ -22,4 +22,16 @@ namespace Appointments.App.Models.DataModels
         [Ignore]
         public string UserName { get; set; }
     }
+
+    public class AndroidAppointment
+    {
+        public string Title{ get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string Description { get; set; }
+        public string Location { get; set; }
+        public AppointmentType AppointmentType { get; set; }
+        public int ReminderMinutes { get; set; }
+
+    }
 }

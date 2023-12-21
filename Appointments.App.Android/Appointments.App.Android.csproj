@@ -65,7 +65,9 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AndroidCalendarService.cs" />
     <Compile Include="Services\AndroidContactService.cs" />
+    <Compile Include="Utils\AppConstant.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

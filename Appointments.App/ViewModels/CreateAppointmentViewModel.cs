@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Appointments.App.ViewModels
@@ -18,7 +19,7 @@ namespace Appointments.App.ViewModels
             _dataService = new DataService();
             Types = new ObservableCollection<AppointmentType>(Enum.GetValues(typeof(AppointmentType)).OfType<AppointmentType>().ToList());
             Users = new ObservableCollection<User>();
-            AppointmentDurations = new ObservableCollection<AppointmentDuration>(Enum.GetValues(typeof(AppointmentDuration)).OfType<AppointmentDuration>().ToList());            
+            AppointmentDurations = new ObservableCollection<AppointmentDuration>(Enum.GetValues(typeof(AppointmentDuration)).OfType<AppointmentDuration>().ToList());
         }
         #region Temp Properties
 
@@ -33,7 +34,7 @@ namespace Appointments.App.ViewModels
         private TimeSpan _givenTime;
         private ObservableCollection<User> _users = new ObservableCollection<User>();
         private ObservableCollection<AppointmentType> _types = new ObservableCollection<AppointmentType>();
-        private ObservableCollection<AppointmentDuration>  _appointmentDurations = new ObservableCollection<AppointmentDuration>();
+        private ObservableCollection<AppointmentDuration> _appointmentDurations = new ObservableCollection<AppointmentDuration>();
         private AppointmentType? _selectedType;
         private AppointmentDuration? _selectedAppointmentDuration;
         private User _selectedUser;
@@ -163,6 +164,23 @@ namespace Appointments.App.ViewModels
             {
                 if (result.Success)
                 {
+                    var statusRead = await Permissions.CheckStatusAsync<Permissions.CalendarRead>();
+                    var statusWrite = await Permissions.CheckStatusAsync<Permissions.CalendarWrite>();
+
+                    if (statusRead == PermissionStatus.Granted && statusWrite == PermissionStatus.Granted)
+                    {
+                        await CreateDeviceAppointment(appointment);
+                    }
+                    else
+                    {
+                        var requestR = await Permissions.RequestAsync<Permissions.CalendarRead>();
+                        var requestW = await Permissions.RequestAsync<Permissions.CalendarWrite>();
+
+                        if(requestR == PermissionStatus.Granted && requestW == PermissionStatus.Granted)
+                        {
+                            await CreateDeviceAppointment(appointment);
+                        }
+                    }
 
                     await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Cita agendada", "Ok");
                     await Application.Current.MainPage.Navigation.PopAsync();
@@ -179,8 +197,23 @@ namespace Appointments.App.ViewModels
             }
         }
 
+        private static async Task CreateDeviceAppointment(Appointment appointment)
+        {
+            var androidAppointment = new AndroidAppointment
+            {
+                Title = $"{appointment.AppointmentType}: {appointment.UserInformation} Tel: {appointment.UserPhone}",
+                StartDate = appointment.AppointmentDate,
+                EndDate = appointment.AppointmentEnd,
+                Location = "JeDent",
+                AppointmentType = appointment.AppointmentType.Value,
+                ReminderMinutes = 10
+            };
+
+            await DependencyService.Get<IDeviceCalendarService>().AddEventToCalendar(androidAppointment);
+        }
+
         public async Task InitializeUsers(string searchText = "", User user = null)
-        {            
+        {
             Users.Clear();
 
             var users = await _dataService.GetUsersByType(UserType.Paciente, searchText);
@@ -191,12 +224,12 @@ namespace Appointments.App.ViewModels
                 Users.Add(person);
             }
 
-            if(user != null)
+            if (user != null)
             {
                 var userFromList = users.FirstOrDefault(t => t.Id == user.Id);
                 SelectedUser = userFromList;
             }
-            
+
         }
         #endregion
     }
