@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:Appointments.App.ViewModels.AppointmentType"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             x:Name="AppointmentTypesListViewModel"
+             x:Class="Appointments.App.Views.Settings.AppointmentTypesPage">
+    <ContentPage.BindingContext>
+        <model:AppointmentTypesListViewModel />
+    </ContentPage.BindingContext>
+    <StackLayout>
+        <Entry x:Name="SearchAppointmentType"
+           PlaceholderColor="#5084ad"
+           Placeholder="Nombre o detalle"
+           ReturnCommand="{Binding SearchAppointmentTypesCommand}"
+           ReturnCommandParameter="{Binding Text, Source={x:Reference SearchAppointmentType}}">
+            <Entry.Behaviors>
+                <xct:EventToCommandBehavior
+                        EventName="TextChanged"
+                        Command="{Binding SearchAppointmentTypesCommand}"
+                        />
+            </Entry.Behaviors>
+        </Entry>
+        <ListView x:Name="AppointmentTypesListView"
+                  ItemsSource="{Binding AppointmentTypes}"
+                  CachingStrategy="RecycleElement">
+            
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid  x:Name="User">
+                            <Button
+                            CornerRadius="5"
+                            HeightRequest="5"
+                            Margin="2"
+                            BackgroundColor="{StaticResource Tertiary}"
+                            TextColor="{StaticResource BlackText}"
+                            Text="{Binding UserFullName}"
+                            Command="{Binding BindingContext.EditAppointmentTypeCommand, Source={x:Reference Name=AppointmentTypesListViewModel}}"                                
+                            CommandParameter="{Binding .}">
+                            </Button>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button
+            Margin="5"
+            Text="Nuevo Tipo de Cita"
+            Command="{Binding CreateAppointmentTypeCommand}">
+        </Button>
+    </StackLayout>
+</ContentPage>

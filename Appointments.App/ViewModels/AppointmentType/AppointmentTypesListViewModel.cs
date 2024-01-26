@@ -1,12 +1,13 @@
 ﻿using Appointments.App.Models.DataModels;
 using Appointments.App.Services;
+using Appointments.App.Views.Settings.AppointmentType;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
-namespace Appointments.App.ViewModels
+namespace Appointments.App.ViewModels.AppointmentType
 {
     public class AppointmentTypesListViewModel : BasePageViewModel
     {
@@ -32,7 +33,8 @@ namespace Appointments.App.ViewModels
 
         #region Commands
         public ICommand SearchAppointmentTypesCommand => new Command(async (item) => await SearchAppointmentTypeAsync(item));
-        public ICommand UserAppointmentsCommand => new Command(async (item) => await LoadAppointmentTypes(item));
+        public ICommand CreateAppointmentTypeCommand => new Command(async (item) => await CreateAppointmentType());
+        public ICommand EditAppointmentTypeCommand => new Command(async (item) => await LoadAppointmentType(item));
 
         public async Task InitializeAppointmentTypes(string searchText = "")
         {
@@ -73,14 +75,14 @@ namespace Appointments.App.ViewModels
 
         private async Task CreateAppointmentType()
         {
-            //await Application.Current.MainPage.Navigation.PushAsync(new CreateUserPage());
+            await Application.Current.MainPage.Navigation.PushAsync(new AppointmentTypeDetailPage(new Models.DataModels.AppointmentType()));
         }
 
-        private async Task LoadAppointmentTypes(object appointmentType)
+        private async Task LoadAppointmentType(object appointmentType)
         {
             if (appointmentType is Models.DataModels.AppointmentType)
             {
-                //await Application.Current.MainPage.Navigation.PushAsync(new UserAppointmentsPage((User)user));
+                await Application.Current.MainPage.Navigation.PushAsync(new AppointmentTypeDetailPage((Models.DataModels.AppointmentType) appointmentType));
             }
 
         }

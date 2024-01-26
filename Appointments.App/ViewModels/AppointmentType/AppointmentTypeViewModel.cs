@@ -15,7 +15,7 @@ namespace Appointments.App.ViewModels.AppointmentType
 {
     public class AppointmentTypeViewModel : BasePageViewModel
     {
-        private readonly IDataService _dataService;        
+        private readonly IDataService _dataService;
         public AppointmentTypeViewModel()
         {
             _dataService = new DataService();
@@ -76,18 +76,18 @@ namespace Appointments.App.ViewModels.AppointmentType
 
         #endregion
 
-            #region Methods
+        #region Methods
 
         public async Task LoadAppointmentType(int id)
         {
-            if(id > 0)
+            if (id > 0)
             {
                 AppointmentType = await _dataService.GetAppointmentType(id);
 
-                if(AppointmentType != null)
+                if (AppointmentType != null)
                 {
-                    Id = AppointmentType.Id; 
-                    Name = AppointmentType.Name; 
+                    Id = AppointmentType.Id;
+                    Name = AppointmentType.Name;
                     AppointmentTypeDescription = AppointmentType.Description;
                     AppointmentDurationEnum = AppointmentType.DefaultDuration;
                     Color = AppointmentType.ColorCode;

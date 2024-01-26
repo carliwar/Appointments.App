@@ -1,20 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using Appointments.App.ViewModels.AppointmentType;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace Appointments.App.Views.Settings.AppointmentType
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+    [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AppointmentTypeDetailPage : ContentPage
 	{
-		public AppointmentTypeDetailPage ()
+        public Models.DataModels.AppointmentType AppointmentType { get; set; }
+        public AppointmentTypeDetailPage (Models.DataModels.AppointmentType appointmentType)
 		{
 			InitializeComponent ();
+			AppointmentType = appointmentType;
 		}
-	}
+
+        protected override void OnAppearing()
+        {
+            (BindingContext as AppointmentTypeViewModel)?.LoadAppointmentType(AppointmentType.Id);
+        }
+    }
 }

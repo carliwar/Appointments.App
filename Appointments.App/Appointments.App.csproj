@@ -24,7 +24,7 @@
     <EmbeddedResource Update="AppShell.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\Settings\AppointmentTypesPage.xaml">
+    <EmbeddedResource Update="Views\Settings\AppointmentType\AppointmentTypesPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\Settings\AppointmentType\AppointmentTypeDetailPage.xaml">
