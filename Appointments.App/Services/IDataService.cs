@@ -31,6 +31,9 @@ namespace Appointments.App.Services
         // Settings
         Task<Setting> CreateSetting(Setting setting);
         Task<List<Setting>> GetSettingsByCatalog(string catalog);
+        Task<List<AppointmentType>> GetAppointmentTypes(string searchText = "");
+        Task<AppointmentType> GetAppointmentType(int id);
+        Task<AppointmentTypeSaveResponse> SaveAppointmentType(AppointmentType appointmentType);
 
 
     }

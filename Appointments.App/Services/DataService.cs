@@ -263,7 +263,84 @@ namespace Appointments.App.Services
             }
 
             return appointments;
-        } 
+        }
+        #endregion
+
+        #region Appointment Types
+
+        public async Task<List<AppointmentType>> GetAppointmentTypes(string searchText = "")
+        {
+            await _database.CreateTablesAsync<AppointmentType, AppointmentType>();
+            var db = new Repository<AppointmentType>(_database);
+            var appointmentTypes = await db.Get();
+
+            var formattedSearch = searchText?.ToLower();
+
+            if (!string.IsNullOrWhiteSpace(formattedSearch))
+            {
+                appointmentTypes = appointmentTypes.Where(
+                    t => (t.Name != null && t.Name.ToLower().Contains(formattedSearch))
+                    || (t.Description != null && t.Description.ToLower().Contains(formattedSearch))
+                ).ToList();
+            }
+
+            return appointmentTypes;
+        }
+
+        public async Task<AppointmentType> GetAppointmentType(int id)
+        {
+            await _database.CreateTablesAsync<AppointmentType, AppointmentType>();
+            var db = new Repository<AppointmentType>(_database);
+            var appointmentType = await db.Get(t => t.Id == id);
+            return appointmentType;
+        }
+
+        public async Task<AppointmentTypeSaveResponse> SaveAppointmentType(AppointmentType appointmentType)
+        {
+            var result = await ValidateAppointmentType(appointmentType);
+
+            if (result.Success)
+            {
+                await _database.CreateTablesAsync<AppointmentType, AppointmentType>();
+                var db = new Repository<AppointmentType>(_database);
+                
+                if (appointmentType.Id > 0)
+                {
+                    await db.Update(appointmentType);
+                }
+                else
+                {
+                    await db.Insert(appointmentType);
+                }  
+            }
+
+            return result;
+        }
+
+        private async Task<AppointmentTypeSaveResponse> ValidateAppointmentType(AppointmentType appointmentType)
+        {
+            var result = new AppointmentTypeSaveResponse();
+
+            var appointmentTypes = await GetAppointmentTypes();
+
+            // check if appointmentType has an exact duplicated value in appointmentTypes
+            if (appointmentTypes.Any())
+            {
+                var sameType = appointmentTypes
+                    .Where(t => t.Name ==  appointmentType.Name || t.Description == appointmentType.Description)
+                    .FirstOrDefault();
+
+                if (sameType != null)
+                {
+                    result.Errors.Add($"Ya existe un tipo de cita con nombre: {appointmentType.Name} ó descripción: {appointmentType.Description}");
+                }
+            }
+
+            // TODO: check similarities (fuzzy results)
+
+            return result;
+        }
+
         #endregion
 
         #region API Call implementation

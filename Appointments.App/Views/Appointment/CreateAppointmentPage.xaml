@@ -18,38 +18,37 @@
                     <Label Text="Por favor llena todos los campos requeridos!" HorizontalTextAlignment="Start" TextColor="White" FontSize="18"/>
                 </Frame>
                 <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
-                    <StackLayout>
+                    <StackLayout>                        
                         <Label Padding="1" Text="Datos de la Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
-
                         <DatePicker
-                TextColor="{StaticResource Primary}"                    
-                Date="{Binding GivenDate}"
-                MinimumDate="{Binding Today}"
-                Format="MM/dd/yyyy">
+                            TextColor="{StaticResource Primary}"                    
+                            Date="{Binding GivenDate}"
+                            MinimumDate="{Binding Today}"
+                            Format="MM/dd/yyyy">
                         </DatePicker>
                         <TimePicker
-                Time="{Binding GivenTime}"
-                TextColor="{StaticResource Primary}"
-                >
+                            Time="{Binding GivenTime}"
+                            TextColor="{StaticResource Primary}">
                         </TimePicker>
                         <Picker 
-                TitleColor="{StaticResource Primary}"
-                TextColor="{StaticResource Secondary}"
-                BackgroundColor="{StaticResource Tertiary}"
-                Title="Tipo de cita *Requerido"                    
-                ItemsSource="{Binding Types}"
-                SelectedItem="{Binding SelectedType}"
-                ItemDisplayBinding="{Binding .}">
+                            TitleColor="{StaticResource Primary}"
+                            TextColor="{StaticResource Secondary}"
+                            BackgroundColor="{StaticResource Tertiary}"
+                            Title="Tipo de cita *Requerido"                    
+                            ItemsSource="{Binding Types}"
+                            SelectedItem="{Binding SelectedType}"
+                            ItemDisplayBinding="{Binding .}">
                         </Picker>
                         <Picker 
-                TitleColor="{StaticResource Primary}"
-                TextColor="{StaticResource Secondary}"
-                BackgroundColor="{StaticResource Tertiary}"
-                Title="Duración de la cita"                    
-                ItemsSource="{Binding AppointmentDurations}"
-                SelectedItem="{Binding SelectedAppointmentDuration}"
-                ItemDisplayBinding="{Binding Description}">
-                        </Picker>
+                            TitleColor="{StaticResource Primary}"
+                            TextColor="{StaticResource Secondary}"
+                            BackgroundColor="{StaticResource Tertiary}"
+                            Title="Duración de la cita"                    
+                            ItemsSource="{Binding AppointmentDurations}"
+                            SelectedItem="{Binding SelectedAppointmentDuration}"
+                            ItemDisplayBinding="{Binding Description}">
+                        </Picker>                       
+
                     </StackLayout>
                 </Frame>
                 <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
