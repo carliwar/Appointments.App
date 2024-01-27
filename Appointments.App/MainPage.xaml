@@ -4,6 +4,7 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:model="clr-namespace:Appointments.App.ViewModels"
+    xmlns:fontawesome="clr-namespace:Appointments.App.Utils"
     xmlns:plugin="clr-namespace:Xamarin.Plugin.Calendar.Controls;assembly=Xamarin.Plugin.Calendar"
     x:Name="MainCalendarPage">
     <ContentPage.BindingContext>
@@ -11,6 +12,13 @@
     </ContentPage.BindingContext>
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding TodayCommand}" Text="HOY" />
+        <ToolbarItem Command="{Binding SettingsCommand}" Order="Primary">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource 
+                    FontFamily="{StaticResource FontAwesomeSolid}" Size="Subtitle" Glyph="{x:Static fontawesome:FontAwesomeIcons.Gear}" />
+            </ToolbarItem.IconImageSource>
+
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
     <StackLayout>
         <plugin:Calendar            

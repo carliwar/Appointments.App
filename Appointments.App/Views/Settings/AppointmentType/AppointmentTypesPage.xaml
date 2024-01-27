@@ -35,7 +35,7 @@
                             Margin="2"
                             BackgroundColor="{StaticResource Tertiary}"
                             TextColor="{StaticResource BlackText}"
-                            Text="{Binding UserFullName}"
+                            Text="{Binding Name}"
                             Command="{Binding BindingContext.EditAppointmentTypeCommand, Source={x:Reference Name=AppointmentTypesListViewModel}}"                                
                             CommandParameter="{Binding .}">
                             </Button>

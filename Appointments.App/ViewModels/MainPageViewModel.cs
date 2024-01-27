@@ -1,7 +1,9 @@
 ﻿using Appointments.App.Models;
 using Appointments.App.Models.DataModels;
+using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using Appointments.App.Views.Appointment;
+using Appointments.App.Views.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,10 +95,16 @@ namespace Appointments.App.ViewModels
         public ICommand ButtonClickCommand => new Command(async (item) => await ButtonClicked(item));
         public ICommand CallPhoneCommand => new Command(async (phone) => await CallPhoneClicked(phone));
         public ICommand TodayCommand => new Command(async (item) => await SetToday());
+        public ICommand SettingsCommand => new Command(async (item) => await GoToSettings());
 
         private async Task SetToday()
         {
             SelectedDate = Today;
+        }
+
+        private async Task GoToSettings()
+        {
+            await Application.Current.MainPage.Navigation.PushAsync(new AppointmentTypesPage());
         }
 
         private async Task ExecuteEventSelectedCommand(object item)
@@ -190,20 +198,14 @@ namespace Appointments.App.ViewModels
                 var appointmentColor = Color.FromHex("#2196F3");
                 switch (appointment.AppointmentType)
                 {
-                    case Models.Enum.AppointmentTypeEnum.Descanso:
-                        appointmentColor = Color.FromHex("#2196F3");
+                    case AppointmentTypeEnum.Endodoncia:
+                        appointmentColor = Color.FromHex("#b3ffb3");
                         break;
-                    case Models.Enum.AppointmentTypeEnum.Extraccion:
-                        appointmentColor = Color.FromHex("#ff0000");
+                    case AppointmentTypeEnum.Ortodoncia:
+                        appointmentColor = Color.FromHex("#ffe6ff");
                         break;
-                    case Models.Enum.AppointmentTypeEnum.Consulta:
-                        appointmentColor = Color.FromHex("#5084ad");
-                        break;
-                    case Models.Enum.AppointmentTypeEnum.Endodoncia:
-                        appointmentColor = Color.FromHex("#00ff00");
-                        break;
-                    case Models.Enum.AppointmentTypeEnum.Ortodoncia:
-                        appointmentColor = Color.FromHex("#ff00ff");
+                    default:
+                        appointmentColor = Color.FromHex("#cbdbe7");
                         break;
                 }
 

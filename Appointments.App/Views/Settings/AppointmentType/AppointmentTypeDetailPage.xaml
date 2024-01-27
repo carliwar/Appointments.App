@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"             
              xmlns:model="clr-namespace:Appointments.App.ViewModels.AppointmentType"
+             xmlns:colorpicker="clr-namespace:ColorPicker;assembly=ColorPicker"
              x:Name="AppointmentTypeViewModel"
              x:Class="Appointments.App.Views.Settings.AppointmentType.AppointmentTypeDetailPage">
     <ContentPage.BindingContext>
@@ -29,10 +30,13 @@
                             SelectedItem="{Binding AppointmentDurationEnum}"
                             ItemDisplayBinding="{Binding Description}">
                         </Picker>
-                        <Label Text="Apellido"></Label>
-                        <Entry x:Name="LastName" Text="{Binding LastName}"></Entry>
-                        <Label Text="Fecha de Nacimiento"></Label>
-                        <DatePicker x:Name="BirthDate" MaximumDate="{Binding Today}" Date="{Binding BirthDate}"></DatePicker>
+                        <colorpicker:ColorWheel 
+                            SelectedColor="{Binding ColorApp}"
+                            x:Name="ColorApp"
+                            WidthRequest="150"
+                            ShowAlphaSlider="False"                            
+                            Padding="5"
+                            Grid.Row="1"/>
                     </StackLayout>
                 </Frame>
             </ScrollView>

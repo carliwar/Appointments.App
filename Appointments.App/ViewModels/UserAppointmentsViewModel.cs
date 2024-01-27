@@ -128,21 +128,15 @@ namespace Appointments.App.ViewModels
                 var appointmentColor = Color.FromHex("#2196F3");
 
                 switch (appointment.AppointmentType)
-                {
-                    case Models.Enum.AppointmentTypeEnum.Descanso:
-                        appointmentColor = Color.FromHex("#2196F3");
-                        break;
-                    case Models.Enum.AppointmentTypeEnum.Extraccion:
-                        appointmentColor = Color.FromHex("#ffb3b3");
-                        break;
-                    case Models.Enum.AppointmentTypeEnum.Consulta:
-                        appointmentColor = Color.FromHex("#cbdbe7");
-                        break;
-                    case Models.Enum.AppointmentTypeEnum.Endodoncia:
+                {             
+                    case AppointmentTypeEnum.Endodoncia:
                         appointmentColor = Color.FromHex("#b3ffb3");
                         break;
-                    case Models.Enum.AppointmentTypeEnum.Ortodoncia:
+                    case AppointmentTypeEnum.Ortodoncia:
                         appointmentColor = Color.FromHex("#ffe6ff");
+                        break;
+                    default:
+                        appointmentColor = Color.FromHex("#cbdbe7");
                         break;
 
                 }

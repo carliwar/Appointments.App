@@ -327,7 +327,7 @@ namespace Appointments.App.Services
             if (appointmentTypes.Any())
             {
                 var sameType = appointmentTypes
-                    .Where(t => t.Name ==  appointmentType.Name || t.Description == appointmentType.Description)
+                    .Where(t => t.Name ==  appointmentType.Name && t.Id != appointmentType.Id)
                     .FirstOrDefault();
 
                 if (sameType != null)

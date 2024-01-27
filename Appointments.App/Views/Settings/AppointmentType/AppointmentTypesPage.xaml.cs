@@ -1,4 +1,6 @@
-﻿using Xamarin.Forms;
+﻿using Appointments.App.ViewModels;
+using Appointments.App.ViewModels.AppointmentType;
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace Appointments.App.Views.Settings
@@ -10,5 +12,10 @@ namespace Appointments.App.Views.Settings
 		{
 			InitializeComponent ();
 		}
-	}
+
+        protected override void OnAppearing()
+        {
+            (BindingContext as AppointmentTypesListViewModel)?.InitializeAppointmentTypes();
+        }
+    }
 }

@@ -38,6 +38,10 @@
                     </VisualStateGroupList>
                 </Setter>
             </Style>
-        </ResourceDictionary>
+
+            <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeSolid">
+                <On Platform="Android" Value="fa-regular-400" />
+            </OnPlatform>
+        </ResourceDictionary>        
     </Application.Resources>
 </Application>

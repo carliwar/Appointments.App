@@ -19,6 +19,7 @@ namespace Appointments.App.ViewModels.AppointmentType
         public AppointmentTypesListViewModel()
         {
             _dataService = new DataService();
+            AppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
         }
 
         #region Methods
