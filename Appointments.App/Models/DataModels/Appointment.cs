@@ -1,6 +1,9 @@
 ﻿using Appointments.App.Models.Enum;
 using SQLite;
+using SQLiteNetExtensions.Attributes;
 using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Appointments.App.Models.DataModels
 {
@@ -14,6 +17,9 @@ namespace Appointments.App.Models.DataModels
         public string UserInformation { get; set; }
         public int UserId { get; set; }
         public bool Attended { get; set; }
+
+        [ManyToMany(typeof(AppointmentType))]
+        public List<AppointmentType> AppointmentTypes { get; set; }
 
         [Ignore]
         public string AppointmentInformation { 

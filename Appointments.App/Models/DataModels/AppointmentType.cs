@@ -1,5 +1,7 @@
 ﻿using Appointments.App.Models.Enum;
 using SQLite;
+using SQLiteNetExtensions.Attributes;
+using System.Collections.Generic;
 
 namespace Appointments.App.Models.DataModels
 {
@@ -12,5 +14,8 @@ namespace Appointments.App.Models.DataModels
         public AppointmentDurationEnum DefaultDuration { get; set; }
         public string ColorCode { get; set; }
         public bool Enabled { get; set; }
+
+        [ManyToMany(typeof(Appointment))]
+        public List<Appointment> Appointments { get; set; }
     }
 }
