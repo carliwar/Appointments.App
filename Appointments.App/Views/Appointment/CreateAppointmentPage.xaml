@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:model="clr-namespace:Appointments.App.ViewModels"
              xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             xmlns:lv="clr-namespace:Xamarin.Forms.MultiSelectListView;assembly=Xamarin.Forms.MultiSelectListView"
              x:Name="CreateAppointmentViewModel"
              x:Class="Appointments.App.Views.Appointment.CreateAppointmentPage">
     <ContentPage.BindingContext>
@@ -30,6 +31,27 @@
                             Time="{Binding GivenTime}"
                             TextColor="{StaticResource Primary}">
                         </TimePicker>
+                        <ListView 
+                            HeightRequest="50"
+                            HasUnevenRows="true"
+                            SeparatorVisibility="Default" 
+                            ItemsSource="{Binding AppointmentTypes}"
+                            lv:MultiSelect.Enable="true">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <lv:SelectableCell x:Name="SelectableCell">
+                                        <lv:SelectableCell.CheckView>
+                                            <Image Source="select.png" WidthRequest="30" HeightRequest="30"></Image>
+                                        </lv:SelectableCell.CheckView>
+                                        <lv:SelectableCell.DataView>
+                                            <StackLayout Orientation="Vertical" Padding="20,0,20,0">
+                                                <Label Text="{Binding Name}" FontSize="17" ></Label>
+                                            </StackLayout>
+                                        </lv:SelectableCell.DataView>
+                                    </lv:SelectableCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
                         <Picker 
                             TitleColor="{StaticResource Primary}"
                             TextColor="{StaticResource Secondary}"

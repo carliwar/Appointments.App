@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Xamarin.Forms.MultiSelectListView;
 
 namespace Appointments.App.ViewModels
 {
@@ -50,6 +51,7 @@ namespace Appointments.App.ViewModels
         private ObservableCollection<User> _users = new ObservableCollection<User>();
         private ObservableCollection<AppointmentTypeEnum> _types = new ObservableCollection<AppointmentTypeEnum>();
         private ObservableCollection<AppointmentDuration> _appointmentDurations = new ObservableCollection<AppointmentDuration>();
+        private MultiSelectObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new MultiSelectObservableCollection<Models.DataModels.AppointmentType>();
         private AppointmentTypeEnum? _selectedType;
         private AppointmentDuration _selectedAppointmentDuration;
         private User _selectedUser;
@@ -96,7 +98,12 @@ namespace Appointments.App.ViewModels
             get => _appointmentDurations;
             set => SetProperty(ref _appointmentDurations, value);
         }
-
+        public MultiSelectObservableCollection<Models.DataModels.AppointmentType> AppointmentTypes
+        {
+            get => _appointmentTypes;
+            set => SetProperty(ref _appointmentTypes, value);
+        }
+        
         public AppointmentTypeEnum? SelectedType
         {
             get => _selectedType;
@@ -129,7 +136,7 @@ namespace Appointments.App.ViewModels
 
             if (sender == null)
             {
-                await InitializeUsers();
+                await LoadUsers();
             }
             else
             {
@@ -144,7 +151,7 @@ namespace Appointments.App.ViewModels
                     searchText = @string;
                 }
 
-                await InitializeUsers(searchText);
+                await LoadUsers(searchText);
             }
         }
 
@@ -228,7 +235,7 @@ namespace Appointments.App.ViewModels
             await DependencyService.Get<IDeviceCalendarService>().AddEventToCalendar(androidAppointment);
         }
 
-        public async Task InitializeUsers(string searchText = "", User user = null)
+        public async Task LoadUsers(string searchText = "", User user = null)
         {
             Users.Clear();
 
@@ -247,6 +254,24 @@ namespace Appointments.App.ViewModels
             }
 
         }
+
+        public async Task Initialize(User user = null)
+        {
+            await LoadUsers(user: user);
+            await InitializeAppointmentTypes();
+
+        }
+
+        private async Task InitializeAppointmentTypes()
+        {
+            var appointmentTypes = await _dataService.GetAppointmentTypes();
+
+            foreach(var appointmentType in appointmentTypes)
+            {
+                AppointmentTypes.Add(appointmentType);
+            }
+        }
+
         #endregion
 
         private string GetEnumDescription(Models.Enum.AppointmentDurationEnum value)

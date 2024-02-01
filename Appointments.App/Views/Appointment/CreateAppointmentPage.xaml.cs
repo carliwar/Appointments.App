@@ -26,7 +26,7 @@ namespace Appointments.App.Views.Appointment
             userAppointmentsViewModel.SelectedUser = SelectedUser;
             userAppointmentsViewModel.GivenDate = GivenDate;
             userAppointmentsViewModel.GivenTime = GivenTime;
-            (BindingContext as CreateAppointmentViewModel)?.InitializeUsers(user:SelectedUser);
+            (BindingContext as CreateAppointmentViewModel)?.Initialize(user:SelectedUser);
 
 
         }
