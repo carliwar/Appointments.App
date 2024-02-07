@@ -40,7 +40,7 @@ namespace Appointments.App.ViewModels.AppointmentType
         private int _id;
         private string _name;
         private string _description;
-        private AppointmentDurationEnum _appointmentDurationEnum;
+        private Models.DataModels.AppointmentDuration _selectedAppointmentDuration;
         private string _color;
         private Color _colorApp;
         private bool _enabled;
@@ -52,7 +52,7 @@ namespace Appointments.App.ViewModels.AppointmentType
         public int Id { get => _id; set => SetProperty(ref _id, value); }
         public string Name { get => _name; set => SetProperty(ref _name, value); }
         public string AppointmentTypeDescription { get => _description; set => SetProperty(ref _description, value); }
-        public AppointmentDurationEnum AppointmentDurationEnum { get => _appointmentDurationEnum; set => SetProperty(ref _appointmentDurationEnum, value); }
+        public Models.DataModels.AppointmentDuration SelectedAppointmentDuration { get => _selectedAppointmentDuration; set => SetProperty(ref _selectedAppointmentDuration, value); }
         public string Color { get => _color; set => SetProperty(ref _color, value); }
         public Color ColorApp { get => _colorApp; set => SetProperty(ref _colorApp, value); }
         public bool Enabled { get => _enabled; set => SetProperty(ref _enabled, value); }
@@ -65,15 +65,20 @@ namespace Appointments.App.ViewModels.AppointmentType
 
         public async Task Save()
         {
+            if (Id == 0)
+            {
+                Enabled = true;
+            }
+
             var appointmentType = new Models.DataModels.AppointmentType
             {
                 Id = Id,
                 Name = Name,
                 Description = AppointmentTypeDescription,
-                DefaultDuration = AppointmentDurationEnum,
-                ColorCode = Color,
+                DefaultDuration = SelectedAppointmentDuration.Name,
+                ColorCode = ColorApp.ToHex(),
                 Enabled = Enabled
-            };
+            };            
 
             var result = await _dataService.SaveAppointmentType(appointmentType);
 
@@ -107,8 +112,9 @@ namespace Appointments.App.ViewModels.AppointmentType
                     Id = AppointmentType.Id;
                     Name = AppointmentType.Name;
                     AppointmentTypeDescription = AppointmentType.Description;
-                    AppointmentDurationEnum = AppointmentType.DefaultDuration;
+                    SelectedAppointmentDuration = AppointmentDurations.SingleOrDefault(t => t.Name == AppointmentType.DefaultDuration);
                     Color = AppointmentType.ColorCode;
+                    ColorApp = Xamarin.Forms.Color.FromHex(AppointmentType.ColorCode);
                     Enabled = AppointmentType.Enabled;
 
                     IsEdit = true;

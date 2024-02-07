@@ -31,36 +31,32 @@
                             Time="{Binding GivenTime}"
                             TextColor="{StaticResource Primary}">
                         </TimePicker>
+                        <Label Padding="1" Text="Tipos de Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
                         <ListView 
-                            HeightRequest="50"
+                            BackgroundColor="{StaticResource Tertiary}"
+                            HeightRequest="100"
                             HasUnevenRows="true"
                             SeparatorVisibility="Default" 
-                            ItemsSource="{Binding AppointmentTypes}"
+                            ItemsSource="{Binding AppointmentTypes}"                           
                             lv:MultiSelect.Enable="true">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <lv:SelectableCell x:Name="SelectableCell">
-                                        <lv:SelectableCell.CheckView>
+                                    <lv:SelectableCell x:Name="SelectableCell" >
+                                        <lv:SelectableCell.CheckView>                                            
                                             <Image Source="select.png" WidthRequest="30" HeightRequest="30"></Image>
                                         </lv:SelectableCell.CheckView>
                                         <lv:SelectableCell.DataView>
                                             <StackLayout Orientation="Vertical" Padding="20,0,20,0">
-                                                <Label Text="{Binding Name}" FontSize="17" ></Label>
+                                                <Label Text="{Binding Name}" FontSize="17" TextColor="{StaticResource Primary}"></Label>
                                             </StackLayout>
                                         </lv:SelectableCell.DataView>
                                     </lv:SelectableCell>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
-                        </ListView>
-                        <Picker 
-                            TitleColor="{StaticResource Primary}"
-                            TextColor="{StaticResource Secondary}"
-                            BackgroundColor="{StaticResource Tertiary}"
-                            Title="Tipo de cita *Requerido"                    
-                            ItemsSource="{Binding Types}"
-                            SelectedItem="{Binding SelectedType}"
-                            ItemDisplayBinding="{Binding .}">
-                        </Picker>
+                            <ListView.Behaviors>
+                                <lv:SelectedItemBehavior Command="{Binding FillSelectedAppointmentTypesCommand}"/>
+                            </ListView.Behaviors>
+                        </ListView>                        
                         <Picker 
                             TitleColor="{StaticResource Primary}"
                             TextColor="{StaticResource Secondary}"

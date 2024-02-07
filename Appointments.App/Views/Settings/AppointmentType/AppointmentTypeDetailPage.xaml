@@ -17,20 +17,21 @@
             <ScrollView Orientation="Vertical">
                 <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
                     <StackLayout>
-                        <Label Text="Nombre"></Label>
+                        <Label Text="Nombre" TextColor="{StaticResource Secondary}" FontAttributes="Bold"></Label>
                         <Entry x:Name="Nombre" Text="{Binding Name}"></Entry>
-                        <Label Text="Descripción"></Label>
+                        <Label Text="Descripción" TextColor="{StaticResource Secondary}" FontAttributes="Bold"></Label>
                         <Entry x:Name="Description" Text="{Binding AppointmentTypeDescription}"></Entry>
-                        <Label Text="Duración"></Label>
+                        <Label Text="Duración" TextColor="{StaticResource Secondary}" FontAttributes="Bold"></Label>
                         <Picker 
                             TextColor="{StaticResource Primary}"
                             BackgroundColor="{StaticResource Tertiary}"
                             Title="Escoja el tiempo predeterminado"                    
                             ItemsSource="{Binding AppointmentDurations}"
-                            SelectedItem="{Binding AppointmentDurationEnum}"
+                            SelectedItem="{Binding SelectedAppointmentDuration}"
                             ItemDisplayBinding="{Binding Description}">
                         </Picker>
-                        <cp:ColorPickerMixer Color="{Binding ColorApp}" />
+                        <Label Text="Color Representativo" TextColor="{StaticResource Secondary}" FontAttributes="Bold"></Label>
+                        <cp:ColorPickerMixer Color="{Binding ColorApp}" EditAlpha="False" EditorsColor="{StaticResource Primary}" />
                     </StackLayout>
                 </Frame>
             </ScrollView>

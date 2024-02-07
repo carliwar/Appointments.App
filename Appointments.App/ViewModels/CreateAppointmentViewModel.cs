@@ -52,10 +52,12 @@ namespace Appointments.App.ViewModels
         private ObservableCollection<AppointmentTypeEnum> _types = new ObservableCollection<AppointmentTypeEnum>();
         private ObservableCollection<AppointmentDuration> _appointmentDurations = new ObservableCollection<AppointmentDuration>();
         private MultiSelectObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new MultiSelectObservableCollection<Models.DataModels.AppointmentType>();
+        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
         private AppointmentTypeEnum? _selectedType;
         private AppointmentDuration _selectedAppointmentDuration;
         private User _selectedUser;
         private bool _showError = false;
+        private int _appointmentTypesHeight;
 
         public int Id
         {
@@ -103,7 +105,13 @@ namespace Appointments.App.ViewModels
             get => _appointmentTypes;
             set => SetProperty(ref _appointmentTypes, value);
         }
-        
+
+        public ObservableCollection<Models.DataModels.AppointmentType> SelectedAppointmentTypes
+        {
+            get => _selectedAppointmentTypes;
+            set => SetProperty(ref _selectedAppointmentTypes, value);
+        }
+
         public AppointmentTypeEnum? SelectedType
         {
             get => _selectedType;
@@ -124,12 +132,19 @@ namespace Appointments.App.ViewModels
             get => _showError;
             set => SetProperty(ref _showError, value);
         }
+
+        public int AppointmentTypesHeight
+        {
+            get => _appointmentTypesHeight;
+            set => SetProperty(ref _appointmentTypesHeight, value);
+        }
         #endregion
 
         #region Commands
         //SearchUserCommand
         public ICommand SearchUserCommand => new Command(async (item) => await SearchUserAsync(item));
         public ICommand CreateAppointmentCommand => new Command(async (item) => await CreateAppointment(item));
+        public ICommand FillSelectedAppointmentTypesCommand => new Command(async (item) => await FillSelectedAppointmentTypes(item));
 
         private async Task SearchUserAsync(object sender)
         {
@@ -220,6 +235,32 @@ namespace Appointments.App.ViewModels
             }
         }
 
+        private async Task FillSelectedAppointmentTypes(object sender)
+        {
+            if(sender is Models.DataModels.AppointmentType selectedAppointmentType)
+            {
+                SelectedAppointmentDuration = AppointmentDurations.SingleOrDefault(t => t.Name == selectedAppointmentType.DefaultDuration);
+
+                if (!SelectedAppointmentTypes.Any(t => t.Id == selectedAppointmentType.Id))
+                {
+                    SelectedAppointmentTypes.Add(selectedAppointmentType);
+                }
+                else
+                {
+                    SelectedAppointmentTypes.Remove(selectedAppointmentType);
+                }
+
+                if (SelectedAppointmentTypes.Any())
+                {
+                    SelectedAppointmentDuration = AppointmentDurations.SingleOrDefault(t => t.Name == SelectedAppointmentTypes.Max(u => u.DefaultDuration));
+                }
+                else
+                {
+                    SelectedAppointmentDuration = null;
+                }
+                
+            }            
+        }
         private static async Task CreateDeviceAppointment(Appointment appointment)
         {
             var androidAppointment = new AndroidAppointment
@@ -269,6 +310,15 @@ namespace Appointments.App.ViewModels
             foreach(var appointmentType in appointmentTypes)
             {
                 AppointmentTypes.Add(appointmentType);
+            }
+
+            if(appointmentTypes.Count > 3)
+            {
+                AppointmentTypesHeight = 125;
+            }
+            else
+            {
+                AppointmentTypesHeight = 75;
             }
         }
 
