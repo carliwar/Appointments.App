@@ -18,7 +18,7 @@ namespace Appointments.App.ViewModels
         public UserListViewModel() : base()
         {
             _dataService = new DataService();
-            Users = new ObservableCollection<User>();
+            Users = new ObservableCollection<Models.DataModels.User>();
         }
         #region Temp Properties
         private readonly IDataService _dataService;
@@ -29,7 +29,7 @@ namespace Appointments.App.ViewModels
         private int _id;
         private string _userValue;
         private DateTime _givenDate;
-        private ObservableCollection<User> _users;
+        private ObservableCollection<Models.DataModels.User> _users;
 
         public int Id
         {
@@ -49,7 +49,7 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _givenDate, value);
         }
 
-        public ObservableCollection<User> Users
+        public ObservableCollection<Models.DataModels.User> Users
         {
             get => _users;
             set => SetProperty(ref _users, value);
@@ -103,14 +103,14 @@ namespace Appointments.App.ViewModels
 
         private async Task CreateUser()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new CreateUserPage());
+            await Application.Current.MainPage.Navigation.PushAsync(new UserDetailPage(0));
         }
 
         private async Task LoadUserAppointments(object user)
         {
-            if(user is User)
+            if(user is Models.DataModels.User)
             {
-                await Application.Current.MainPage.Navigation.PushAsync(new UserAppointmentsPage((User)user));
+                await Application.Current.MainPage.Navigation.PushAsync(new UserAppointmentsPage((Models.DataModels.User)user));
             }
             
         }

@@ -10,7 +10,7 @@
     </ContentPage.BindingContext>
     <StackLayout>
         <Entry x:Name="SearchAppointmentType"
-           PlaceholderColor="#5084ad"
+           PlaceholderColor="{StaticResource Secondary}"
            Placeholder="Nombre o detalle"
            ReturnCommand="{Binding SearchAppointmentTypesCommand}"
            ReturnCommandParameter="{Binding Text, Source={x:Reference SearchAppointmentType}}">

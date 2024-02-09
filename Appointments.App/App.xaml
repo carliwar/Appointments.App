@@ -12,10 +12,6 @@
             <Color x:Key="DisabledText">#C0C0C0</Color>
             <Color x:Key="ErrorText">#ff0000</Color>
             <Color x:Key="Success">#4BB543</Color>
-            <Color x:Key="Extraccion">#ffb3b3</Color>
-            <Color x:Key="Consulta">#cbdbe7</Color>
-            <Color x:Key="Endodoncia">#b3ffb3</Color>
-            <Color x:Key="Ortodoncia">#ffe6ff</Color>
 
             <Style TargetType="Button">
                 <Setter Property="TextColor" Value="White"></Setter>
@@ -38,6 +34,11 @@
                     </VisualStateGroupList>
                 </Setter>
             </Style>
+            <Style>
+                <Setter Property="FontAttributes" Value="Bold"></Setter>
+                <Setter Property="TextColor" Value="{StaticResource Secondary}"></Setter>
+            </Style>
+            
 
             <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeSolid">
                 <On Platform="Android" Value="fa-regular-400" />

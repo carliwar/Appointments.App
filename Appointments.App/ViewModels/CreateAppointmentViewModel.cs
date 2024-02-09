@@ -35,7 +35,7 @@ namespace Appointments.App.ViewModels
                 AppointmentDurations.Add(appointmentDuration);
             }
 
-            Users = new ObservableCollection<User>();            
+            Users = new ObservableCollection<Models.DataModels.User>();            
         }
         #region Temp Properties
 
@@ -48,14 +48,14 @@ namespace Appointments.App.ViewModels
         private string _userFullName;
         private DateTime _givenDate;
         private TimeSpan _givenTime;
-        private ObservableCollection<User> _users = new ObservableCollection<User>();
+        private ObservableCollection<Models.DataModels.User> _users = new ObservableCollection<Models.DataModels.User>();
         private ObservableCollection<AppointmentTypeEnum> _types = new ObservableCollection<AppointmentTypeEnum>();
         private ObservableCollection<AppointmentDuration> _appointmentDurations = new ObservableCollection<AppointmentDuration>();
         private MultiSelectObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new MultiSelectObservableCollection<Models.DataModels.AppointmentType>();
         private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
         private AppointmentTypeEnum? _selectedType;
         private AppointmentDuration _selectedAppointmentDuration;
-        private User _selectedUser;
+        private Models.DataModels.User _selectedUser;
         private bool _showError = false;
         private int _appointmentTypesHeight;
 
@@ -83,7 +83,7 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _givenTime, value);
         }
 
-        public ObservableCollection<User> Users
+        public ObservableCollection<Models.DataModels.User> Users
         {
             get => _users;
             set => SetProperty(ref _users, value);
@@ -122,7 +122,7 @@ namespace Appointments.App.ViewModels
             get => _selectedAppointmentDuration;
             set => SetProperty(ref _selectedAppointmentDuration, value);
         }
-        public User SelectedUser
+        public Models.DataModels.User SelectedUser
         {
             get => _selectedUser;
             set => SetProperty(ref _selectedUser, value);
@@ -276,7 +276,7 @@ namespace Appointments.App.ViewModels
             await DependencyService.Get<IDeviceCalendarService>().AddEventToCalendar(androidAppointment);
         }
 
-        public async Task LoadUsers(string searchText = "", User user = null)
+        public async Task LoadUsers(string searchText = "", Models.DataModels.User user = null)
         {
             Users.Clear();
 
@@ -296,7 +296,7 @@ namespace Appointments.App.ViewModels
 
         }
 
-        public async Task Initialize(User user = null)
+        public async Task Initialize(Models.DataModels.User user = null)
         {
             await LoadUsers(user: user);
             await InitializeAppointmentTypes();

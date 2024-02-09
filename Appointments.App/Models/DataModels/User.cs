@@ -1,5 +1,6 @@
 ﻿using Appointments.App.Models.Enum;
 using SQLite;
+using SQLiteNetExtensions.Attributes;
 using System;
 
 namespace Appointments.App.Models.DataModels
@@ -27,5 +28,11 @@ namespace Appointments.App.Models.DataModels
         public string LastName { get; set; }
         public DateTime? BirthDate { get; set; }
         public UserTypeEnum UserType { get; set; }
+
+        [ForeignKey(typeof(AppointmentType))]
+        public int DefaultAppointmentTypeId { get; set; }
+
+        [ManyToOne]
+        public AppointmentType DefaultAppointmentType { get; set; }
     }
 }

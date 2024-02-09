@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:Appointments.App.ViewModels.User"
+             x:Name="UserViewModel"
+             x:Class="Appointments.App.Views.Users.UserDetailPage">
+    <ContentPage.BindingContext>
+        <model:UserViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding ImportContactCommand}" Text="Importar Contacto" />
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ScrollView Orientation="Vertical">
+                <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
+                    <StackLayout>
+                        <Label Text="CI o Pasaporte"></Label>
+                        <Entry x:Name="Identificacion" Text="{Binding Identification}"></Entry>
+                        <Label Text="Teléfono"></Label>
+                        <Entry x:Name="Phone" Text="{Binding Phone}"></Entry>
+                        <Label Text="Nombre"></Label>
+                        <Entry x:Name="FirstName" Text="{Binding FirstName}"></Entry>
+                        <Label Text="Apellido"></Label>
+                        <Entry x:Name="LastName" Text="{Binding LastName}"></Entry>
+                        <Label Text="Fecha de Nacimiento"></Label>
+                        <DatePicker x:Name="BirthDate" MaximumDate="{Binding Today}" Date="{Binding BirthDate}"></DatePicker>
+                        <Label Text="Especialidad de Paciente"></Label>
+                        <Picker 
+                            TitleColor="{StaticResource Primary}"
+                            TextColor="{StaticResource Secondary}"
+                            BackgroundColor="{StaticResource Tertiary}"
+                            Title="Especialidad Paciente"
+                            ItemsSource="{Binding AppointmentTypes}"
+                            SelectedItem="{Binding SelectedAppointmentType}"
+                            ItemDisplayBinding="{Binding Name}">                            
+                        </Picker>
+                    </StackLayout>
+                </Frame>
+            </ScrollView>
+            <Button
+                Grid.Row="1"
+                Command="{Binding SaveUserCommand}"
+                VerticalOptions="EndAndExpand"
+                Margin="5"
+                Text="Guardar">
+            </Button>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

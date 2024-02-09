@@ -1,28 +1,28 @@
 ﻿using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using Appointments.App.Views.Users;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using static SQLite.SQLite3;
+using Xamarin.Forms.MultiSelectListView;
 
-namespace Appointments.App.ViewModels
+namespace Appointments.App.ViewModels.User
 {
-    public class CreateUserRequestViewModel : BasePageViewModel
+    public class UserViewModel : BasePageViewModel
     {
-        public CreateUserRequestViewModel()
+        public UserViewModel()
         {
             //UserTypes = new ObservableCollection<UserType>(Enum.GetValues(typeof(UserType)).OfType<UserType>().ToList());
             _dataService = new DataService();
         }
 
         #region Properties
+        private int _id;
         private string _identification;
         private string _phone;
         private string _firstName;
@@ -31,9 +31,16 @@ namespace Appointments.App.ViewModels
         private readonly IDataService _dataService;
         private UserTypeEnum _selectedUserType;
         private bool _isImported = false;
+        private bool _isEdit = false;
+        private ObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
+        private Models.DataModels.AppointmentType _selectedAppointmentType;
 
 
-
+        public int Id
+        {
+            get => _id;
+            set => SetProperty(ref _id, value);
+        }
         public string Identification
         {
             get => _identification;
@@ -72,17 +79,35 @@ namespace Appointments.App.ViewModels
             get => _isImported;
             set => SetProperty(ref _isImported, value);
         }
+
+        public bool IsEdit
+        {
+            get => _isEdit;
+            set => SetProperty(ref _isEdit, value);
+        }
+
+        public ObservableCollection<Models.DataModels.AppointmentType> AppointmentTypes
+        {
+            get => _appointmentTypes;
+            set => SetProperty(ref _appointmentTypes, value);
+        }
+
+        public Models.DataModels.AppointmentType SelectedAppointmentType
+        {
+            get => _selectedAppointmentType;
+            set => SetProperty(ref _selectedAppointmentType, value);
+        }
         #endregion
 
         #region Commands
-        public ICommand CreateUserCommand => new Command((item) => CreateUser(item));
+        public ICommand SaveUserCommand => new Command((item) => SaveUser(item));
         public ICommand SelectUserTypeCommand => new Command((item) => SelectUserType(item));
         public ICommand ImportContactCommand => new Command(async (item) => await ImportContactAsync(item));
 
         private async Task ImportContactAsync(object item)
         {
             var status = await Permissions.CheckStatusAsync<Permissions.ContactsRead>();
-            
+
             if (status != PermissionStatus.Granted)
             {
                 var request = await Permissions.RequestAsync<Permissions.ContactsRead>();
@@ -91,9 +116,9 @@ namespace Appointments.App.ViewModels
                 {
                     await Application.Current.MainPage.DisplayAlert("Error:", "No se puede acceder a los contactos. Por favor, agrega el permiso desde la Configuración > Apps.", "Ok");
                 }
-                    
+
             }
-            
+
             var contact = await Contacts.PickContactAsync();
             if (contact != null)
             {
@@ -108,7 +133,7 @@ namespace Appointments.App.ViewModels
             SelectedUserType = (UserTypeEnum)item;
         }
 
-        private async void CreateUser(object item)
+        private async void SaveUser(object item)
         {
             var user = new Models.DataModels.User
             {
@@ -119,6 +144,7 @@ namespace Appointments.App.ViewModels
                 Phone = FormatPhone(Phone),
                 UserType = UserTypeEnum.Paciente
             };
+
             var result = await _dataService.CreateValidatedUser(user);
 
             if (result.Success)
@@ -148,11 +174,11 @@ namespace Appointments.App.ViewModels
                         {
                             var request = await Permissions.RequestAsync<Permissions.ContactsWrite>();
 
-                            if(request != PermissionStatus.Granted)
+                            if (request != PermissionStatus.Granted)
                             {
                                 await Application.Current.MainPage.DisplayAlert("Error:", "No se puede crear contactos. Por favor, agrega el permiso desde la Configuración > Apps.", "Ok");
                             }
-                            
+
                         }
 
                         DependencyService.Get<IDeviceContactService>().CreateContact(deviceContact);
@@ -173,7 +199,6 @@ namespace Appointments.App.ViewModels
             }
         }
 
-
         private string FormatPhone(string phone)
         {
             if (phone == null)
@@ -181,7 +206,7 @@ namespace Appointments.App.ViewModels
 
             string formattedString = phone.Trim();
 
-            if(formattedString.Length > 0)
+            if (formattedString.Length > 0)
             {
                 // if phone starts with 09 replace that with +5939
                 if (phone.StartsWith("09"))
@@ -189,8 +214,32 @@ namespace Appointments.App.ViewModels
                     formattedString = "+5939" + phone.Substring(2);
                     Console.WriteLine(formattedString);
                 }
-            }            
+            }
             return formattedString;
+        }
+
+        public async Task LoadUser(int id)
+        {
+            var user = await _dataService.GetUser(id);
+
+            if(user != null)
+            {
+                Id = user.Id;
+                Identification = user.Identification;
+                FirstName = user.Name;
+                LastName = user.LastName;
+                Phone = user.Phone;
+                BirthDate = user.BirthDate ?? DateTime.UtcNow;
+                SelectedUserType = user.UserType;
+                SelectedAppointmentType = user.DefaultAppointmentType;
+                IsEdit = true;
+            }
+            else
+            {
+                IsEdit = false;
+            }
+
+
         }
 
 
