@@ -1,6 +1,5 @@
 ﻿using Appointments.App.Models.DataModels;
 using Appointments.App.ViewModels;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -16,11 +15,11 @@ namespace Appointments.App.Views.UserAppointment
             SelectedUser2 = user;
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             UserAppointmentsViewModel userAppointmentsViewModel = (BindingContext as UserAppointmentsViewModel);
             userAppointmentsViewModel.SelectedUser = SelectedUser2;
-            (BindingContext as UserAppointmentsViewModel)?.GetAppointments();
+            await (BindingContext as UserAppointmentsViewModel)?.GetAppointments();
         }
     }
 }

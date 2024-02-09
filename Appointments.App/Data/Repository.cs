@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using SQLiteNetExtensionsAsync.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -21,6 +22,9 @@ namespace Appointments.App.Data
         public async Task<List<T>> Get() =>
             await db.Table<T>().ToListAsync();
 
+        public async Task<List<T>> GetAllWithChildren() =>
+            await db.GetAllWithChildrenAsync<T>();
+
         public async Task<List<T>> Get<TValue>(Expression<Func<T, bool>> predicate = null, Expression<Func<T, TValue>> orderBy = null)
         {
             var query = db.Table<T>();
@@ -35,7 +39,7 @@ namespace Appointments.App.Data
         }
 
         public async Task<T> Get(int id) =>
-             await db.FindAsync<T>(id);
+             await db.GetWithChildrenAsync<T>(id);
 
         public async Task<T> Get(Expression<Func<T, bool>> predicate) =>
             await db.FindAsync<T>(predicate);
@@ -43,8 +47,11 @@ namespace Appointments.App.Data
         public async Task<int> Insert(T entity) =>
              await db.InsertAsync(entity);
 
-        public async Task<int> Update(T entity) =>
+        public async Task Update(T entity) =>
              await db.UpdateAsync(entity);
+
+        public async Task UpdateWithChildrenAsync(T entity) =>
+             await db.UpdateWithChildrenAsync(entity);
 
         public async Task<int> Delete(T entity) =>
              await db.DeleteAsync(entity);

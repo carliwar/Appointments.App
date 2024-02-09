@@ -3,6 +3,7 @@ using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using Appointments.App.Views.Appointment;
+using Appointments.App.Views.Settings.AppointmentType;
 using Appointments.App.Views.Users;
 using System;
 using System.Collections.Generic;
@@ -32,9 +33,12 @@ namespace Appointments.App.ViewModels
         private int _id;
         private string _userValue;
         private DateTime _givenDate;
-        private User _selectedUser;
+        private Models.DataModels.User _selectedUser;
         private ObservableCollection<Appointment> _appointments;
         private bool _showNoAppointmentsMessage;
+        private bool _hasDefaultAppointmentType;
+        private string _userDefaultAppointmentType;
+        private string _userDefaultAppointmentTypeColor;
 
         public int Id
         {
@@ -60,7 +64,7 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _appointments, value);
         }
 
-        public User SelectedUser
+        public Models.DataModels.User SelectedUser
         {
             get => _selectedUser;
             set => SetProperty(ref _selectedUser, value);
@@ -71,6 +75,17 @@ namespace Appointments.App.ViewModels
             get => _showNoAppointmentsMessage;
             set => SetProperty(ref _showNoAppointmentsMessage, value);
         }
+
+        public bool HasDefaultAppointmentType
+        {
+            get => _hasDefaultAppointmentType;
+            set => SetProperty(ref _hasDefaultAppointmentType, value);
+        }
+        public string UserDefaultAppointmentType
+        {
+            get => _userDefaultAppointmentType;
+            set => SetProperty(ref _userDefaultAppointmentType, value);
+        }
         #endregion        
 
         #region Commands
@@ -78,9 +93,14 @@ namespace Appointments.App.ViewModels
         //SearchUserCommand
         public ICommand SearchAppointmentCommand => new Command(async (item) => await SearchAppointment(item));
         public ICommand AddAppointmentCommand => new Command(async () => await NewAppointment());
-
         public ICommand ContactUserCommand => new Command(async (item) => await ExecuteContactUserCommand(item));
+        public ICommand EditUserCommand => new Command(async (item) => await GoToUserDetails());
 
+
+        private async Task GoToUserDetails()
+        {
+            await Application.Current.MainPage.Navigation.PushAsync(new UserDetailPage(SelectedUser.Id));
+        }
         // TODO
         private async Task SearchAppointment(object sender)
         {
@@ -116,6 +136,12 @@ namespace Appointments.App.ViewModels
 
             var appointments = await _dataService.GetAppointmentsByUser(SelectedUser, null, null);
             appointments = appointments.OrderBy(t => t.AppointmentDate).ToList();
+
+            if(SelectedUser.AppointmentType != null)
+            {
+                HasDefaultAppointmentType = true;
+                UserDefaultAppointmentType = $"Especialidad: {SelectedUser.AppointmentType.Name}";
+            }
 
             if(!appointments.Any())
             {

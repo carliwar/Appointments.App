@@ -1,11 +1,4 @@
-﻿using Appointments.App.Models.DataModels;
-using Appointments.App.ViewModels.AppointmentType;
-using Appointments.App.ViewModels.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Appointments.App.ViewModels.User;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -22,9 +15,10 @@ namespace Appointments.App.Views.Users
             UserId = userId;
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
-            (BindingContext as UserViewModel)?.LoadUser(UserId);
+            await (BindingContext as UserViewModel)?.InitializeAppointmentTypes();
+            await (BindingContext as UserViewModel)?.LoadUser(UserId);
         }
     }
 }

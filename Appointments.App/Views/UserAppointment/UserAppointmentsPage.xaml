@@ -11,6 +11,7 @@
     </ContentPage.BindingContext>
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding AddAppointmentCommand}" Text="Nueva Cita +" />
+        <ToolbarItem Command="{Binding EditUserCommand}" Text="Editar" />
     </ContentPage.ToolbarItems>
     <StackLayout>
         <StackLayout HorizontalOptions="FillAndExpand"                      
@@ -33,11 +34,14 @@
                     HorizontalOptions="End"
                     Command="{Binding ContactUserCommand}"                    
                     />
-                
-                    
             </Grid>
-
-
+            <Grid IsVisible="{Binding HasDefaultAppointmentType}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <BoxView Color="{Binding SelectedUser.AppointmentType.ColorCode}" />
+                <Label IsVisible="{Binding HasDefaultAppointmentType}" Text="{Binding UserDefaultAppointmentType}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"></Label>
+            </Grid>
         </StackLayout>
 
         <!--<Entry x:Name="SearchAppointment"

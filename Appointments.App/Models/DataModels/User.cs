@@ -30,9 +30,9 @@ namespace Appointments.App.Models.DataModels
         public UserTypeEnum UserType { get; set; }
 
         [ForeignKey(typeof(AppointmentType))]
-        public int DefaultAppointmentTypeId { get; set; }
+        public int AppointmentTypeId { get; set; }
 
-        [ManyToOne]
-        public AppointmentType DefaultAppointmentType { get; set; }
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        public AppointmentType AppointmentType { get; set; }
     }
 }

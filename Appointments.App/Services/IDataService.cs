@@ -12,10 +12,8 @@ namespace Appointments.App.Services
     public interface IDataService
     {
         Task<IEnumerable<PersonType>> GetPersonTypes();
-
-        Task<User> CreateUser(User person);
         Task<User> GetUser(int userId);
-        Task<UserCreationResponse> CreateValidatedUser(User user);
+        Task<UserCreationResponse> SaveUser(User user);
         Task<IEnumerable<User>> GetUsers();
         Task<IEnumerable<User>> GetUsersByType(UserTypeEnum userType, string searchText="");
 

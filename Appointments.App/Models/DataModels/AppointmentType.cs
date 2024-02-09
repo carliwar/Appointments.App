@@ -17,5 +17,8 @@ namespace Appointments.App.Models.DataModels
 
         [ManyToMany(typeof(Appointment))]
         public List<Appointment> Appointments { get; set; }
+
+        [OneToMany]
+        public List<User> Users { get; set; }
     }
 }

@@ -137,15 +137,19 @@ namespace Appointments.App.ViewModels.User
         {
             var user = new Models.DataModels.User
             {
+                Id = Id,
                 Identification = Identification,
                 Name = FirstName,
                 LastName = LastName,
                 BirthDate = BirthDate,
                 Phone = FormatPhone(Phone),
-                UserType = UserTypeEnum.Paciente
+                UserType = UserTypeEnum.Paciente,
+                AppointmentType = SelectedAppointmentType,
+                AppointmentTypeId = SelectedAppointmentType.Id
+
             };
 
-            var result = await _dataService.CreateValidatedUser(user);
+            var result = await _dataService.SaveUser(user);
 
             if (result.Success)
             {
@@ -166,7 +170,7 @@ namespace Appointments.App.ViewModels.User
 
                 try
                 {
-                    if (!IsImported)
+                    if (!IsImported && Id == 0)
                     {
                         var status = await Permissions.CheckStatusAsync<Permissions.ContactsWrite>();
 
@@ -220,29 +224,39 @@ namespace Appointments.App.ViewModels.User
 
         public async Task LoadUser(int id)
         {
-            var user = await _dataService.GetUser(id);
-
-            if(user != null)
+            if(id != 0)
             {
-                Id = user.Id;
-                Identification = user.Identification;
-                FirstName = user.Name;
-                LastName = user.LastName;
-                Phone = user.Phone;
-                BirthDate = user.BirthDate ?? DateTime.UtcNow;
-                SelectedUserType = user.UserType;
-                SelectedAppointmentType = user.DefaultAppointmentType;
-                IsEdit = true;
-            }
-            else
-            {
-                IsEdit = false;
-            }
+                var user = await _dataService.GetUser(id);
 
+                if (user != null)
+                {
+                    Id = user.Id;
+                    Identification = user.Identification;
+                    FirstName = user.Name;
+                    LastName = user.LastName;
+                    Phone = user.Phone;
+                    BirthDate = user.BirthDate ?? DateTime.UtcNow;
+                    SelectedUserType = user.UserType;
 
+                    if (user.AppointmentType != null)
+                    {
+                        SelectedAppointmentType = AppointmentTypes.Single(t => t.Id == user.AppointmentType.Id);
+                    }
+
+                    IsEdit = true;
+                }
+            }
         }
 
+        public async Task InitializeAppointmentTypes()
+        {
+            var appointmentTypes = await _dataService.GetAppointmentTypes();
 
+            foreach (var appointmentType in appointmentTypes)
+            {
+                AppointmentTypes.Add(appointmentType);
+            }
+        }
         #endregion
 
         #region Private Methods

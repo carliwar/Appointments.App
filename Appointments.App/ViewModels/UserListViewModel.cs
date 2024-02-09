@@ -30,7 +30,8 @@ namespace Appointments.App.ViewModels
         private string _userValue;
         private DateTime _givenDate;
         private ObservableCollection<Models.DataModels.User> _users;
-
+        private ObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
+        private Models.DataModels.AppointmentType _selectedAppointmentType;
         public int Id
         {
             get => _id;
@@ -54,7 +55,28 @@ namespace Appointments.App.ViewModels
             get => _users;
             set => SetProperty(ref _users, value);
         }
+        public ObservableCollection<Models.DataModels.AppointmentType> AppointmentTypes
+        {
+            get => _appointmentTypes;
+            set => SetProperty(ref _appointmentTypes, value);
+        }
+        public Models.DataModels.AppointmentType SelectedAppointmentType
+        {
+            get => _selectedAppointmentType;
+            set 
+            {
+                SetProperty(ref _selectedAppointmentType, value);
+                
+                var searchValue = string.Empty;
 
+                if (SelectedAppointmentType.Id != 0)
+                {
+                    searchValue = SelectedAppointmentType.Name;
+                }
+
+                InitializeUsers(searchValue).ConfigureAwait(false);
+            }
+        }
         #endregion        
 
         #region Commands
@@ -114,7 +136,27 @@ namespace Appointments.App.ViewModels
             }
             
         }
+        public async Task InitializeAppointmentTypes()
+        {
+            if (Users.Any())
+            {
+                AppointmentTypes.Add(new Models.DataModels.AppointmentType
+                {
+                    Name = "Todos"
+                });
 
+                var appointmentTypes = Users.Select(t => t.AppointmentType).Distinct();
+
+                foreach (var appointmentType in appointmentTypes)
+                {
+                    if (appointmentType != null)
+                    {
+                        AppointmentTypes.Add(appointmentType);
+                    }                    
+                }
+            }
+            
+        }
         #endregion
     }
 }

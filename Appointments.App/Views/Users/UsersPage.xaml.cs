@@ -13,9 +13,10 @@ namespace Appointments.App.Views.Users
             InitializeComponent();
         }        
 
-        protected override void OnAppearing()
-        {
-            (BindingContext as UserListViewModel)?.InitializeUsers();
+        protected override async void OnAppearing()
+        {            
+            await (BindingContext as UserListViewModel)?.InitializeUsers();            
+            await (BindingContext as UserListViewModel)?.InitializeAppointmentTypes();            
         }
 
     }

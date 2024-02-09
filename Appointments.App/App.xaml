@@ -34,7 +34,7 @@
                     </VisualStateGroupList>
                 </Setter>
             </Style>
-            <Style>
+            <Style TargetType="Label">
                 <Setter Property="FontAttributes" Value="Bold"></Setter>
                 <Setter Property="TextColor" Value="{StaticResource Secondary}"></Setter>
             </Style>

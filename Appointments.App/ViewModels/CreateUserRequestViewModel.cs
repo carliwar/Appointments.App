@@ -119,7 +119,7 @@ namespace Appointments.App.ViewModels
                 Phone = FormatPhone(Phone),
                 UserType = UserTypeEnum.Paciente
             };
-            var result = await _dataService.CreateValidatedUser(user);
+            var result = await _dataService.SaveUser(user);
 
             if (result.Success)
             {

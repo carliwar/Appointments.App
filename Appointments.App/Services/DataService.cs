@@ -4,15 +4,12 @@ using Appointments.App.Models;
 using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Models.TransactionModels;
-using Newtonsoft.Json;
 using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using static SQLite.SQLite3;
-using static Xamarin.Essentials.Permissions;
+
 
 namespace Appointments.App.Services
 {
@@ -26,21 +23,31 @@ namespace Appointments.App.Services
         }
 
         #region Users
-        public async Task<User> CreateUser(User user)
+
+        public async Task<User> GetUser(int id)
         {
-            await _database.CreateTablesAsync<User, User>();
+            await _database.CreateTableAsync<User>();
             var db = new Repository<User>(_database);
-            await db.Insert(user);
-            return user;
+            return await db.Get(id);
         }
 
-        public async Task<UserCreationResponse> CreateValidatedUser(User user)
+        public async Task<UserCreationResponse> SaveUser(User user)
         {
             var result = await ValidateUser(user);
 
             if (result.Success)
             {
-                await CreateUser(user);
+                await _database.CreateTableAsync<User>();
+                var db = new Repository<User>(_database);
+
+                if (user.Id == 0)
+                {                    
+                    await db.Insert(user);
+                }
+                else
+                {
+                    await db.Update(user);
+                }                
             }
 
             return result;
@@ -79,9 +86,9 @@ namespace Appointments.App.Services
 
         public async Task<IEnumerable<User>> GetUsersByType(UserTypeEnum userType, string searchText = "")
         {
-            await _database.CreateTablesAsync<User, User>();
+            await _database.CreateTableAsync<User>();
             var db = new Repository<User>(_database);
-            List<User> users = await db.Get();
+            List<User> users = await db.GetAllWithChildren();
 
             var formattedSearch = searchText?.ToLower();
 
@@ -90,6 +97,7 @@ namespace Appointments.App.Services
                 users = users.Where(
                     t =>  (t.Identification != null && t.Identification.ToLower().Contains(formattedSearch))
                     || (t.Name != null && t.Name.ToLower().Contains(formattedSearch))
+                    || (t.AppointmentType != null && t.AppointmentType.Name.ToLower().Contains(formattedSearch))
                     || (t.LastName != null && t.LastName.ToLower().Contains(formattedSearch))
                 ).ToList();
             }
@@ -224,6 +232,7 @@ namespace Appointments.App.Services
         }
         #endregion
 
+        #region Settings
         public async Task<Setting> CreateSetting(Setting setting)
         {
             await _database.CreateTablesAsync<Setting, Setting>();
@@ -242,7 +251,8 @@ namespace Appointments.App.Services
             appointments = appointments.Where(t => t.Catalog == catalog).ToList();
 
             return appointments;
-        }
+        } 
+        #endregion
 
         #region User Appointments
         public async Task<List<Appointment>> GetAppointmentsByUser(User user, DateTime? start, DateTime? end)
