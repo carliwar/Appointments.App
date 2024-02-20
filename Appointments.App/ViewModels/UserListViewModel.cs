@@ -145,11 +145,13 @@ namespace Appointments.App.ViewModels
                     Name = "Todos"
                 });
 
-                var appointmentTypes = Users.Select(t => t.AppointmentType).Distinct();
+                AppointmentTypes.Clear();
+
+                var appointmentTypes = Users.Select(t => t.AppointmentType).Distinct().ToList();
 
                 foreach (var appointmentType in appointmentTypes)
                 {
-                    if (appointmentType != null)
+                    if (appointmentType != null && !AppointmentTypes.Any(t => t.Id == appointmentType.Id))
                     {
                         AppointmentTypes.Add(appointmentType);
                     }                    

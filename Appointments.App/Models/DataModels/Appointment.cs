@@ -18,7 +18,7 @@ namespace Appointments.App.Models.DataModels
         public int UserId { get; set; }
         public bool Attended { get; set; }
 
-        [ManyToMany(typeof(AppointmentType))]
+        [ManyToMany(typeof(AppointmentAppointmentType), CascadeOperations = CascadeOperation.CascadeRead)]
         public List<AppointmentType> AppointmentTypes { get; set; }
 
         [Ignore]

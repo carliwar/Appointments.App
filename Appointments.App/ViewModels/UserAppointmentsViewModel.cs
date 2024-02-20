@@ -150,31 +150,15 @@ namespace Appointments.App.ViewModels
 
             foreach (var appointment in appointments)
             {
-                appointment.TextColor = Color.FromHex("#0c0c0c");
                 var appointmentColor = Color.FromHex("#2196F3");
 
-                switch (appointment.AppointmentType)
-                {             
-                    case AppointmentTypeEnum.Endodoncia:
-                        appointmentColor = Color.FromHex("#b3ffb3");
-                        break;
-                    case AppointmentTypeEnum.Ortodoncia:
-                        appointmentColor = Color.FromHex("#ffe6ff");
-                        break;
-                    default:
-                        appointmentColor = Color.FromHex("#cbdbe7");
-                        break;
-
-                }
-
-                if (!appointment.Attended)
+                if(appointment.AppointmentTypes.Any())
                 {
-                    appointmentColor = Color.FromHex("#800000");
-                    appointment.TextColor = Color.FromHex("#fefefe");
+                    appointmentColor = Color.FromHex(appointment.AppointmentTypes.FirstOrDefault().ColorCode);                    
                 }
-
 
                 appointment.AppointmentColor = appointmentColor;
+
 
                 Appointments.Add(appointment);
             }

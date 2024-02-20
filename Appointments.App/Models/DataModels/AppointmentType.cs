@@ -15,7 +15,7 @@ namespace Appointments.App.Models.DataModels
         public string ColorCode { get; set; }
         public bool Enabled { get; set; }
 
-        [ManyToMany(typeof(Appointment))]
+        [ManyToMany(typeof(AppointmentAppointmentType), CascadeOperations = CascadeOperation.CascadeRead)]
         public List<Appointment> Appointments { get; set; }
 
         [OneToMany]

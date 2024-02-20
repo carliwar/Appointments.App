@@ -18,7 +18,6 @@ namespace Appointments.App.Droid.Services
             bool isEventAdded = true;
             try
             {
-                var eventColor = (int) Utils.AppConstant.GetConstantValue<Resource.Color>(appointment.AppointmentType.ToString());
 
                 ContentResolver contentResolver = Android.App.Application.Context.ContentResolver;
 
@@ -31,7 +30,6 @@ namespace Appointments.App.Droid.Services
                 appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.Dtstart, AppConstant.GetDateTimeMS(appointment.StartDate));
                 appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.Dtend, AppConstant.GetDateTimeMS(appointment.EndDate));
                 appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.EventLocation, appointment.Location);
-                appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.EventColor, eventColor);
                 appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.AllDay, false);
 
                 Android.Net.Uri eventUri = contentResolver.Insert(CalendarContract.Events.ContentUri, appointmentCalendarEvent);

@@ -172,7 +172,7 @@ namespace Appointments.App.ViewModels
 
         private async Task CreateAppointment(object sender)
         {
-            if (SelectedType == null || SelectedUser == null)
+            if (SelectedUser == null)
             {
                 ShowError = true;
             }
@@ -193,7 +193,8 @@ namespace Appointments.App.ViewModels
                 AppointmentEnd = GivenDate.Date.Add(GivenTime).AddMinutes((double)SelectedAppointmentDuration.Name),
                 UserInformation = SelectedUser.UserFullName,
                 AppointmentType = SelectedType,
-                Attended = true
+                Attended = true,
+                AppointmentTypes = SelectedAppointmentTypes?.ToList()
             };
 
             var result = await _dataService.CreateValidatedAppointment(appointment);

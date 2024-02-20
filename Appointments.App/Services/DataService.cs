@@ -176,9 +176,24 @@ namespace Appointments.App.Services
 
             if (result.Success)
             {
-                await _database.CreateTablesAsync<Appointment, Appointment>();
-                var db = new Repository<Appointment>(_database);
-                await db.Insert(appointment);
+                await _database.CreateTableAsync<Appointment>();
+                var dbAppointment = new Repository<Appointment>(_database);
+                await dbAppointment.Insert(appointment);
+
+
+                await _database.CreateTableAsync<AppointmentAppointmentType>();
+                
+                var dbAppointmentType = new Repository<AppointmentAppointmentType>(_database);
+                
+                foreach(var appointmentType in appointment.AppointmentTypes)
+                {
+                    var newAppointmentAppointmentType = new AppointmentAppointmentType
+                    {
+                        AppointmentId = appointment.Id,
+                        AppointmentTypeId = appointmentType.Id,
+                    };
+                    await dbAppointmentType.Insert(newAppointmentAppointmentType);
+                }                
             }
 
             return result;
@@ -257,9 +272,9 @@ namespace Appointments.App.Services
         #region User Appointments
         public async Task<List<Appointment>> GetAppointmentsByUser(User user, DateTime? start, DateTime? end)
         {
-            await _database.CreateTablesAsync<Appointment, Appointment>();
+            await _database.CreateTableAsync<Appointment>();
             var db = new Repository<Appointment>(_database);
-            var appointments = await db.Get();
+            var appointments = await db.GetAllWithChildren();
 
             // get appointments from start and end dates
             appointments = appointments
