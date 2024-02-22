@@ -140,12 +140,12 @@ namespace Appointments.App.ViewModels
         {
             if (Users.Any())
             {
+                AppointmentTypes.Clear();
+
                 AppointmentTypes.Add(new Models.DataModels.AppointmentType
                 {
                     Name = "Todos"
                 });
-
-                AppointmentTypes.Clear();
 
                 var appointmentTypes = Users.Select(t => t.AppointmentType).Distinct().ToList();
 

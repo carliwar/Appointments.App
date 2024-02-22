@@ -10,6 +10,7 @@ namespace Appointments.App.Models
         public string UserInformation { get; set; }
         public string UserPhone { get; set; }
         public DateTime EventDate { get; set; }
+        public DateTime EndDate { get; set; }
         public Color AppointmentColor { get; set; }
         public string Time 
         {   get 

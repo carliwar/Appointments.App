@@ -201,9 +201,9 @@ namespace Appointments.App.Services
 
         public async Task<List<Appointment>> GetAppointments(DateTime start, DateTime end)
         {
-            await _database.CreateTablesAsync<Appointment, Appointment>();
+            await _database.CreateTableAsync<Appointment>();
             var db = new Repository<Appointment>(_database);
-            var appointments = await db.Get();
+            var appointments = await db.GetAllWithChildren();
 
             // get appointments from start and end dates
             appointments = appointments.Where(t =>
@@ -212,7 +212,7 @@ namespace Appointments.App.Services
 
             var users = await GetUserByIds(appointments.Select(t => t.UserId).ToList());
 
-            // set name from user foreach appointment
+            // set name from user for each appointment
             foreach (var appointment in appointments)
             {
                 appointment.UserName = users.FirstOrDefault(t => t.Id == appointment.UserId).UserFullName;

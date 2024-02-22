@@ -196,19 +196,6 @@ namespace Appointments.App.ViewModels
             foreach(Appointment appointment in appointments)
             {
                 var appointmentColor = Color.FromHex("#2196F3");
-                switch (appointment.AppointmentType)
-                {
-                    case AppointmentTypeEnum.Endodoncia:
-                        appointmentColor = Color.FromHex("#b3ffb3");
-                        break;
-                    case AppointmentTypeEnum.Ortodoncia:
-                        appointmentColor = Color.FromHex("#ffe6ff");
-                        break;
-                    default:
-                        appointmentColor = Color.FromHex("#cbdbe7");
-                        break;
-                }
-
                 var attendedFlag = string.Empty;
                 if (!appointment.Attended)
                 {
@@ -216,12 +203,20 @@ namespace Appointments.App.ViewModels
                     appointmentColor = Color.FromHex("800000");
                 }
 
+                var appointmentTypeString = string.Empty;
+
+                if (appointment.AppointmentTypes != null && appointment.AppointmentTypes.Any())
+                {
+                    appointmentTypeString = string.Join(", ", appointment.AppointmentTypes.Select(c => c.Name));
+                    appointmentColor = Color.FromHex(appointment.AppointmentTypes.FirstOrDefault().ColorCode);
+                }
+
                 results.Add(new EventModel 
                 { 
                     Id = appointment.Id,
                     UserInformation = appointment.UserName,
                     UserPhone = appointment.UserPhone,
-                    AppointmentType = $"{appointment.AppointmentType} {attendedFlag}",
+                    AppointmentType = $"{appointmentTypeString} {attendedFlag}",
                     EventDate = appointment.AppointmentDate,
                     AppointmentColor = appointmentColor
                 });

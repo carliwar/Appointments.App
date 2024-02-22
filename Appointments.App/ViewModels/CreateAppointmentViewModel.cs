@@ -52,12 +52,14 @@ namespace Appointments.App.ViewModels
         private ObservableCollection<AppointmentTypeEnum> _types = new ObservableCollection<AppointmentTypeEnum>();
         private ObservableCollection<AppointmentDuration> _appointmentDurations = new ObservableCollection<AppointmentDuration>();
         private MultiSelectObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new MultiSelectObservableCollection<Models.DataModels.AppointmentType>();
+        private ObservableCollection<Models.DataModels.AppointmentType> _filterAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
         private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
         private AppointmentTypeEnum? _selectedType;
         private AppointmentDuration _selectedAppointmentDuration;
         private Models.DataModels.User _selectedUser;
         private bool _showError = false;
         private int _appointmentTypesHeight;
+        private Models.DataModels.AppointmentType _selectedAppointmentTypeFilter;
 
         public int Id
         {
@@ -106,6 +108,12 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _appointmentTypes, value);
         }
 
+        public ObservableCollection<Models.DataModels.AppointmentType> FilterAppointmentTypes
+        {
+            get => _filterAppointmentTypes;
+            set => SetProperty(ref _filterAppointmentTypes, value);
+        }
+
         public ObservableCollection<Models.DataModels.AppointmentType> SelectedAppointmentTypes
         {
             get => _selectedAppointmentTypes;
@@ -138,20 +146,37 @@ namespace Appointments.App.ViewModels
             get => _appointmentTypesHeight;
             set => SetProperty(ref _appointmentTypesHeight, value);
         }
+        public Models.DataModels.AppointmentType SelectedAppointmentTypeFilter
+        {
+            get => _selectedAppointmentTypeFilter;
+            set
+            {
+                SetProperty(ref _selectedAppointmentTypeFilter, value);
+
+                var searchValue = string.Empty;
+
+                if (SelectedAppointmentTypeFilter.Id != 0)
+                {
+                    searchValue = SelectedAppointmentTypeFilter.Name;
+                }
+
+                SearchUserAsync(searchValue);
+            }
+        }
         #endregion
 
         #region Commands
         //SearchUserCommand
-        public ICommand SearchUserCommand => new Command(async (item) => await SearchUserAsync(item));
+        public ICommand SearchUserCommand => new Command((item) => SearchUserAsync(item));
         public ICommand CreateAppointmentCommand => new Command(async (item) => await CreateAppointment(item));
         public ICommand FillSelectedAppointmentTypesCommand => new Command(async (item) => await FillSelectedAppointmentTypes(item));
 
-        private async Task SearchUserAsync(object sender)
+        private void SearchUserAsync(object sender)
         {
 
             if (sender == null)
             {
-                await LoadUsers();
+                Task.Run(() => LoadUsers()).Wait();
             }
             else
             {
@@ -166,7 +191,7 @@ namespace Appointments.App.ViewModels
                     searchText = @string;
                 }
 
-                await LoadUsers(searchText);
+                Task.Run(() => LoadUsers(searchText)).Wait();
             }
         }
 
@@ -308,9 +333,18 @@ namespace Appointments.App.ViewModels
         {
             var appointmentTypes = await _dataService.GetAppointmentTypes();
 
+            if (appointmentTypes.Any())
+            {
+                FilterAppointmentTypes.Add(new Models.DataModels.AppointmentType
+                {
+                    Name = "Todos"
+                });
+            }
+
             foreach(var appointmentType in appointmentTypes)
             {
                 AppointmentTypes.Add(appointmentType);
+                FilterAppointmentTypes.Add(appointmentType);
             }
 
             if(appointmentTypes.Count > 3)

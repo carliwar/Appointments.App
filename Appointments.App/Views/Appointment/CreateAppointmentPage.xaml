@@ -13,14 +13,14 @@
         <ScrollView>
             <StackLayout>
                 <Frame BackgroundColor="{StaticResource Primary}" Padding="10" CornerRadius="0">
-                    <Label Text="Nueva Cita" HorizontalTextAlignment="Start" TextColor="White" FontSize="18"/>
+                    <Label Text="Nueva Cita" HorizontalTextAlignment="Start" TextColor="{StaticResource WhiteText}" FontSize="18"/>
                 </Frame>
                 <Frame BackgroundColor="{StaticResource ErrorText}" IsVisible="{Binding ShowError}">
-                    <Label Text="Por favor llena todos los campos requeridos!" HorizontalTextAlignment="Start" TextColor="White" FontSize="18"/>
+                    <Label Text="Por favor llena todos los campos requeridos!" HorizontalTextAlignment="Start" TextColor="{StaticResource WhiteText}" FontSize="18"/>
                 </Frame>
-                <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
-                    <StackLayout>                        
-                        <Label Padding="1" Text="Datos de la Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
+                <Frame BackgroundColor="{StaticResource Tertiary}" Margin="5,0,0,0" CornerRadius="0">
+                    <StackLayout>
+                        <Label Padding="1" Text="Datos de la Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
                         <DatePicker
                             TextColor="{StaticResource Primary}"                    
                             Date="{Binding GivenDate}"
@@ -31,7 +31,7 @@
                             Time="{Binding GivenTime}"
                             TextColor="{StaticResource Primary}">
                         </TimePicker>
-                        <Label Padding="1" Text="Tipos de Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
+                        <Label Padding="1" Text="Tipos de Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
                         <ListView 
                             BackgroundColor="{StaticResource Tertiary}"
                             HeightRequest="100"
@@ -69,35 +69,60 @@
 
                     </StackLayout>
                 </Frame>
-                <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
+                <Frame BackgroundColor="{StaticResource Tertiary}" Margin="5,0,0,0" CornerRadius="0">
                     <StackLayout>
-                        <Label Padding="1" Text="Datos del paciente" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
+                        <Label Padding="1" Text="Datos del paciente" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
 
-                        <Entry x:Name="SearchUser"
-                       PlaceholderColor="#5084ad"
-                       Placeholder="Buscar por CI ó Nombre ó Apellido"
-                       ReturnCommand="{Binding SearchUserCommand}"
-                       ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
-                            <Entry.Behaviors>
-                                <xct:EventToCommandBehavior
-                        EventName="TextChanged"
-                        Command="{Binding SearchUserCommand}"
-                        />
-                            </Entry.Behaviors>
-                        </Entry>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Picker Grid.Column="0"
+                                TitleColor="{StaticResource Secondary}"
+                                Title="Filtrar por Especialidad"
+                                ItemsSource="{Binding FilterAppointmentTypes}"
+                                SelectedItem="{Binding SelectedAppointmentTypeFilter}"            
+                                ItemDisplayBinding="{Binding Name}">                                
+                            </Picker>
+                            <Entry
+                                Grid.Column="1"
+                                x:Name="SearchUser"
+                                PlaceholderColor="{StaticResource Secondary}"
+                                Placeholder="Filtrar por Paciente"
+                                ReturnCommand="{Binding SearchUserCommand}"
+                                ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
+                                <Entry.Behaviors>
+                                    <xct:EventToCommandBehavior
+                                        EventName="TextChanged"
+                                        Command="{Binding SearchUserCommand}"/>
+                                </Entry.Behaviors>
+                            </Entry>
+                        </Grid>
 
-                        <Picker 
-                    TextColor="{StaticResource Primary}"
-                    BackgroundColor="#e9f0f7"
-                    Title="Escoja el paciente *Requerido"                    
-                    ItemsSource="{Binding Users}"
-                    SelectedItem="{Binding SelectedUser}"
-                    ItemDisplayBinding="{Binding UserFullName}">
-                        </Picker>
+                        <ListView 
+                            BackgroundColor="{StaticResource Tertiary}"
+                            HeightRequest="100"
+                            HasUnevenRows="true"
+                            SeparatorVisibility="Default" 
+                            ItemsSource="{Binding Users}"
+                            SelectedItem="{Binding SelectedUser}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <StackLayout Orientation="Vertical" Padding="20,0,20,0">
+                                            <Label Text="{Binding UserFullName}" FontSize="17" TextColor="{StaticResource Primary}"></Label>
+                                        </StackLayout>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </StackLayout>
                 </Frame>
-                <Frame BackgroundColor="#e9f0f7" Margin="5,0,0,0" CornerRadius="0">
-
+                <!--<Frame BackgroundColor="{StaticResource Tertiary}" Margin="5,0,0,0" CornerRadius="0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -107,23 +132,19 @@
                             <ColumnDefinition />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Padding="1" Text="Notas" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="#5084ad" FontSize="18"></Label>
-                        <Switch Grid.Column="1" x:Name="AddNotesSwitch"
-                    IsToggled="False">
-                        </Switch>
+                        <Label Grid.Column="0" Padding="1" Text="Notas" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
+                        <Switch Grid.Column="1" x:Name="AddNotesSwitch" IsToggled="False"></Switch>
                         <StackLayout Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding Source={x:Reference AddNotesSwitch}, Path=IsToggled}">
                             <Editor
-                PlaceholderColor="#5084ad"
-                TextColor="#2196F3"
-                AutoSize="TextChanges"
-                MaxLength="100"                    
-                Placeholder="Notas de la cita">
+                                PlaceholderColor="{StaticResource Secondary}"
+                                TextColor="{StaticResource Primary}"
+                                AutoSize="TextChanges"
+                                MaxLength="100"
+                                Placeholder="Notas de la cita">
                             </Editor>
                         </StackLayout>
-
                     </Grid>
-                </Frame>
-
+                </Frame>-->
             </StackLayout>
         </ScrollView>
         <StackLayout>
@@ -132,7 +153,7 @@
                 Margin="5"
                 Text="Guardar Cita" 
                 BackgroundColor="{StaticResource Primary}"
-                TextColor="#fefefe"
+                TextColor="{StaticResource WhiteText}"
                 Command="{Binding CreateAppointmentCommand}"
                 VerticalOptions="EndAndExpand"/>
         </StackLayout>
