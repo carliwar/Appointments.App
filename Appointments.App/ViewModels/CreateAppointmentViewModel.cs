@@ -333,6 +333,9 @@ namespace Appointments.App.ViewModels
 
         private async Task InitializeAppointmentTypes()
         {
+            AppointmentTypes.Clear();
+            FilterAppointmentTypes.Clear();
+
             var appointmentTypes = await _dataService.GetAppointmentTypes();
 
             if (appointmentTypes.Any())
