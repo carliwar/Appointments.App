@@ -217,9 +217,9 @@ namespace Appointments.App.ViewModels
                 AppointmentDate = GivenDate.Date.Add(GivenTime),
                 AppointmentEnd = GivenDate.Date.Add(GivenTime).AddMinutes((double)SelectedAppointmentDuration.Name),
                 UserInformation = SelectedUser.UserFullName,
-                AppointmentType = SelectedType,
                 Attended = true,
-                AppointmentTypes = SelectedAppointmentTypes?.ToList()
+                AppointmentTypes = SelectedAppointmentTypes?.ToList(),
+                UserPhone = SelectedUser.Phone
             };
 
             var result = await _dataService.CreateValidatedAppointment(appointment);
@@ -289,13 +289,15 @@ namespace Appointments.App.ViewModels
         }
         private static async Task CreateDeviceAppointment(Appointment appointment)
         {
+            var appointmentTypes = string.Join(", ", appointment.AppointmentTypes.Select(t => t.Name));
+
             var androidAppointment = new AndroidAppointment
             {
-                Title = $"{appointment.AppointmentType}: {appointment.UserInformation} Tel: {appointment.UserPhone}",
+                Title = $"{appointmentTypes}: {appointment.UserInformation} Tel: {appointment.UserPhone}",
                 StartDate = appointment.AppointmentDate,
                 EndDate = appointment.AppointmentEnd,
                 Location = ConstantValues.APPOINTMENT_BRAND,
-                AppointmentType = appointment.AppointmentType,
+                AppointmentTypes = appointmentTypes,
                 ReminderMinutes = 10
             };
 

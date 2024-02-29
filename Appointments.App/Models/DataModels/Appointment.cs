@@ -3,6 +3,7 @@ using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Appointments.App.Models.DataModels
@@ -25,11 +26,19 @@ namespace Appointments.App.Models.DataModels
         public string AppointmentInformation { 
             get {
                 var attendedFlag = string.Empty;
+
+                var appointmentTypes = string.Empty;
+
                 if (!Attended)
                 {
                     attendedFlag = $"{ConstantValues.NOT_ATTENDED} **";
                 }
-                return $"{attendedFlag} {AppointmentDate:dd/MM/yyyy} {AppointmentDate:HH:mm} - {AppointmentType}"; 
+                if(AppointmentTypes != null && AppointmentTypes.Any())
+                {
+                    appointmentTypes = string.Join(", ", AppointmentTypes.Select(t => t.Name));
+                }
+
+                return $"{attendedFlag} {AppointmentDate:dd/MM/yyyy} {AppointmentDate:HH:mm} - {appointmentTypes}"; 
             } 
         }
 
@@ -53,7 +62,7 @@ namespace Appointments.App.Models.DataModels
         public DateTime EndDate { get; set; }
         public string Description { get; set; }
         public string Location { get; set; }
-        public AppointmentTypeEnum? AppointmentType { get; set; }
+        public string AppointmentTypes { get; set; }
         public int ReminderMinutes { get; set; }
     }
 }
