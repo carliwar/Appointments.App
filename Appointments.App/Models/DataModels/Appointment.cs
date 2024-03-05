@@ -14,7 +14,6 @@ namespace Appointments.App.Models.DataModels
         public int Id { get; set; }
         public DateTime AppointmentDate { get; set; }
         public DateTime AppointmentEnd { get; set; }
-        public AppointmentTypeEnum? AppointmentType { get; set; }
         public string UserInformation { get; set; }
         public int UserId { get; set; }
         public bool Attended { get; set; }

@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:model="clr-namespace:Appointments.App.ViewModels"
+             xmlns:model="clr-namespace:Appointments.App.ViewModels.Appointments"             
              xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
              xmlns:lv="clr-namespace:Xamarin.Forms.MultiSelectListView;assembly=Xamarin.Forms.MultiSelectListView"
-             x:Name="CreateAppointmentViewModel"
-             x:Class="Appointments.App.Views.Appointment.CreateAppointmentPage">
+             x:Name="AppointmentViewModel"
+             x:Class="Appointments.App.Views.Appointments.AppointmentDetailPage">
     <ContentPage.BindingContext>
-        <model:CreateAppointmentViewModel />
+        <model:AppointmentViewModel />
     </ContentPage.BindingContext>
     <StackLayout>
         <ScrollView>
@@ -22,27 +22,27 @@
                     <StackLayout>
                         <Label Padding="1" Text="Datos de la Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
                         <DatePicker
-                            TextColor="{StaticResource Primary}"                    
-                            Date="{Binding GivenDate}"
-                            MinimumDate="{Binding Today}"
-                            Format="MM/dd/yyyy">
+                        TextColor="{StaticResource Primary}"                    
+                        Date="{Binding GivenDate}"
+                        MinimumDate="{Binding Today}"
+                        Format="MM/dd/yyyy">
                         </DatePicker>
                         <TimePicker
-                            Time="{Binding GivenTime}"
-                            TextColor="{StaticResource Primary}">
+                        Time="{Binding GivenTime}"
+                        TextColor="{StaticResource Primary}">
                         </TimePicker>
                         <Label Padding="1" Text="Tipos de Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
                         <ListView 
-                            BackgroundColor="{StaticResource Tertiary}"
-                            HeightRequest="100"
-                            HasUnevenRows="true"
-                            SeparatorVisibility="Default" 
-                            ItemsSource="{Binding AppointmentTypes}"                           
-                            lv:MultiSelect.Enable="true">
+                        BackgroundColor="{StaticResource Tertiary}"
+                        HeightRequest="100"
+                        HasUnevenRows="true"
+                        SeparatorVisibility="Default" 
+                        ItemsSource="{Binding AppointmentTypes}"                           
+                        lv:MultiSelect.Enable="true">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <lv:SelectableCell x:Name="SelectableCell" >
-                                        <lv:SelectableCell.CheckView>                                            
+                                        <lv:SelectableCell.CheckView>
                                             <Image Source="select.png" WidthRequest="30" HeightRequest="30"></Image>
                                         </lv:SelectableCell.CheckView>
                                         <lv:SelectableCell.DataView>
@@ -56,16 +56,16 @@
                             <ListView.Behaviors>
                                 <lv:SelectedItemBehavior Command="{Binding FillSelectedAppointmentTypesCommand}"/>
                             </ListView.Behaviors>
-                        </ListView>                        
+                        </ListView>
                         <Picker 
-                            TitleColor="{StaticResource Primary}"
-                            TextColor="{StaticResource Secondary}"
-                            BackgroundColor="{StaticResource Tertiary}"
-                            Title="Duración de la cita"                    
-                            ItemsSource="{Binding AppointmentDurations}"
-                            SelectedItem="{Binding SelectedAppointmentDuration}"
-                            ItemDisplayBinding="{Binding Description}">
-                        </Picker>                       
+                        TitleColor="{StaticResource Primary}"
+                        TextColor="{StaticResource Secondary}"
+                        BackgroundColor="{StaticResource Tertiary}"
+                        Title="Duración de la cita"                    
+                        ItemsSource="{Binding AppointmentDurations}"
+                        SelectedItem="{Binding SelectedAppointmentDuration}"
+                        ItemDisplayBinding="{Binding Description}">
+                        </Picker>
 
                     </StackLayout>
                 </Frame>
@@ -82,34 +82,34 @@
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Picker Grid.Column="0"
-                                TitleColor="{StaticResource Secondary}"
-                                Title="Filtrar por Especialidad"
-                                ItemsSource="{Binding FilterAppointmentTypes}"
-                                SelectedItem="{Binding SelectedAppointmentTypeFilter}"            
-                                ItemDisplayBinding="{Binding Name}">                                
+                            TitleColor="{StaticResource Secondary}"
+                            Title="Filtrar por Especialidad"
+                            ItemsSource="{Binding FilterAppointmentTypes}"
+                            SelectedItem="{Binding SelectedAppointmentTypeFilter}"            
+                            ItemDisplayBinding="{Binding Name}">
                             </Picker>
                             <Entry
-                                Grid.Column="1"
-                                x:Name="SearchUser"
-                                PlaceholderColor="{StaticResource Secondary}"
-                                Placeholder="Filtrar por Paciente"
-                                ReturnCommand="{Binding SearchUserCommand}"
-                                ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
+                            Grid.Column="1"
+                            x:Name="SearchUser"
+                            PlaceholderColor="{StaticResource Secondary}"
+                            Placeholder="Filtrar por Paciente"
+                            ReturnCommand="{Binding SearchUserCommand}"
+                            ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
                                 <Entry.Behaviors>
                                     <xct:EventToCommandBehavior
-                                        EventName="TextChanged"
-                                        Command="{Binding SearchUserCommand}"/>
+                                    EventName="TextChanged"
+                                    Command="{Binding SearchUserCommand}"/>
                                 </Entry.Behaviors>
                             </Entry>
                         </Grid>
 
                         <ListView 
-                            BackgroundColor="{StaticResource Tertiary}"
-                            HeightRequest="100"
-                            HasUnevenRows="true"
-                            SeparatorVisibility="Default" 
-                            ItemsSource="{Binding Users}"
-                            SelectedItem="{Binding SelectedUser}">
+                        BackgroundColor="{StaticResource Tertiary}"
+                        HeightRequest="100"
+                        HasUnevenRows="true"
+                        SeparatorVisibility="Default" 
+                        ItemsSource="{Binding Users}"
+                        SelectedItem="{Binding SelectedUser}">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
@@ -123,28 +123,28 @@
                     </StackLayout>
                 </Frame>
                 <!--<Frame BackgroundColor="{StaticResource Tertiary}" Margin="5,0,0,0" CornerRadius="0">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" Padding="1" Text="Notas" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
-                        <Switch Grid.Column="1" x:Name="AddNotesSwitch" IsToggled="False"></Switch>
-                        <StackLayout Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding Source={x:Reference AddNotesSwitch}, Path=IsToggled}">
-                            <Editor
-                                PlaceholderColor="{StaticResource Secondary}"
-                                TextColor="{StaticResource Primary}"
-                                AutoSize="TextChanges"
-                                MaxLength="100"
-                                Placeholder="Notas de la cita">
-                            </Editor>
-                        </StackLayout>
-                    </Grid>
-                </Frame>-->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Padding="1" Text="Notas" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
+                    <Switch Grid.Column="1" x:Name="AddNotesSwitch" IsToggled="False"></Switch>
+                    <StackLayout Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding Source={x:Reference AddNotesSwitch}, Path=IsToggled}">
+                        <Editor
+                            PlaceholderColor="{StaticResource Secondary}"
+                            TextColor="{StaticResource Primary}"
+                            AutoSize="TextChanges"
+                            MaxLength="100"
+                            Placeholder="Notas de la cita">
+                        </Editor>
+                    </StackLayout>
+                </Grid>
+            </Frame>-->
             </StackLayout>
         </ScrollView>
         <StackLayout>
@@ -154,7 +154,7 @@
                 Text="Guardar Cita" 
                 BackgroundColor="{StaticResource Primary}"
                 TextColor="{StaticResource WhiteText}"
-                Command="{Binding CreateAppointmentCommand}"
+                Command="{Binding SaveAppointmentCommand}"
                 VerticalOptions="EndAndExpand"/>
         </StackLayout>
     </StackLayout>

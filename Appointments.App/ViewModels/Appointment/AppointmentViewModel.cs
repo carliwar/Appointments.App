@@ -2,35 +2,33 @@
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using Plugin.Calendars;
-using Plugin.Calendars.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Essentials;
-using Xamarin.Forms;
 using Xamarin.Forms.MultiSelectListView;
+using Xamarin.Forms;
+using Plugin.Calendars.Abstractions;
+using Appointments.App.Utils;
 
-namespace Appointments.App.ViewModels
+namespace Appointments.App.ViewModels.Appointments
 {
-    public class CreateAppointmentViewModel : BasePageViewModel
+    public class AppointmentViewModel : BasePageViewModel
     {
-        public CreateAppointmentViewModel() : base()
+        public AppointmentViewModel() : base()
         {
             _dataService = new DataService();
-
-            Types = new ObservableCollection<AppointmentTypeEnum>(Enum.GetValues(typeof(AppointmentTypeEnum)).OfType<AppointmentTypeEnum>().ToList());
-
-
-            foreach (AppointmentDurationEnum enumValue in Enum.GetValues(typeof(Models.Enum.AppointmentDurationEnum)))
+            
+            foreach (AppointmentDurationEnum enumValue in Enum.GetValues(typeof(AppointmentDurationEnum)))
             {
-                string customString = GetEnumDescription(enumValue);
+                string customString = EnumDescriptor.GetEnumDescription(enumValue);
 
-                var appointmentDuration = new Models.DataModels.AppointmentDuration
+                var appointmentDuration = new AppointmentDuration
                 {
                     Name = enumValue,
                     Description = customString
@@ -53,12 +51,10 @@ namespace Appointments.App.ViewModels
         private DateTime _givenDate;
         private TimeSpan _givenTime;
         private ObservableCollection<Models.DataModels.User> _users = new ObservableCollection<Models.DataModels.User>();
-        private ObservableCollection<AppointmentTypeEnum> _types = new ObservableCollection<AppointmentTypeEnum>();
         private ObservableCollection<AppointmentDuration> _appointmentDurations = new ObservableCollection<AppointmentDuration>();
         private MultiSelectObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new MultiSelectObservableCollection<Models.DataModels.AppointmentType>();
         private ObservableCollection<Models.DataModels.AppointmentType> _filterAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
-        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
-        private AppointmentTypeEnum? _selectedType;
+        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();        
         private AppointmentDuration _selectedAppointmentDuration;
         private Models.DataModels.User _selectedUser;
         private bool _showError = false;
@@ -95,12 +91,6 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _users, value);
         }
 
-        public ObservableCollection<AppointmentTypeEnum> Types
-        {
-            get => _types;
-            set => SetProperty(ref _types, value);
-        }
-
         public ObservableCollection<AppointmentDuration> AppointmentDurations
         {
             get => _appointmentDurations;
@@ -124,11 +114,6 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _selectedAppointmentTypes, value);
         }
 
-        public AppointmentTypeEnum? SelectedType
-        {
-            get => _selectedType;
-            set => SetProperty(ref _selectedType, value);
-        }
         public AppointmentDuration SelectedAppointmentDuration
         {
             get => _selectedAppointmentDuration;
@@ -174,7 +159,7 @@ namespace Appointments.App.ViewModels
         #region Commands
         //SearchUserCommand
         public ICommand SearchUserCommand => new Command((item) => SearchUserAsync(item));
-        public ICommand CreateAppointmentCommand => new Command(async (item) => await CreateAppointment(item));
+        public ICommand SaveAppointmentCommand => new Command(async (item) => await SaveAppointment(item));
         public ICommand FillSelectedAppointmentTypesCommand => new Command(async (item) => await FillSelectedAppointmentTypes(item));
 
         private void SearchUserAsync(object sender)
@@ -201,7 +186,7 @@ namespace Appointments.App.ViewModels
             }
         }
 
-        private async Task CreateAppointment(object sender)
+        private async Task SaveAppointment(object sender)
         {
             if (SelectedUser == null)
             {
@@ -269,7 +254,7 @@ namespace Appointments.App.ViewModels
 
         private async Task FillSelectedAppointmentTypes(object sender)
         {
-            if(sender is Models.DataModels.AppointmentType selectedAppointmentType)
+            if (sender is Models.DataModels.AppointmentType selectedAppointmentType)
             {
                 SelectedAppointmentDuration = AppointmentDurations.SingleOrDefault(t => t.Name == selectedAppointmentType.DefaultDuration);
 
@@ -290,14 +275,14 @@ namespace Appointments.App.ViewModels
                 {
                     SelectedAppointmentDuration = null;
                 }
-                
-            }            
+
+            }
         }
-        private async Task CreateDeviceAppointment(Appointment appointment)
+        private async Task CreateDeviceAppointment(Models.DataModels.Appointment appointment)
         {
 
             var account = await _dataService.GetSettingByNameAndCatalog("email", "basic");
-            
+
             if (account != null)
             {
                 EmailAccount = account.Value;
@@ -307,27 +292,28 @@ namespace Appointments.App.ViewModels
 
             var appCalendar = calendars.FirstOrDefault(t => t.Name == EmailAccount);
 
-            //if (appCalendar == null)
-            //{
-            //    await CrossCalendars.Current.CreateCalendarAsync(ConstantValues.APPOINTMENT_BRAND, ConstantValues.BRAND_MAIN_COLOR);
-            //    calendars = await CrossCalendars.Current.GetCalendarsAsync();
-            //    appCalendar = calendars.FirstOrDefault(t => t.Name == ConstantValues.APPOINTMENT_BRAND);
-            //}
-
-            var appointmentTypes = string.Join(", ", appointment.AppointmentTypes.Select(t => t.Name));
-
-            var androidAppointment = new AndroidAppointment
+            if (appCalendar == null)
             {
-                Title = $"{appointmentTypes}: {appointment.UserInformation} Tel: {appointment.UserPhone}",
-                StartDate = appointment.AppointmentDate,
-                EndDate = appointment.AppointmentEnd,
-                Location = ConstantValues.APPOINTMENT_BRAND,
-                AppointmentTypes = appointmentTypes,
-                ReminderMinutes = 10,
-                CalendarID = Convert.ToInt32(appCalendar.ExternalID)
-            };
+                await Application.Current.MainPage.DisplayAlert("Advertencia!", "Se generó la cita en la app. Pero no se pueden crear citas en el calendario sin configurar el Email en Configuraciones.", "Ok");
+                await Application.Current.MainPage.Navigation.PopAsync();
+            }
+            else
+            {
+                var appointmentTypes = string.Join(", ", appointment.AppointmentTypes.Select(t => t.Name));
 
-            await DependencyService.Get<IDeviceCalendarService>().AddEventToCalendar(androidAppointment);
+                var androidAppointment = new AndroidAppointment
+                {
+                    Title = $"{appointmentTypes}: {appointment.UserInformation} Tel: {appointment.UserPhone}",
+                    StartDate = appointment.AppointmentDate,
+                    EndDate = appointment.AppointmentEnd,
+                    Location = ConstantValues.APPOINTMENT_BRAND,
+                    AppointmentTypes = appointmentTypes,
+                    ReminderMinutes = 10,
+                    CalendarID = Convert.ToInt32(appCalendar.ExternalID)
+                };
+
+                await DependencyService.Get<IDeviceCalendarService>().AddEventToCalendar(androidAppointment);
+            }
         }
 
         public async Task LoadUsers(string searchText = "", Models.DataModels.User user = null)
@@ -372,13 +358,13 @@ namespace Appointments.App.ViewModels
                 });
             }
 
-            foreach(var appointmentType in appointmentTypes)
+            foreach (var appointmentType in appointmentTypes)
             {
                 AppointmentTypes.Add(appointmentType);
                 FilterAppointmentTypes.Add(appointmentType);
             }
 
-            if(appointmentTypes.Count > 3)
+            if (appointmentTypes.Count > 3)
             {
                 AppointmentTypesHeight = 125;
             }
@@ -390,15 +376,25 @@ namespace Appointments.App.ViewModels
 
         #endregion
 
-        private string GetEnumDescription(Models.Enum.AppointmentDurationEnum value)
+        public async Task LoadAppointment(int id)
         {
-            var fieldInfo = value.GetType().GetField(value.ToString());
+            if (id != 0) 
+            {
+                var appointment = await _dataService.GetAppointment(id);
 
-            var attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(
-                typeof(DescriptionAttribute), false);
+                Id = appointment.Id;
+                GivenDate = appointment.AppointmentDate.Date;
+                GivenTime = appointment.AppointmentDate.TimeOfDay;
+                var appointmentDuration = appointment.AppointmentEnd - appointment.AppointmentDate;
+                var appointmentDurationEnum = (AppointmentDurationEnum) appointmentDuration.TotalMinutes;
+                SelectedAppointmentDuration = AppointmentDurations.First(t => t.Name == appointmentDurationEnum);
+                SelectedUser = Users.First(t => t.Id == appointment.UserId);
 
-            return attributes.Length > 0 ? attributes[0].Description : value.ToString();
+                foreach (var appointmentType in appointment.AppointmentTypes)
+                {
+                    SelectedAppointmentTypes.Add(appointmentType);
+                }
+            }
         }
     }
-
 }

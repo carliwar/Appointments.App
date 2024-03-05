@@ -2,7 +2,7 @@
 using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using Appointments.App.Views.Appointment;
+using Appointments.App.Views.Appointments;
 using Appointments.App.Views.Settings.AppointmentType;
 using Appointments.App.Views.Users;
 using System;
@@ -166,7 +166,7 @@ namespace Appointments.App.ViewModels
 
         public async Task NewAppointment()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new CreateAppointmentPage(DateTime.Now, SelectedUser));
+            await Application.Current.MainPage.Navigation.PushAsync(new AppointmentDetailPage(DateTime.Now, SelectedUser));
         }
 
         private async Task ExecuteContactUserCommand(object item)

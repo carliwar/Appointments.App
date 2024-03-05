@@ -2,7 +2,7 @@
 using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using Appointments.App.Views.Appointment;
+using Appointments.App.Views.Appointments;
 using Appointments.App.Views.Settings;
 using System;
 using System.Collections.Generic;
@@ -112,7 +112,7 @@ namespace Appointments.App.ViewModels
             if (item is EventModel eventModel)
             {
                 //create a list of strings
-                var options = new List<string> { ConstantValues.MARK_NOT_ATTENDED_OPTION };
+                var options = new List<string> { ConstantValues.EDIT_APPOINTMENT, ConstantValues.MARK_NOT_ATTENDED_OPTION };
 
                 if(eventModel.UserPhone != null)
                 {
@@ -129,6 +129,9 @@ namespace Appointments.App.ViewModels
 
                 switch (action)
                 {
+                    case ConstantValues.EDIT_APPOINTMENT:
+                        await Application.Current.MainPage.Navigation.PushAsync(new AppointmentDetailPage(SelectedDate.Value, appointmentId: eventModel.Id));
+                        break;
                     case ConstantValues.CONTACT_WHATSAPP_OPTION:
                         await Browser.OpenAsync(new Uri($"https://wa.me/{phone}"), BrowserLaunchMode.SystemPreferred);
                         break;
@@ -178,7 +181,7 @@ namespace Appointments.App.ViewModels
             {
                 SelectedDate = DateTime.Today;
             }
-            await Application.Current.MainPage.Navigation.PushAsync(new CreateAppointmentPage(SelectedDate.Value));
+            await Application.Current.MainPage.Navigation.PushAsync(new AppointmentDetailPage(SelectedDate.Value));
         }
 
         private async Task CallPhoneClicked(object phone)

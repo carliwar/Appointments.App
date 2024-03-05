@@ -1,7 +1,7 @@
 ﻿using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using Appointments.App.Views.Appointment;
+using Appointments.App.Views.Appointments;
 using Appointments.App.Views.UserAppointment;
 using Appointments.App.Views.Users;
 using System;

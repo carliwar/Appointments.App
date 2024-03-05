@@ -149,9 +149,9 @@ namespace Appointments.App.Services
         #region Appointments
         public async Task<Appointment> GetAppointment(int id)
         {
-            await _database.CreateTablesAsync<Appointment, Appointment>();
+            await _database.CreateTableAsync<Appointment>();
             var db = new Repository<Appointment>(_database);
-            var appointment = await db.Get(t => t.Id == id);
+            var appointment = await db.Get(id);
             return appointment;
         }
         public async Task<Appointment> CreateAppointment(Appointment appointment)
