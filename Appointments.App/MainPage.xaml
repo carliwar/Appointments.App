@@ -12,13 +12,7 @@
     </ContentPage.BindingContext>
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding TodayCommand}" Text="HOY" />
-        <ToolbarItem Command="{Binding SettingsCommand}" Order="Primary">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource 
-                    FontFamily="{StaticResource FontAwesomeSolid}" Size="Subtitle" Glyph="{x:Static fontawesome:FontAwesomeIcons.Gear}" />
-            </ToolbarItem.IconImageSource>
-
-        </ToolbarItem>
+        <ToolbarItem Command="{Binding SettingsCommand}" Order="Primary" IconImageSource="settings.png"/>
     </ContentPage.ToolbarItems>
     <StackLayout>
         <plugin:Calendar            
@@ -75,7 +69,7 @@
                                 HorizontalOptions="CenterAndExpand"
                                 HorizontalTextAlignment="Center"
                                 TextColor="{StaticResource Primary}"
-                                Text="&#x21E6;"
+                                Text="&lt;"
                                 VerticalOptions="CenterAndExpand"
                                 VerticalTextAlignment="Center" />
                             <Frame.GestureRecognizers>
@@ -114,7 +108,7 @@
                                 HorizontalOptions="CenterAndExpand"
                                 HorizontalTextAlignment="Center"
                                 TextColor="{StaticResource Primary}"
-                                Text="&#x21E8;"
+                                Text="&gt;"
                                 VerticalOptions="CenterAndExpand"
                                 VerticalTextAlignment="Center" />
 

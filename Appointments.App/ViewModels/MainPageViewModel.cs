@@ -104,7 +104,7 @@ namespace Appointments.App.ViewModels
 
         private async Task GoToSettings()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new AppointmentTypesPage());
+            await Application.Current.MainPage.Navigation.PushAsync(new SettingsPage());
         }
 
         private async Task ExecuteEventSelectedCommand(object item)

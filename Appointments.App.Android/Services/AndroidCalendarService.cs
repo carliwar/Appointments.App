@@ -22,7 +22,7 @@ namespace Appointments.App.Droid.Services
                 ContentResolver contentResolver = Android.App.Application.Context.ContentResolver;
 
                 ContentValues appointmentCalendarEvent = new ContentValues();
-                appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.CalendarId, 1); // Default calendar
+                appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.CalendarId, appointment.CalendarID); // Default calendar
                 appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.Title, appointment.Title);
                 appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.Description, appointment.Description);
                 appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.EventTimezone, "UTC");

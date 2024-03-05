@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             xmlns:model="clr-namespace:Appointments.App.ViewModels.Settings.Admin"
+             x:Name="SettingsListViewModel"
+             x:Class="Appointments.App.Views.Settings.Admin.SettingsListPage">
+    <ContentPage.BindingContext>
+        <model:SettingsListViewModel />
+    </ContentPage.BindingContext>
+    <StackLayout>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Picker 
+                Grid.Column="0"
+                TitleColor="{StaticResource Secondary}"
+                Title="Filtrar por Catálogo"
+                ItemsSource="{Binding SettingCatalogs}"
+                SelectedItem="{Binding SelectedSettingCatalog}"
+                ItemDisplayBinding="{Binding .}">                
+            </Picker>
+            <Entry 
+                Grid.Column="1" x:Name="SearchSetting"
+                PlaceholderColor="{StaticResource Secondary}"
+                Placeholder="Buscar por nombre o catalogo"
+                ReturnCommand="{Binding SearchSettingCommand}"
+                ReturnCommandParameter="{Binding Text, Source={x:Reference SearchSetting}}">
+                <Entry.Behaviors>
+                    <xct:EventToCommandBehavior
+                        EventName="TextChanged"
+                        Command="{Binding SearchSettingCommand}"/>
+                </Entry.Behaviors>
+            </Entry>
+        </Grid>
+
+        <ListView 
+            ItemsSource="{Binding Settings}"
+            CachingStrategy="RecycleElement">
+            <!--Built in Cells-->
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid x:Name="SearchSetting">
+                            <Button
+                                CornerRadius="5"
+                                HeightRequest="5"
+                                Margin="2"
+                                TextColor="{StaticResource WhiteText}"
+                                Text="{Binding Name}"
+                                Command="{Binding BindingContext.LoadSettingCommand, Source={x:Reference Name=SettingsListViewModel}}"                                
+                                CommandParameter="{Binding .}">
+                            </Button>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button            
+            Margin="5"
+            Text="Nueva Configuración +"
+            Command="{Binding CreateSettingCommand}">
+        </Button>
+    </StackLayout>
+</ContentPage>

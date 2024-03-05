@@ -28,8 +28,11 @@ namespace Appointments.App.Services
         Task<List<Appointment>> GetAppointmentsByUser(User user, DateTime? start, DateTime? end);
 
         // Settings
-        Task<Setting> CreateSetting(Setting setting);
+        Task<Setting> GetSetting(int id);
+        Task<Setting> GetSettingByNameAndCatalog(string name, string catalog);
+        Task<Setting> SaveSetting(Setting setting);
         Task<List<Setting>> GetSettingsByCatalog(string catalog);
+        Task<List<Setting>> GetAllSettings(string searchText = "");
         Task<List<AppointmentType>> GetAppointmentTypes(string searchText = "");
         Task<AppointmentType> GetAppointmentType(int id);
         Task<AppointmentTypeSaveResponse> SaveAppointmentType(AppointmentType appointmentType);

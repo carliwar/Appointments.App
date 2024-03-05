@@ -1,5 +1,4 @@
-﻿using Appointments.App.Models;
-using Appointments.App.ViewModels;
+﻿using Appointments.App.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 

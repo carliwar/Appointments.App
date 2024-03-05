@@ -64,5 +64,6 @@ namespace Appointments.App.Models.DataModels
         public string Location { get; set; }
         public string AppointmentTypes { get; set; }
         public int ReminderMinutes { get; set; }
+        public int CalendarID { get; set; }
     }
 }

@@ -41,13 +41,13 @@ namespace Appointments.App.Services
                 var db = new Repository<User>(_database);
 
                 if (user.Id == 0)
-                {                    
+                {
                     await db.Insert(user);
                 }
                 else
                 {
                     await db.Update(user);
-                }                
+                }
             }
 
             return result;
@@ -95,7 +95,7 @@ namespace Appointments.App.Services
             if (!string.IsNullOrWhiteSpace(formattedSearch))
             {
                 users = users.Where(
-                    t =>  (t.Identification != null && t.Identification.ToLower().Contains(formattedSearch))
+                    t => (t.Identification != null && t.Identification.ToLower().Contains(formattedSearch))
                     || (t.Name != null && t.Name.ToLower().Contains(formattedSearch))
                     || (t.AppointmentType != null && t.AppointmentType.Name.ToLower().Contains(formattedSearch))
                     || (t.LastName != null && t.LastName.ToLower().Contains(formattedSearch))
@@ -182,10 +182,10 @@ namespace Appointments.App.Services
 
 
                 await _database.CreateTableAsync<AppointmentAppointmentType>();
-                
+
                 var dbAppointmentType = new Repository<AppointmentAppointmentType>(_database);
-                
-                foreach(var appointmentType in appointment.AppointmentTypes)
+
+                foreach (var appointmentType in appointment.AppointmentTypes)
                 {
                     var newAppointmentAppointmentType = new AppointmentAppointmentType
                     {
@@ -193,7 +193,7 @@ namespace Appointments.App.Services
                         AppointmentTypeId = appointmentType.Id,
                     };
                     await dbAppointmentType.Insert(newAppointmentAppointmentType);
-                }                
+                }
             }
 
             return result;
@@ -248,17 +248,67 @@ namespace Appointments.App.Services
         #endregion
 
         #region Settings
-        public async Task<Setting> CreateSetting(Setting setting)
+        public async Task<Setting> GetSetting(int id)
         {
-            await _database.CreateTablesAsync<Setting, Setting>();
+            await _database.CreateTableAsync<Setting>();
             var db = new Repository<Setting>(_database);
-            await db.Insert(setting);
+            return await db.Get(id);
+        }
+
+        public async Task<Setting> GetSettingByNameAndCatalog(string name, string catalog)
+        {
+            name = name.ToLower();
+            catalog = catalog.ToLower();
+
+            await _database.CreateTableAsync<Setting>();
+            var db = new Repository<Setting>(_database);
+            var settings = await db.Get();
+            var result = settings.FirstOrDefault(t => t.Name.ToLower() == name && t.Catalog.ToLower() == catalog.ToLower());
+
+            return result;
+        }
+        
+        public async Task<Setting> SaveSetting(Setting setting)
+        {
+            await _database.CreateTableAsync<Setting>();
+
+            var db = new Repository<Setting>(_database);
+
+            if (setting.Id == 0)
+            {
+                await db.Insert(setting);
+            }
+            else
+            {
+                await db.Update(setting);
+            }
+
             return setting;
+        }
+
+
+        public async Task<List<Setting>> GetAllSettings(string searchText = "")
+        {
+            await _database.CreateTableAsync<Setting>();
+            var db = new Repository<Setting>(_database);
+            var appointments = await db.Get();
+
+            var formattedSearch = searchText?.ToLower();
+
+            if (!string.IsNullOrWhiteSpace(formattedSearch))
+            {
+                appointments = appointments.Where(
+                    t => (t.Name != null && t.Name.ToLower().Contains(formattedSearch))
+                    || (t.Catalog != null && t.Catalog.ToLower().Contains(formattedSearch))
+                ).ToList();
+            }
+
+            return appointments;
         }
 
         public async Task<List<Setting>> GetSettingsByCatalog(string catalog)
         {
-            await _database.CreateTablesAsync<Setting, Setting>();
+            await _database.CreateTableAsync<Setting>();
             var db = new Repository<Setting>(_database);
             var appointments = await db.Get();
 
@@ -266,7 +316,7 @@ namespace Appointments.App.Services
             appointments = appointments.Where(t => t.Catalog == catalog).ToList();
 
             return appointments;
-        } 
+        }
         #endregion
 
         #region User Appointments
@@ -280,7 +330,7 @@ namespace Appointments.App.Services
             appointments = appointments
                 .Where(t => t.UserId == user.Id).ToList();
 
-            if(start.HasValue && end.HasValue)
+            if (start.HasValue && end.HasValue)
             {
                 appointments = appointments
                 .Where(t => t.AppointmentDate.Date >= start.Value.Date
@@ -328,7 +378,7 @@ namespace Appointments.App.Services
             {
                 await _database.CreateTablesAsync<AppointmentType, AppointmentType>();
                 var db = new Repository<AppointmentType>(_database);
-                
+
                 if (appointmentType.Id > 0)
                 {
                     await db.Update(appointmentType);
@@ -336,7 +386,7 @@ namespace Appointments.App.Services
                 else
                 {
                     await db.Insert(appointmentType);
-                }  
+                }
             }
 
             return result;
@@ -352,7 +402,7 @@ namespace Appointments.App.Services
             if (appointmentTypes.Any())
             {
                 var sameType = appointmentTypes
-                    .Where(t => t.Name ==  appointmentType.Name && t.Id != appointmentType.Id)
+                    .Where(t => t.Name == appointmentType.Name && t.Id != appointmentType.Id)
                     .FirstOrDefault();
 
                 if (sameType != null)

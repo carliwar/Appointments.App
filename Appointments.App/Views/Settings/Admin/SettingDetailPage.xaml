@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"             
+             xmlns:model="clr-namespace:Appointments.App.ViewModels.Settings.Admin"
+             x:Class="Appointments.App.Views.Settings.Admin.SettingDetailPage">
+    <ContentPage.BindingContext>
+        <model:SettingViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ScrollView Orientation="Vertical">
+                <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
+                    <StackLayout>
+                        <Label Text="Catálogo"></Label>
+                        <Entry x:Name="Catalog" Text="{Binding Catalog}"></Entry>
+                        <Label Text="Nombre"></Label>
+                        <Entry x:Name="Name" Text="{Binding Name}"></Entry>
+                        <Label Text="Valor"></Label>
+                        <Entry x:Name="Value" Text="{Binding Value}"></Entry>                        
+                    </StackLayout>
+                </Frame>
+            </ScrollView>
+            <Button
+                Grid.Row="1"
+                Command="{Binding SaveSettingCommand}"
+                VerticalOptions="EndAndExpand"
+                Margin="5"
+                Text="Guardar">
+            </Button>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

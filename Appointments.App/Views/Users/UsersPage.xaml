@@ -31,7 +31,7 @@
                 ItemDisplayBinding="{Binding Name}">
              </Picker>
             <Entry Grid.Column="1" x:Name="SearchUser"
-                   PlaceholderColor="#5084ad"
+                   PlaceholderColor="{StaticResource Secondary}"
                    Placeholder="Buscar por datos del Paciente"
                    ReturnCommand="{Binding SearchUserCommand}"
                    ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">    

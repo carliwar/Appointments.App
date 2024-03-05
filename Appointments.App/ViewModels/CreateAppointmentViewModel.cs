@@ -1,6 +1,8 @@
 ﻿using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
+using Plugin.Calendars;
+using Plugin.Calendars.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,6 +10,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.MultiSelectListView;
@@ -35,7 +38,8 @@ namespace Appointments.App.ViewModels
                 AppointmentDurations.Add(appointmentDuration);
             }
 
-            Users = new ObservableCollection<Models.DataModels.User>();            
+            Users = new ObservableCollection<Models.DataModels.User>();
+
         }
         #region Temp Properties
 
@@ -163,6 +167,8 @@ namespace Appointments.App.ViewModels
                 SearchUserAsync(searchValue);
             }
         }
+
+        public string EmailAccount { get; set; }
         #endregion
 
         #region Commands
@@ -287,8 +293,27 @@ namespace Appointments.App.ViewModels
                 
             }            
         }
-        private static async Task CreateDeviceAppointment(Appointment appointment)
+        private async Task CreateDeviceAppointment(Appointment appointment)
         {
+
+            var account = await _dataService.GetSettingByNameAndCatalog("email", "basic");
+            
+            if (account != null)
+            {
+                EmailAccount = account.Value;
+            }
+
+            IList<Calendar> calendars = await CrossCalendars.Current.GetCalendarsAsync();
+
+            var appCalendar = calendars.FirstOrDefault(t => t.Name == EmailAccount);
+
+            //if (appCalendar == null)
+            //{
+            //    await CrossCalendars.Current.CreateCalendarAsync(ConstantValues.APPOINTMENT_BRAND, ConstantValues.BRAND_MAIN_COLOR);
+            //    calendars = await CrossCalendars.Current.GetCalendarsAsync();
+            //    appCalendar = calendars.FirstOrDefault(t => t.Name == ConstantValues.APPOINTMENT_BRAND);
+            //}
+
             var appointmentTypes = string.Join(", ", appointment.AppointmentTypes.Select(t => t.Name));
 
             var androidAppointment = new AndroidAppointment
@@ -298,7 +323,8 @@ namespace Appointments.App.ViewModels
                 EndDate = appointment.AppointmentEnd,
                 Location = ConstantValues.APPOINTMENT_BRAND,
                 AppointmentTypes = appointmentTypes,
-                ReminderMinutes = 10
+                ReminderMinutes = 10,
+                CalendarID = Convert.ToInt32(appCalendar.ExternalID)
             };
 
             await DependencyService.Get<IDeviceCalendarService>().AddEventToCalendar(androidAppointment);
