@@ -6,20 +6,22 @@ using Appointments.App.Services;
 using System;
 using System.Threading.Tasks;
 using Appointments.App.Models.DataModels;
+using Appointments.App.Models.TransactionModels;
 
 [assembly: Xamarin.Forms.Dependency(typeof(AndroidCalendarService))]
 namespace Appointments.App.Droid.Services
 {
     public class AndroidCalendarService : IDeviceCalendarService
     {
+        const string _reminderUriString = "content://com.android.calendar/reminders";
+        ContentResolver contentResolver = Android.App.Application.Context.ContentResolver;
 
-        public async Task<bool> AddEventToCalendar(AndroidAppointment appointment)
+        public async Task<DeviceCalendarEventResult> AddEventToCalendar(AndroidAppointment appointment)
         {
-            bool isEventAdded = true;
+            var result = new DeviceCalendarEventResult();
+
             try
             {
-
-                ContentResolver contentResolver = Android.App.Application.Context.ContentResolver;
 
                 ContentValues appointmentCalendarEvent = new ContentValues();
                 appointmentCalendarEvent.Put(CalendarContract.Events.InterfaceConsts.CalendarId, appointment.CalendarID); // Default calendar
@@ -36,24 +38,41 @@ namespace Appointments.App.Droid.Services
 
                 // Get the event ID from the inserted event URI
                 long eventId = long.Parse(eventUri.LastPathSegment);
-                string reminderUriString = "content://com.android.calendar/reminders";
+                result.EventID = eventId.ToString();
+
 
                 ContentValues reminderValues = new ContentValues();
                 reminderValues.Put(CalendarContract.Reminders.InterfaceConsts.EventId, eventId);
                 reminderValues.Put(CalendarContract.Reminders.InterfaceConsts.Method, (int) RemindersMethod.Alert);
                 reminderValues.Put(CalendarContract.Reminders.InterfaceConsts.Minutes, appointment.ReminderMinutes); // Set the reminder time in minutes
-                Android.Net.Uri url = Android.Net.Uri.Parse(reminderUriString);
+                Android.Net.Uri url = Android.Net.Uri.Parse(_reminderUriString);
 
                 // Insert the reminder into the reminders table
-                contentResolver.Insert(CalendarContract.Reminders.ContentUri, reminderValues);
-
-                return await Task.FromResult(isEventAdded);
+                result.ReminderID = contentResolver.Insert(CalendarContract.Reminders.ContentUri, reminderValues).LastPathSegment;
             }
             catch (Exception ex)
             {
-                isEventAdded = false;
+                result.Error = ex.Message;
             }
-            return await Task.FromResult(isEventAdded);
+            return await Task.FromResult(result);
+        }
+
+        public async Task<bool> DeleteEventFromCalendar(CalendarEventLog calendarEventLog)
+        {
+            try
+            {
+                Android.Net.Uri reminderUri = Android.Net.Uri.Parse($"{_reminderUriString}/{calendarEventLog.ReminderId}");
+                var deletedReminders = contentResolver.Delete(reminderUri, null);
+
+                Android.Net.Uri eventUri = Android.Net.Uri.Parse($"{CalendarContract.Events.ContentUri}/{calendarEventLog.EventId}");
+                var deletedEvents = contentResolver.Delete(eventUri, null);
+
+                return await Task.FromResult(true);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false); ;
+            }
         }
     }
 }

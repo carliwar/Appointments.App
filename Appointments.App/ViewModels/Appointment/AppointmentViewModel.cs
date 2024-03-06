@@ -58,6 +58,7 @@ namespace Appointments.App.ViewModels.Appointments
         private AppointmentDuration _selectedAppointmentDuration;
         private Models.DataModels.User _selectedUser;
         private bool _showError = false;
+        private bool _isEdit = false;
         private int _appointmentTypesHeight;
         private Models.DataModels.AppointmentType _selectedAppointmentTypeFilter;
 
@@ -153,7 +154,14 @@ namespace Appointments.App.ViewModels.Appointments
             }
         }
 
+        public bool IsEdit
+        {
+            get => _isEdit;
+            set => SetProperty(ref _isEdit, value);
+        }
+
         public string EmailAccount { get; set; }
+        public string BrandName { get; set; }
         #endregion
 
         #region Commands
@@ -204,6 +212,7 @@ namespace Appointments.App.ViewModels.Appointments
 
             var appointment = new Appointment
             {
+                Id = Id,
                 UserId = SelectedUser.Id,
                 AppointmentDate = GivenDate.Date.Add(GivenTime),
                 AppointmentEnd = GivenDate.Date.Add(GivenTime).AddMinutes((double)SelectedAppointmentDuration.Name),
@@ -237,7 +246,9 @@ namespace Appointments.App.ViewModels.Appointments
                         }
                     }
 
-                    await Application.Current.MainPage.DisplayAlert("Éxito!", "Cita agendada", "Ok");
+                    var updatedMessage = IsEdit ? "actualizada" : "creada";
+
+                    await Application.Current.MainPage.DisplayAlert("Éxito!", $"Cita {updatedMessage}.", "Ok");
                     await Application.Current.MainPage.Navigation.PopAsync();
                 }
                 else
@@ -278,14 +289,16 @@ namespace Appointments.App.ViewModels.Appointments
 
             }
         }
-        private async Task CreateDeviceAppointment(Models.DataModels.Appointment appointment)
+        private async Task CreateDeviceAppointment(Appointment appointment)
         {
 
             var account = await _dataService.GetSettingByNameAndCatalog("email", "basic");
+            var brandName = await _dataService.GetSettingByNameAndCatalog("brand", "basic");
 
             if (account != null)
             {
                 EmailAccount = account.Value;
+                BrandName = brandName.Value;
             }
 
             IList<Calendar> calendars = await CrossCalendars.Current.GetCalendarsAsync();
@@ -294,11 +307,20 @@ namespace Appointments.App.ViewModels.Appointments
 
             if (appCalendar == null)
             {
-                await Application.Current.MainPage.DisplayAlert("Advertencia!", "Se generó la cita en la app. Pero no se pueden crear citas en el calendario sin configurar el Email en Configuraciones.", "Ok");
-                await Application.Current.MainPage.Navigation.PopAsync();
+                appCalendar = new Calendar
+                {
+                    AccountName = BrandName,
+                };
+
+                await CrossCalendars.Current.AddOrUpdateCalendarAsync(appCalendar);
+
+                appCalendar = calendars.FirstOrDefault(t => t.Name == BrandName);
             }
             else
             {
+                // delete existent Reminder if exists for current appointment
+                await DeleteExistingCalendarReminder(appointment);
+
                 var appointmentTypes = string.Join(", ", appointment.AppointmentTypes.Select(t => t.Name));
 
                 var androidAppointment = new AndroidAppointment
@@ -306,14 +328,36 @@ namespace Appointments.App.ViewModels.Appointments
                     Title = $"{appointmentTypes}: {appointment.UserInformation} Tel: {appointment.UserPhone}",
                     StartDate = appointment.AppointmentDate,
                     EndDate = appointment.AppointmentEnd,
-                    Location = ConstantValues.APPOINTMENT_BRAND,
+                    Location = BrandName,
                     AppointmentTypes = appointmentTypes,
                     ReminderMinutes = 10,
                     CalendarID = Convert.ToInt32(appCalendar.ExternalID)
                 };
 
-                await DependencyService.Get<IDeviceCalendarService>().AddEventToCalendar(androidAppointment);
+                var result = await DependencyService.Get<IDeviceCalendarService>().AddEventToCalendar(androidAppointment);
+
+                if (result.IsSuccess)
+                {
+                    var calendarEventLog = new CalendarEventLog
+                    {
+                        AppointmentId = appointment.Id,
+                        EventId = result.EventID,
+                        ReminderId = result.ReminderID
+                    };
+
+                    await _dataService.AddCalendarEventLog(calendarEventLog);
+                }
             }
+        }
+
+        private async Task DeleteExistingCalendarReminder(Appointment appointment)
+        {
+            var existingReminders = await _dataService.GetCalendarEventLog(appointment.Id);
+            if(existingReminders != null)
+            {
+                await _dataService.DeleteCalendarEventLog(appointment.Id);
+                await DependencyService.Get<IDeviceCalendarService>().DeleteEventFromCalendar(existingReminders);
+            }            
         }
 
         public async Task LoadUsers(string searchText = "", Models.DataModels.User user = null)
@@ -387,16 +431,19 @@ namespace Appointments.App.ViewModels.Appointments
                 GivenTime = appointment.AppointmentDate.TimeOfDay;
                 var appointmentDuration = appointment.AppointmentEnd - appointment.AppointmentDate;
                 var appointmentDurationEnum = (AppointmentDurationEnum) appointmentDuration.TotalMinutes;
-                SelectedAppointmentDuration = AppointmentDurations.First(t => t.Name == appointmentDurationEnum);                
+                SelectedAppointmentDuration = AppointmentDurations.FirstOrDefault(t => t.Name == appointmentDurationEnum);                
 
                 var typesFromAppointment = AppointmentTypes.Where(t => appointment.AppointmentTypes.Any(u => u.Id == t.Data.Id)) ;
 
                 foreach (var appointmentType in typesFromAppointment)
                 {
                     appointmentType.IsSelected = true;
+                    SelectedAppointmentTypes.Add(appointmentType.Data);
                 }
 
-                SelectedUser = Users.First(t => t.Id == appointment.UserId);
+                //var selectedUser = Users.FirstOrDefault(t => t.Id == appointment.UserId);
+                SelectedUser = Users.FirstOrDefault(t => t.Id == appointment.UserId);
+                IsEdit = true;
             }
         }
     }

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static SQLite.SQLite3;
 
 
 namespace Appointments.App.Services
@@ -176,14 +177,34 @@ namespace Appointments.App.Services
 
             if (result.Success)
             {
+
                 await _database.CreateTableAsync<Appointment>();
                 var dbAppointment = new Repository<Appointment>(_database);
-                await dbAppointment.Insert(appointment);
-
 
                 await _database.CreateTableAsync<AppointmentAppointmentType>();
-
                 var dbAppointmentType = new Repository<AppointmentAppointmentType>(_database);
+
+                if (appointment.Id == 0)
+                {
+                    await dbAppointment.Insert(appointment);
+                }
+                else
+                {
+                    await dbAppointment.Update(appointment);
+                }
+
+                if(appointment.Id != 0)
+                {
+                    var appointmentAppointmentTypesDb = await dbAppointmentType.Get();
+
+                    var appointmentsToDelete = 
+                        appointmentAppointmentTypesDb.Where(t => t.AppointmentId == appointment.Id).ToList();
+
+                    foreach (var appointmentToDelete in appointmentsToDelete)
+                    {
+                        await dbAppointmentType.Delete(appointmentToDelete);
+                    }
+                }
 
                 foreach (var appointmentType in appointment.AppointmentTypes)
                 {
@@ -194,6 +215,7 @@ namespace Appointments.App.Services
                     };
                     await dbAppointmentType.Insert(newAppointmentAppointmentType);
                 }
+
             }
 
             return result;
@@ -228,14 +250,14 @@ namespace Appointments.App.Services
             var appointmentsOfDay = await GetAppointments(appointment.AppointmentDate.Date, appointment.AppointmentDate.Date.AddDays(1));
 
             // check if appointment.Date is at the start or end of any other appointment
-            var sameStartingDateTime = appointmentsOfDay.Any(t => t.AppointmentDate == appointment.AppointmentDate);
+            var sameStartingDateTime = appointmentsOfDay.Any(t => t.AppointmentDate == appointment.AppointmentDate && appointment.Id != t.Id);
 
             if (sameStartingDateTime)
             {
                 response.Errors.Add($"Ya existe una cita para la hora escogida el: {appointment.AppointmentDate:dd/MMM/yyyy}");
             }
 
-            var crossingStartingDateTime = appointmentsOfDay.Where(t => appointment.AppointmentEnd > t.AppointmentDate && appointment.AppointmentEnd <= t.AppointmentEnd).ToList();
+            var crossingStartingDateTime = appointmentsOfDay.Where(t => appointment.AppointmentEnd > t.AppointmentDate && appointment.AppointmentEnd <= t.AppointmentEnd && appointment.Id != t.Id).ToList();
 
             if (crossingStartingDateTime.Any())
             {
@@ -244,6 +266,48 @@ namespace Appointments.App.Services
             }
 
             return response;
+        }
+        public async Task<CalendarEventLog> AddCalendarEventLog(CalendarEventLog calendarEventLog)
+        {
+            await _database.CreateTableAsync<CalendarEventLog>();
+
+            var db = new Repository<CalendarEventLog>(_database);
+
+            if (calendarEventLog.Id == 0)
+            {
+                await db.Insert(calendarEventLog);
+            }
+            else
+            {
+                await db.Update(calendarEventLog);
+            }
+
+            return calendarEventLog;
+        }
+
+        public async Task<CalendarEventLog> GetCalendarEventLog(int appointmentId)
+        {
+            await _database.CreateTableAsync<CalendarEventLog>();
+            var db = new Repository<CalendarEventLog>(_database);
+
+            var reminders = await db.Get();
+
+            var existingReminder = reminders.FirstOrDefault(t => t.AppointmentId == appointmentId);
+
+            return existingReminder;
+        }
+
+        public async Task DeleteCalendarEventLog(int appointmentId)
+        {
+            await _database.CreateTableAsync<CalendarEventLog>();
+            var db = new Repository<CalendarEventLog>(_database);
+
+            var reminders = await db.Get();
+
+            var existingReminder = reminders.FirstOrDefault(t => t.AppointmentId == appointmentId);
+
+            await db.Delete(existingReminder);
+
         }
         #endregion
 
@@ -415,6 +479,7 @@ namespace Appointments.App.Services
 
             return result;
         }
+        
 
         #endregion
 

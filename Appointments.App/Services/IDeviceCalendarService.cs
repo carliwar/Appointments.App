@@ -1,11 +1,12 @@
 ﻿using Appointments.App.Models.DataModels;
-using System;
+using Appointments.App.Models.TransactionModels;
 using System.Threading.Tasks;
 
 namespace Appointments.App.Services
 {
     public interface IDeviceCalendarService
     {
-        Task<bool> AddEventToCalendar(AndroidAppointment appointment);
+        Task<DeviceCalendarEventResult> AddEventToCalendar(AndroidAppointment appointment);
+        Task<bool> DeleteEventFromCalendar(CalendarEventLog calendarEventLog);
     }
 }
