@@ -33,12 +33,12 @@
                         </TimePicker>
                         <Label Padding="1" Text="Tipos de Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
                         <ListView 
-                        BackgroundColor="{StaticResource Tertiary}"
-                        HeightRequest="100"
-                        HasUnevenRows="true"
-                        SeparatorVisibility="Default" 
-                        ItemsSource="{Binding AppointmentTypes}"                           
-                        lv:MultiSelect.Enable="true">
+                            BackgroundColor="{StaticResource Tertiary}"
+                            HeightRequest="100"
+                            HasUnevenRows="true"
+                            SeparatorVisibility="Default" 
+                            ItemsSource="{Binding AppointmentTypes}"                            
+                            lv:MultiSelect.Enable="true">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <lv:SelectableCell x:Name="SelectableCell" >
@@ -104,12 +104,12 @@
                         </Grid>
 
                         <ListView 
-                        BackgroundColor="{StaticResource Tertiary}"
-                        HeightRequest="100"
-                        HasUnevenRows="true"
-                        SeparatorVisibility="Default" 
-                        ItemsSource="{Binding Users}"
-                        SelectedItem="{Binding SelectedUser}">
+                            BackgroundColor="{StaticResource Tertiary}"
+                            HeightRequest="100"
+                            HasUnevenRows="true"
+                            SeparatorVisibility="Default"
+                            ItemsSource="{Binding Users}"
+                            SelectedItem="{Binding SelectedUser, Mode=TwoWay}">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>

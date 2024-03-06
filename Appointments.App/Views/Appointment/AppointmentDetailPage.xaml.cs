@@ -26,17 +26,23 @@ namespace Appointments.App.Views.Appointments
         protected override void OnAppearing()
         {
             AppointmentViewModel userAppointmentsViewModel = (BindingContext as AppointmentViewModel);
-            userAppointmentsViewModel.SelectedUser = SelectedUser;
-            userAppointmentsViewModel.GivenDate = GivenDate;
-            userAppointmentsViewModel.GivenTime = GivenTime;
-            (BindingContext as AppointmentViewModel)?.Initialize(user: SelectedUser);
 
-            if (AppointmentId.HasValue)
+            if(SelectedUser != null)
+                userAppointmentsViewModel.SelectedUser = SelectedUser;
+            if(GivenDate != null)
+                userAppointmentsViewModel.GivenDate = GivenDate;
+            if(GivenTime != null) 
+                userAppointmentsViewModel.GivenTime = GivenTime;
+
+            (BindingContext as AppointmentViewModel)?.Initialize(user: SelectedUser).ContinueWith((t1) =>
             {
-                (BindingContext as AppointmentViewModel)?.LoadAppointment(AppointmentId.Value);
-            }
+                if (AppointmentId.HasValue)
+                {
+                    userAppointmentsViewModel.SelectedUser = null;
+                    (BindingContext as AppointmentViewModel)?.LoadAppointment(AppointmentId.Value);
+                }
 
-
+            });
         }
     }
 }

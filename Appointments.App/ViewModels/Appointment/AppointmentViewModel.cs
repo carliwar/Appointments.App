@@ -387,13 +387,16 @@ namespace Appointments.App.ViewModels.Appointments
                 GivenTime = appointment.AppointmentDate.TimeOfDay;
                 var appointmentDuration = appointment.AppointmentEnd - appointment.AppointmentDate;
                 var appointmentDurationEnum = (AppointmentDurationEnum) appointmentDuration.TotalMinutes;
-                SelectedAppointmentDuration = AppointmentDurations.First(t => t.Name == appointmentDurationEnum);
-                SelectedUser = Users.First(t => t.Id == appointment.UserId);
+                SelectedAppointmentDuration = AppointmentDurations.First(t => t.Name == appointmentDurationEnum);                
 
-                foreach (var appointmentType in appointment.AppointmentTypes)
+                var typesFromAppointment = AppointmentTypes.Where(t => appointment.AppointmentTypes.Any(u => u.Id == t.Data.Id)) ;
+
+                foreach (var appointmentType in typesFromAppointment)
                 {
-                    SelectedAppointmentTypes.Add(appointmentType);
+                    appointmentType.IsSelected = true;
                 }
+
+                SelectedUser = Users.First(t => t.Id == appointment.UserId);
             }
         }
     }
