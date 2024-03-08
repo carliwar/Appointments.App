@@ -1,4 +1,5 @@
-﻿using Appointments.App.Models;
+﻿using Acr.UserDialogs;
+using Appointments.App.Models;
 using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
@@ -95,7 +96,18 @@ namespace Appointments.App.ViewModels
         public ICommand AddAppointmentCommand => new Command(async () => await NewAppointment());
         public ICommand ContactUserCommand => new Command(async (item) => await ExecuteContactUserCommand(item));
         public ICommand EditUserCommand => new Command(async (item) => await GoToUserDetails());
+        public ICommand SelectAppointmentCommand => new Command(async (item) => await GoToAppointment(item));
 
+
+
+        private async Task GoToAppointment(object item)
+        {
+            if(item is Appointment appointment)
+            {
+                await Application.Current.MainPage.Navigation.PushAsync(new AppointmentDetailPage(appointment.AppointmentDate.Date, appointmentId: appointment.Id));
+            }
+
+        }
 
         private async Task GoToUserDetails()
         {
@@ -128,6 +140,7 @@ namespace Appointments.App.ViewModels
 
         public async Task GetAppointments(string searchText = null)
         {
+            UserDialogs.Instance.ShowLoading();
             Appointments.Clear();
             if(SelectedUser == null)
             {
@@ -162,6 +175,8 @@ namespace Appointments.App.ViewModels
 
                 Appointments.Add(appointment);
             }
+
+            UserDialogs.Instance.HideLoading();
         }
 
         public async Task NewAppointment()

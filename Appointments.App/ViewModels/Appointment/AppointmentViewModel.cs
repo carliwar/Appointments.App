@@ -5,9 +5,7 @@ using Plugin.Calendars;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
@@ -15,6 +13,7 @@ using Xamarin.Forms.MultiSelectListView;
 using Xamarin.Forms;
 using Plugin.Calendars.Abstractions;
 using Appointments.App.Utils;
+using Acr.UserDialogs;
 
 namespace Appointments.App.ViewModels.Appointments
 {
@@ -23,7 +22,7 @@ namespace Appointments.App.ViewModels.Appointments
         public AppointmentViewModel() : base()
         {
             _dataService = new DataService();
-            
+
             foreach (AppointmentDurationEnum enumValue in Enum.GetValues(typeof(AppointmentDurationEnum)))
             {
                 string customString = EnumDescriptor.GetEnumDescription(enumValue);
@@ -54,7 +53,7 @@ namespace Appointments.App.ViewModels.Appointments
         private ObservableCollection<AppointmentDuration> _appointmentDurations = new ObservableCollection<AppointmentDuration>();
         private MultiSelectObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new MultiSelectObservableCollection<Models.DataModels.AppointmentType>();
         private ObservableCollection<Models.DataModels.AppointmentType> _filterAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
-        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();        
+        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
         private AppointmentDuration _selectedAppointmentDuration;
         private Models.DataModels.User _selectedUser;
         private bool _showError = false;
@@ -168,6 +167,7 @@ namespace Appointments.App.ViewModels.Appointments
         //SearchUserCommand
         public ICommand SearchUserCommand => new Command((item) => SearchUserAsync(item));
         public ICommand SaveAppointmentCommand => new Command(async (item) => await SaveAppointment(item));
+        public ICommand DeleteAppointmentCommand => new Command(async () => await DeleteAppointmentAction());
         public ICommand FillSelectedAppointmentTypesCommand => new Command(async (item) => await FillSelectedAppointmentTypes(item));
 
         private void SearchUserAsync(object sender)
@@ -222,6 +222,8 @@ namespace Appointments.App.ViewModels.Appointments
                 UserPhone = SelectedUser.Phone
             };
 
+            UserDialogs.Instance.ShowLoading();
+
             var result = await _dataService.CreateValidatedAppointment(appointment);
 
             if (result != null)
@@ -237,14 +239,19 @@ namespace Appointments.App.ViewModels.Appointments
                     }
                     else
                     {
+                        UserDialogs.Instance.HideLoading();
+
                         var requestR = await Permissions.RequestAsync<Permissions.CalendarRead>();
                         var requestW = await Permissions.RequestAsync<Permissions.CalendarWrite>();
 
                         if (requestR == PermissionStatus.Granted && requestW == PermissionStatus.Granted)
                         {
+                            UserDialogs.Instance.ShowLoading();
                             await CreateDeviceAppointment(appointment);
                         }
                     }
+                    
+                    UserDialogs.Instance.HideLoading();
 
                     var updatedMessage = IsEdit ? "actualizada" : "creada";
 
@@ -253,13 +260,40 @@ namespace Appointments.App.ViewModels.Appointments
                 }
                 else
                 {
+                    UserDialogs.Instance.HideLoading();
+
                     // display all errors from list as a single string from result
                     await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
                 }
             }
             else
             {
+                UserDialogs.Instance.HideLoading();
+
+
                 await Application.Current.MainPage.DisplayAlert("Error", "Contacte al administrador", "Ok");
+            }
+
+            UserDialogs.Instance.HideLoading();
+        }
+
+        private async Task DeleteAppointmentAction()
+        {
+            var confirm = await UserDialogs.Instance.ConfirmAsync("Desea eliminar la cita?", null, "Si", "No");
+
+            if (confirm)
+            {
+                UserDialogs.Instance.ShowLoading();
+                var result = await _dataService.DeleteAppointment(Id);
+
+                if (result == 1)
+                {
+                    await DeleteExistingCalendarReminder(Id);
+
+                    await Application.Current.MainPage.DisplayAlert("Éxito!", $"Cita eliminada.", "Ok");
+                    await Application.Current.MainPage.Navigation.PopAsync();
+                }
+                UserDialogs.Instance.Loading().Hide();
             }
         }
 
@@ -319,7 +353,7 @@ namespace Appointments.App.ViewModels.Appointments
             else
             {
                 // delete existent Reminder if exists for current appointment
-                await DeleteExistingCalendarReminder(appointment);
+                await DeleteExistingCalendarReminder(appointment.Id);
 
                 var appointmentTypes = string.Join(", ", appointment.AppointmentTypes.Select(t => t.Name));
 
@@ -350,14 +384,14 @@ namespace Appointments.App.ViewModels.Appointments
             }
         }
 
-        private async Task DeleteExistingCalendarReminder(Appointment appointment)
+        private async Task DeleteExistingCalendarReminder(int appointmentId)
         {
-            var existingReminders = await _dataService.GetCalendarEventLog(appointment.Id);
-            if(existingReminders != null)
+            var existingReminders = await _dataService.GetCalendarEventLog(appointmentId);
+            if (existingReminders != null)
             {
-                await _dataService.DeleteCalendarEventLog(appointment.Id);
+                await _dataService.DeleteCalendarEventLog(appointmentId);
                 await DependencyService.Get<IDeviceCalendarService>().DeleteEventFromCalendar(existingReminders);
-            }            
+            }
         }
 
         public async Task LoadUsers(string searchText = "", Models.DataModels.User user = null)
@@ -422,7 +456,7 @@ namespace Appointments.App.ViewModels.Appointments
 
         public async Task LoadAppointment(int id)
         {
-            if (id != 0) 
+            if (id != 0)
             {
                 var appointment = await _dataService.GetAppointment(id);
 
@@ -430,10 +464,10 @@ namespace Appointments.App.ViewModels.Appointments
                 GivenDate = appointment.AppointmentDate.Date;
                 GivenTime = appointment.AppointmentDate.TimeOfDay;
                 var appointmentDuration = appointment.AppointmentEnd - appointment.AppointmentDate;
-                var appointmentDurationEnum = (AppointmentDurationEnum) appointmentDuration.TotalMinutes;
-                SelectedAppointmentDuration = AppointmentDurations.FirstOrDefault(t => t.Name == appointmentDurationEnum);                
+                var appointmentDurationEnum = (AppointmentDurationEnum)appointmentDuration.TotalMinutes;
+                SelectedAppointmentDuration = AppointmentDurations.FirstOrDefault(t => t.Name == appointmentDurationEnum);
 
-                var typesFromAppointment = AppointmentTypes.Where(t => appointment.AppointmentTypes.Any(u => u.Id == t.Data.Id)) ;
+                var typesFromAppointment = AppointmentTypes.Where(t => appointment.AppointmentTypes.Any(u => u.Id == t.Data.Id));
 
                 foreach (var appointmentType in typesFromAppointment)
                 {

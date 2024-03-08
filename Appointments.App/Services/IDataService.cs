@@ -25,7 +25,8 @@ namespace Appointments.App.Services
         Task<List<Appointment>> GetAppointments(DateTime start, DateTime end);
         Task<CalendarEventLog> AddCalendarEventLog(CalendarEventLog calendarEventLog);
         Task<CalendarEventLog> GetCalendarEventLog(int appointmentId);
-        Task DeleteCalendarEventLog(int appointmentId);
+        Task<int> DeleteCalendarEventLog(int appointmentId);
+        Task<int> DeleteAppointment(int appointmentId);
 
         // User Appointments
         Task<List<Appointment>> GetAppointmentsByUser(User user, DateTime? start, DateTime? end);

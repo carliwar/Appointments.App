@@ -1,4 +1,5 @@
-﻿using Appointments.App.Models.DataModels;
+﻿using Acr.UserDialogs;
+using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using System;
@@ -149,6 +150,8 @@ namespace Appointments.App.ViewModels.User
 
             };
 
+            UserDialogs.Instance.ShowLoading();
+
             var result = await _dataService.SaveUser(user);
 
             if (result.Success)
@@ -176,6 +179,8 @@ namespace Appointments.App.ViewModels.User
 
                         if (status != PermissionStatus.Granted)
                         {
+                            UserDialogs.Instance.HideLoading();
+
                             var request = await Permissions.RequestAsync<Permissions.ContactsWrite>();
 
                             if (request != PermissionStatus.Granted)
@@ -185,22 +190,31 @@ namespace Appointments.App.ViewModels.User
 
                         }
 
+                        UserDialogs.Instance.ShowLoading();
                         DependencyService.Get<IDeviceContactService>().CreateContact(deviceContact);
                     }
                 }
                 catch (Exception ex)
                 {
+                    UserDialogs.Instance.HideLoading();
+
                     await Application.Current.MainPage.DisplayAlert("Alerta: ", "Creado correctamente en la App pero no en el Dispositivo.", "Ok");
                     await Application.Current.MainPage.Navigation.PopAsync();
                 }
+                
+                UserDialogs.Instance.HideLoading();
 
                 await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Usuario creado", "Ok");
                 await Application.Current.MainPage.Navigation.PopAsync();
             }
             else
             {
+                UserDialogs.Instance.HideLoading();
+
                 await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
             }
+
+            UserDialogs.Instance.HideLoading();
         }
 
         private string FormatPhone(string phone)
@@ -226,6 +240,8 @@ namespace Appointments.App.ViewModels.User
         {
             if(id != 0)
             {
+                UserDialogs.Instance.ShowLoading();
+
                 var user = await _dataService.GetUser(id);
 
                 if (user != null)
@@ -245,6 +261,8 @@ namespace Appointments.App.ViewModels.User
 
                     IsEdit = true;
                 }
+
+                UserDialogs.Instance.HideLoading();
             }
         }
 

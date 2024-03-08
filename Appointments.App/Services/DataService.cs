@@ -157,7 +157,7 @@ namespace Appointments.App.Services
         }
         public async Task<Appointment> CreateAppointment(Appointment appointment)
         {
-            await _database.CreateTablesAsync<Appointment, Appointment>();
+            await _database.CreateTableAsync<Appointment>();
             var db = new Repository<Appointment>(_database);
             await db.Insert(appointment);
             return appointment;
@@ -297,7 +297,7 @@ namespace Appointments.App.Services
             return existingReminder;
         }
 
-        public async Task DeleteCalendarEventLog(int appointmentId)
+        public async Task<int> DeleteCalendarEventLog(int appointmentId)
         {
             await _database.CreateTableAsync<CalendarEventLog>();
             var db = new Repository<CalendarEventLog>(_database);
@@ -306,8 +306,28 @@ namespace Appointments.App.Services
 
             var existingReminder = reminders.FirstOrDefault(t => t.AppointmentId == appointmentId);
 
-            await db.Delete(existingReminder);
+            return await db.Delete(existingReminder);
 
+        }
+
+        public async Task<int> DeleteAppointment(int appointmentId)
+        {
+            await _database.CreateTableAsync<AppointmentAppointmentType>();
+            var dbAppointmentType = new Repository<AppointmentAppointmentType>(_database);
+
+            await _database.CreateTableAsync<Appointment>();
+            var db = new Repository<Appointment>(_database);
+
+            var appointmentTypes = await dbAppointmentType.Get<AppointmentAppointmentType>(t => t.AppointmentId == appointmentId);
+
+            foreach(var appointmentType in appointmentTypes)
+            {
+                await dbAppointmentType.Delete(appointmentType);
+            }
+
+            var appointment = await db.Get(appointmentId);
+
+            return await db.Delete(appointment);
         }
         #endregion
 

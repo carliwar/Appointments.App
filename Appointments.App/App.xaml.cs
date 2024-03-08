@@ -1,4 +1,5 @@
-﻿using Appointments.App.Services;
+﻿using Acr.UserDialogs;
+using Appointments.App.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xamarin.Forms;
@@ -34,6 +35,7 @@ namespace Appointments.App
         #region Private Methods
         private void SetupServices()
         {
+            
         } 
         #endregion
     }

@@ -150,12 +150,21 @@
         <StackLayout>
             <Button
                 x:Name="SaveAppointmentButton"
-                Margin="5"
+                Margin="5,0,5,0"
                 Text="Guardar Cita" 
                 BackgroundColor="{StaticResource Primary}"
                 TextColor="{StaticResource WhiteText}"
                 Command="{Binding SaveAppointmentCommand}"
                 VerticalOptions="EndAndExpand"/>
+            <Button
+                IsVisible="{Binding IsEdit}"
+                Margin="5,0,5,5"
+                Text="Eliminar Cita" 
+                BackgroundColor="{StaticResource ErrorText}"
+                TextColor="{StaticResource WhiteText}"
+                Command="{Binding DeleteAppointmentCommand}"
+                VerticalOptions="EndAndExpand"/>    
+
         </StackLayout>
     </StackLayout>
 </ContentPage>

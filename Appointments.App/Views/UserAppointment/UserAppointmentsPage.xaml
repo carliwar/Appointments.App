@@ -78,6 +78,8 @@
                                 CornerRadius="5"
                                 HeightRequest="5"
                                 Margin="2,2,2,2"
+                                Command="{Binding BindingContext.SelectAppointmentCommand, Source={x:Reference Name=UserAppointmentsViewModel}}"    
+                                CommandParameter="{Binding .}"
                                 BackgroundColor="{Binding AppointmentColor}"
                                 TextColor="{Binding TextColor}"
                                 Text="{Binding AppointmentInformation}" />

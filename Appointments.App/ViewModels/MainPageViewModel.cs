@@ -1,4 +1,5 @@
-﻿using Appointments.App.Models;
+﻿using Acr.UserDialogs;
+using Appointments.App.Models;
 using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
@@ -24,15 +25,12 @@ namespace Appointments.App.ViewModels
 
         #endregion
 
-        public MainPageViewModel():base() 
+        public MainPageViewModel() : base()
         {
             _dataService = new DataService();
             Events = new EventCollection();
-
-            Task.Run(() => GetEvents()).Wait();            
-
             SelectedDate = DateTime.Today;
-            EnableAddAppointmentButton = true;            
+            EnableAddAppointmentButton = true;
         }
 
         #region Constants
@@ -41,7 +39,7 @@ namespace Appointments.App.ViewModels
         #endregion
 
         #region Properties
-        public DateTime Today {  get => DateTime.Now; } 
+        public DateTime Today { get => DateTime.Now; }
         private int _month = DateTime.Today.Month;
         private int _year = DateTime.Today.Year;
         private int _day = DateTime.Today.Day;
@@ -84,7 +82,8 @@ namespace Appointments.App.ViewModels
             set => SetProperty(ref _addAppointmentText, value);
         }
 
-        public EventCollection Events {
+        public EventCollection Events
+        {
             get => _events;
             set => SetProperty(ref _events, value);
         }
@@ -114,7 +113,7 @@ namespace Appointments.App.ViewModels
                 //create a list of strings
                 var options = new List<string> { ConstantValues.EDIT_APPOINTMENT, ConstantValues.MARK_NOT_ATTENDED_OPTION };
 
-                if(eventModel.UserPhone != null)
+                if (eventModel.UserPhone != null)
                 {
                     options.Add(ConstantValues.CALL_OPTION);
                     options.Add(ConstantValues.CONTACT_WHATSAPP_OPTION);
@@ -148,7 +147,7 @@ namespace Appointments.App.ViewModels
         }
 
         public ICommand DaySelectedCommand
-        {            
+        {
             get
             {
                 return new Command<DateTime>((date) => DaySelected(date));
@@ -157,7 +156,7 @@ namespace Appointments.App.ViewModels
 
         private void DaySelected(DateTime date)
         {
-            if(SelectedDate is null)
+            if (SelectedDate is null)
             {
                 EnableAddAppointmentButton = false;
                 AddAppointmentText = _disabledAddAppointmentButton;
@@ -177,7 +176,7 @@ namespace Appointments.App.ViewModels
 
         private async Task ButtonClicked(object sender)
         {
-            if(SelectedDate is null)
+            if (SelectedDate is null)
             {
                 SelectedDate = DateTime.Today;
             }
@@ -196,7 +195,7 @@ namespace Appointments.App.ViewModels
         private List<EventModel> GenerateEvents(List<Appointment> appointments)
         {
             var results = new List<EventModel>();
-            foreach(Appointment appointment in appointments)
+            foreach (Appointment appointment in appointments)
             {
                 var appointmentColor = Color.FromHex("#2196F3");
                 var attendedFlag = string.Empty;
@@ -214,8 +213,8 @@ namespace Appointments.App.ViewModels
                     appointmentColor = Color.FromHex(appointment.AppointmentTypes.FirstOrDefault().ColorCode);
                 }
 
-                results.Add(new EventModel 
-                { 
+                results.Add(new EventModel
+                {
                     Id = appointment.Id,
                     UserInformation = appointment.UserName,
                     UserPhone = appointment.UserPhone,
@@ -225,7 +224,7 @@ namespace Appointments.App.ViewModels
                 });
             }
 
-            if(results.Any())
+            if (results.Any())
             {
                 results = results.OrderBy(t => t.EventDate.TimeOfDay).ToList();
             }
@@ -235,23 +234,28 @@ namespace Appointments.App.ViewModels
 
         public async Task GetEvents()
         {
+            UserDialogs.Instance.ShowLoading();
             Events.Clear();
+
 
             var results = await _dataService.GetAppointments(DateTime.Today.AddMonths(-1), DateTime.Today.AddMonths(1));
 
             var datesWithEvents = results.Select(x => x.AppointmentDate.Date).Distinct();
 
-            foreach (var groupDate in datesWithEvents) {
+            foreach (var groupDate in datesWithEvents)
+            {
 
-                List<Appointment> events = results.Where(x => x.AppointmentDate.Date == groupDate).ToList();                
+                List<Appointment> events = results.Where(x => x.AppointmentDate.Date == groupDate).ToList();
 
                 Events.Add(groupDate, GenerateEvents(events));
             }
 
-            if(Events == null)
+            if (Events == null)
             {
                 Events = new EventCollection();
             }
+
+            UserDialogs.Instance.HideLoading();
         }
         #endregion
     }

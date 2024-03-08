@@ -1,4 +1,5 @@
-﻿using Appointments.App.Models.DataModels;
+﻿using Acr.UserDialogs;
+using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using System;
@@ -70,6 +71,8 @@ namespace Appointments.App.ViewModels.AppointmentType
                 Enabled = true;
             }
 
+            UserDialogs.Instance.ShowLoading();
+
             var appointmentType = new Models.DataModels.AppointmentType
             {
                 Id = Id,
@@ -84,6 +87,8 @@ namespace Appointments.App.ViewModels.AppointmentType
 
             if (result.Success)
             {
+                UserDialogs.Instance.HideLoading();
+
                 var tipoOperacion = IsEdit ? "actualizada" : "creada";
 
                 await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", $"Tipo de cita {tipoOperacion}.", "Ok");
@@ -91,6 +96,8 @@ namespace Appointments.App.ViewModels.AppointmentType
             }
             else
             {
+                UserDialogs.Instance.HideLoading();
+
                 await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
             }
         }
@@ -103,6 +110,8 @@ namespace Appointments.App.ViewModels.AppointmentType
         {
             if (id > 0)
             {
+                UserDialogs.Instance.ShowLoading();
+
                 IsEdit = true;
 
                 AppointmentType = await _dataService.GetAppointmentType(id);
@@ -119,6 +128,8 @@ namespace Appointments.App.ViewModels.AppointmentType
 
                     IsEdit = true;
                 }
+
+                UserDialogs.Instance.HideLoading();
             }
         }
 

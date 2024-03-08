@@ -1,4 +1,5 @@
-﻿using Appointments.App.Models.DataModels;
+﻿using Acr.UserDialogs;
+using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using Appointments.App.Views.Appointments;
@@ -112,6 +113,7 @@ namespace Appointments.App.ViewModels
 
         public async Task InitializeUsers(string searchText = "")
         {
+            UserDialogs.Instance.ShowLoading();
             Users.Clear();
 
             var users = await _dataService.GetUsersByType(UserTypeEnum.Paciente, searchText);
@@ -121,6 +123,7 @@ namespace Appointments.App.ViewModels
             {
                 Users.Add(user);
             }
+            UserDialogs.Instance.Loading().Hide();
         }
 
         private async Task CreateUser()
@@ -139,7 +142,7 @@ namespace Appointments.App.ViewModels
         public async Task InitializeAppointmentTypes()
         {
             if (Users.Any())
-            {
+            {                
                 AppointmentTypes.Clear();
 
                 AppointmentTypes.Add(new Models.DataModels.AppointmentType
