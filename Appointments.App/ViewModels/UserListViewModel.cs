@@ -116,13 +116,22 @@ namespace Appointments.App.ViewModels
             UserDialogs.Instance.ShowLoading();
             Users.Clear();
 
-            var users = await _dataService.GetUsersByType(UserTypeEnum.Paciente, searchText);
-            users = users.OrderBy(t => t.LastName).ToList();
-
-            foreach (var user in users)
+            try
             {
-                Users.Add(user);
+                var users = await _dataService.GetUsersByType(UserTypeEnum.Paciente, searchText);
+                users = users.OrderBy(t => t.LastName).ToList();
+
+                foreach (var user in users)
+                {
+                    Users.Add(user);
+                }
             }
+            catch (Exception e)
+            {
+                UserDialogs.Instance.HideLoading();
+                await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
+            }
+
             UserDialogs.Instance.Loading().Hide();
         }
 

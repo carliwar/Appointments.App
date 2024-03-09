@@ -1,6 +1,7 @@
 ﻿using Appointments.App.Models.DataModels;
 using Appointments.App.ViewModels.Appointments;
 using System;
+using System.Linq;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -24,7 +25,8 @@ namespace Appointments.App.Views.Appointments
         }
 
         protected override void OnAppearing()
-        {
+        {      
+
             AppointmentViewModel userAppointmentsViewModel = (BindingContext as AppointmentViewModel);
 
             if(SelectedUser != null)

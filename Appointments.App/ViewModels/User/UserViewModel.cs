@@ -146,7 +146,7 @@ namespace Appointments.App.ViewModels.User
                 Phone = FormatPhone(Phone),
                 UserType = UserTypeEnum.Paciente,
                 AppointmentType = SelectedAppointmentType,
-                AppointmentTypeId = SelectedAppointmentType.Id
+                AppointmentTypeId = SelectedAppointmentType?.Id
 
             };
 
@@ -154,64 +154,72 @@ namespace Appointments.App.ViewModels.User
 
             var result = await _dataService.SaveUser(user);
 
-            if (result.Success)
+            try
             {
-                //create user as a new phone contact
-                var deviceContact = new Contact
+                if (result.Success)
                 {
-                    NamePrefix = UserTypeEnum.Paciente.ToString(),
-                    GivenName = FirstName,
-                    FamilyName = LastName,
-                    Phones = new List<ContactPhone>
+                    //create user as a new phone contact
+                    var deviceContact = new Contact
+                    {
+                        NamePrefix = UserTypeEnum.Paciente.ToString(),
+                        GivenName = FirstName,
+                        FamilyName = LastName,
+                        Phones = new List<ContactPhone>
                     {
                         new ContactPhone
                         {
                             PhoneNumber = user.Phone
                         }
                     }
-                };
+                    };
 
-                try
-                {
-                    if (!IsImported && Id == 0)
+                    try
                     {
-                        var status = await Permissions.CheckStatusAsync<Permissions.ContactsWrite>();
-
-                        if (status != PermissionStatus.Granted)
+                        if (!IsImported && Id == 0)
                         {
-                            UserDialogs.Instance.HideLoading();
+                            var status = await Permissions.CheckStatusAsync<Permissions.ContactsWrite>();
 
-                            var request = await Permissions.RequestAsync<Permissions.ContactsWrite>();
-
-                            if (request != PermissionStatus.Granted)
+                            if (status != PermissionStatus.Granted)
                             {
-                                await Application.Current.MainPage.DisplayAlert("Error:", "No se puede crear contactos. Por favor, agrega el permiso desde la Configuración > Apps.", "Ok");
+                                UserDialogs.Instance.HideLoading();
+
+                                var request = await Permissions.RequestAsync<Permissions.ContactsWrite>();
+
+                                if (request != PermissionStatus.Granted)
+                                {
+                                    await Application.Current.MainPage.DisplayAlert("Error:", "No se puede crear contactos. Por favor, agrega el permiso desde la Configuración > Apps.", "Ok");
+                                }
+
                             }
 
+                            UserDialogs.Instance.ShowLoading();
+                            DependencyService.Get<IDeviceContactService>().CreateContact(deviceContact);
                         }
-
-                        UserDialogs.Instance.ShowLoading();
-                        DependencyService.Get<IDeviceContactService>().CreateContact(deviceContact);
                     }
+                    catch (Exception ex)
+                    {
+                        UserDialogs.Instance.HideLoading();
+
+                        await Application.Current.MainPage.DisplayAlert("Alerta: ", "Creado correctamente en la App pero no en el Dispositivo.", "Ok");
+                        await Application.Current.MainPage.Navigation.PopAsync();
+                    }
+
+                    UserDialogs.Instance.HideLoading();
+
+                    await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Usuario creado", "Ok");
+                    await Application.Current.MainPage.Navigation.PopAsync();
                 }
-                catch (Exception ex)
+                else
                 {
                     UserDialogs.Instance.HideLoading();
 
-                    await Application.Current.MainPage.DisplayAlert("Alerta: ", "Creado correctamente en la App pero no en el Dispositivo.", "Ok");
-                    await Application.Current.MainPage.Navigation.PopAsync();
+                    await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
                 }
-                
-                UserDialogs.Instance.HideLoading();
-
-                await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Usuario creado", "Ok");
-                await Application.Current.MainPage.Navigation.PopAsync();
             }
-            else
+            catch (Exception e)
             {
                 UserDialogs.Instance.HideLoading();
-
-                await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
+                await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
 
             UserDialogs.Instance.HideLoading();

@@ -105,6 +105,7 @@
                         </Grid>
 
                         <ListView 
+                            x:Name="UsersListView"
                             BackgroundColor="{StaticResource Tertiary}"                            
                             HeightRequest="100"                            
                             SeparatorVisibility="Default"

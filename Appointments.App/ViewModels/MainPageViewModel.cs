@@ -235,24 +235,32 @@ namespace Appointments.App.ViewModels
         public async Task GetEvents()
         {
             UserDialogs.Instance.ShowLoading();
-            Events.Clear();
-
-
-            var results = await _dataService.GetAppointments(DateTime.Today.AddMonths(-1), DateTime.Today.AddMonths(1));
-
-            var datesWithEvents = results.Select(x => x.AppointmentDate.Date).Distinct();
-
-            foreach (var groupDate in datesWithEvents)
+            try
             {
+                Events.Clear();
 
-                List<Appointment> events = results.Where(x => x.AppointmentDate.Date == groupDate).ToList();
 
-                Events.Add(groupDate, GenerateEvents(events));
+                var results = await _dataService.GetAppointments(DateTime.Today.AddMonths(-1), DateTime.Today.AddMonths(1));
+
+                var datesWithEvents = results.Select(x => x.AppointmentDate.Date).Distinct();
+
+                foreach (var groupDate in datesWithEvents)
+                {
+
+                    List<Appointment> events = results.Where(x => x.AppointmentDate.Date == groupDate).ToList();
+
+                    Events.Add(groupDate, GenerateEvents(events));
+                }
+
+                if (Events == null)
+                {
+                    Events = new EventCollection();
+                }
             }
-
-            if (Events == null)
+            catch (Exception e)
             {
-                Events = new EventCollection();
+                UserDialogs.Instance.HideLoading();
+                await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
 
             UserDialogs.Instance.HideLoading();

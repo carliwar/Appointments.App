@@ -73,32 +73,40 @@ namespace Appointments.App.ViewModels.AppointmentType
 
             UserDialogs.Instance.ShowLoading();
 
-            var appointmentType = new Models.DataModels.AppointmentType
+            try
             {
-                Id = Id,
-                Name = Name,
-                Description = AppointmentTypeDescription,
-                DefaultDuration = SelectedAppointmentDuration.Name,
-                ColorCode = ColorApp.ToHex(),
-                Enabled = Enabled
-            };            
+                var appointmentType = new Models.DataModels.AppointmentType
+                {
+                    Id = Id,
+                    Name = Name,
+                    Description = AppointmentTypeDescription,
+                    DefaultDuration = SelectedAppointmentDuration.Name,
+                    ColorCode = ColorApp.ToHex(),
+                    Enabled = Enabled
+                };
 
-            var result = await _dataService.SaveAppointmentType(appointmentType);
+                var result = await _dataService.SaveAppointmentType(appointmentType);
 
-            if (result.Success)
-            {
-                UserDialogs.Instance.HideLoading();
+                if (result.Success)
+                {
+                    UserDialogs.Instance.HideLoading();
 
-                var tipoOperacion = IsEdit ? "actualizada" : "creada";
+                    var tipoOperacion = IsEdit ? "actualizada" : "creada";
 
-                await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", $"Tipo de cita {tipoOperacion}.", "Ok");
-                await Application.Current.MainPage.Navigation.PopAsync();
+                    await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", $"Tipo de cita {tipoOperacion}.", "Ok");
+                    await Application.Current.MainPage.Navigation.PopAsync();
+                }
+                else
+                {
+                    UserDialogs.Instance.HideLoading();
+
+                    await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
+                }
             }
-            else
+            catch (Exception e)
             {
                 UserDialogs.Instance.HideLoading();
-
-                await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
+                await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
         }
 
@@ -112,21 +120,29 @@ namespace Appointments.App.ViewModels.AppointmentType
             {
                 UserDialogs.Instance.ShowLoading();
 
-                IsEdit = true;
-
-                AppointmentType = await _dataService.GetAppointmentType(id);
-
-                if (AppointmentType != null)
+                try
                 {
-                    Id = AppointmentType.Id;
-                    Name = AppointmentType.Name;
-                    AppointmentTypeDescription = AppointmentType.Description;
-                    SelectedAppointmentDuration = AppointmentDurations.SingleOrDefault(t => t.Name == AppointmentType.DefaultDuration);
-                    Color = AppointmentType.ColorCode;
-                    ColorApp = Xamarin.Forms.Color.FromHex(AppointmentType.ColorCode);
-                    Enabled = AppointmentType.Enabled;
-
                     IsEdit = true;
+
+                    AppointmentType = await _dataService.GetAppointmentType(id);
+
+                    if (AppointmentType != null)
+                    {
+                        Id = AppointmentType.Id;
+                        Name = AppointmentType.Name;
+                        AppointmentTypeDescription = AppointmentType.Description;
+                        SelectedAppointmentDuration = AppointmentDurations.SingleOrDefault(t => t.Name == AppointmentType.DefaultDuration);
+                        Color = AppointmentType.ColorCode;
+                        ColorApp = Xamarin.Forms.Color.FromHex(AppointmentType.ColorCode);
+                        Enabled = AppointmentType.Enabled;
+
+                        IsEdit = true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    UserDialogs.Instance.HideLoading();
+                    await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
                 }
 
                 UserDialogs.Instance.HideLoading();

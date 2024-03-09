@@ -147,33 +147,41 @@ namespace Appointments.App.ViewModels
                 return;
             }
 
-            var appointments = await _dataService.GetAppointmentsByUser(SelectedUser, null, null);
-            appointments = appointments.OrderBy(t => t.AppointmentDate).ToList();
-
-            if(SelectedUser.AppointmentType != null)
+            try
             {
-                HasDefaultAppointmentType = true;
-                UserDefaultAppointmentType = $"Especialidad: {SelectedUser.AppointmentType.Name}";
-            }
+                var appointments = await _dataService.GetAppointmentsByUser(SelectedUser, null, null);
+                appointments = appointments.OrderBy(t => t.AppointmentDate).ToList();
 
-            if(!appointments.Any())
-            {
-                ShowNoAppointmentsMessage = true;
-            }
-
-            foreach (var appointment in appointments)
-            {
-                var appointmentColor = Color.FromHex("#2196F3");
-
-                if(appointment.AppointmentTypes.Any())
+                if (SelectedUser.AppointmentType != null)
                 {
-                    appointmentColor = Color.FromHex(appointment.AppointmentTypes.FirstOrDefault().ColorCode);                    
+                    HasDefaultAppointmentType = true;
+                    UserDefaultAppointmentType = $"Especialidad: {SelectedUser.AppointmentType.Name}";
                 }
 
-                appointment.AppointmentColor = appointmentColor;
+                if (!appointments.Any())
+                {
+                    ShowNoAppointmentsMessage = true;
+                }
+
+                foreach (var appointment in appointments)
+                {
+                    var appointmentColor = Color.FromHex("#2196F3");
+
+                    if (appointment.AppointmentTypes.Any())
+                    {
+                        appointmentColor = Color.FromHex(appointment.AppointmentTypes.FirstOrDefault().ColorCode);
+                    }
+
+                    appointment.AppointmentColor = appointmentColor;
 
 
-                Appointments.Add(appointment);
+                    Appointments.Add(appointment);
+                }
+            }
+            catch (Exception e)
+            {
+                UserDialogs.Instance.HideLoading();
+                await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
 
             UserDialogs.Instance.HideLoading();

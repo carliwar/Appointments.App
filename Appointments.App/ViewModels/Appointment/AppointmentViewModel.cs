@@ -14,6 +14,8 @@ using Xamarin.Forms;
 using Plugin.Calendars.Abstractions;
 using Appointments.App.Utils;
 using Acr.UserDialogs;
+using Appointments.App.Views.Appointments;
+using static SQLite.SQLite3;
 
 namespace Appointments.App.ViewModels.Appointments
 {
@@ -36,7 +38,6 @@ namespace Appointments.App.ViewModels.Appointments
             }
 
             Users = new ObservableCollection<Models.DataModels.User>();
-
         }
         #region Temp Properties
 
@@ -122,7 +123,9 @@ namespace Appointments.App.ViewModels.Appointments
         public Models.DataModels.User SelectedUser
         {
             get => _selectedUser;
-            set => SetProperty(ref _selectedUser, value);
+            set {
+                SetProperty(ref _selectedUser, value);
+            }
         }
         public bool ShowError
         {
@@ -210,6 +213,15 @@ namespace Appointments.App.ViewModels.Appointments
                 return;
             }
 
+            if (IsEdit)
+            {
+                var realSelectedUser = Users.IndexOf(SelectedUser);
+                if (realSelectedUser > 0)
+                {
+
+                }
+            }
+
             var appointment = new Appointment
             {
                 Id = Id,
@@ -224,54 +236,62 @@ namespace Appointments.App.ViewModels.Appointments
 
             UserDialogs.Instance.ShowLoading();
 
-            var result = await _dataService.CreateValidatedAppointment(appointment);
 
-            if (result != null)
+
+            try
             {
-                if (result.Success)
-                {
-                    var statusRead = await Permissions.CheckStatusAsync<Permissions.CalendarRead>();
-                    var statusWrite = await Permissions.CheckStatusAsync<Permissions.CalendarWrite>();
+                var result = await _dataService.CreateValidatedAppointment(appointment);
 
-                    if (statusRead == PermissionStatus.Granted && statusWrite == PermissionStatus.Granted)
+                if (result != null)
+                {
+                    if (result.Success)
                     {
-                        await CreateDeviceAppointment(appointment);
+                        var statusRead = await Permissions.CheckStatusAsync<Permissions.CalendarRead>();
+                        var statusWrite = await Permissions.CheckStatusAsync<Permissions.CalendarWrite>();
+
+                        if (statusRead == PermissionStatus.Granted && statusWrite == PermissionStatus.Granted)
+                        {
+                            await CreateDeviceAppointment(appointment);
+                        }
+                        else
+                        {
+                            UserDialogs.Instance.HideLoading();
+
+                            var requestR = await Permissions.RequestAsync<Permissions.CalendarRead>();
+                            var requestW = await Permissions.RequestAsync<Permissions.CalendarWrite>();
+
+                            if (requestR == PermissionStatus.Granted && requestW == PermissionStatus.Granted)
+                            {
+                                UserDialogs.Instance.ShowLoading();
+                                await CreateDeviceAppointment(appointment);
+                            }
+                        }
+
+                        UserDialogs.Instance.HideLoading();
+
+                        var updatedMessage = IsEdit ? "actualizada" : "creada";
+
+                        await Application.Current.MainPage.DisplayAlert("Éxito!", $"Cita {updatedMessage}.", "Ok");
+                        await Application.Current.MainPage.Navigation.PopAsync();
                     }
                     else
                     {
                         UserDialogs.Instance.HideLoading();
 
-                        var requestR = await Permissions.RequestAsync<Permissions.CalendarRead>();
-                        var requestW = await Permissions.RequestAsync<Permissions.CalendarWrite>();
-
-                        if (requestR == PermissionStatus.Granted && requestW == PermissionStatus.Granted)
-                        {
-                            UserDialogs.Instance.ShowLoading();
-                            await CreateDeviceAppointment(appointment);
-                        }
+                        // display all errors from list as a single string from result
+                        await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
                     }
-                    
-                    UserDialogs.Instance.HideLoading();
-
-                    var updatedMessage = IsEdit ? "actualizada" : "creada";
-
-                    await Application.Current.MainPage.DisplayAlert("Éxito!", $"Cita {updatedMessage}.", "Ok");
-                    await Application.Current.MainPage.Navigation.PopAsync();
                 }
                 else
                 {
                     UserDialogs.Instance.HideLoading();
-
-                    // display all errors from list as a single string from result
-                    await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
+                    await Application.Current.MainPage.DisplayAlert("Error", "Contacte al administrador", "Ok");
                 }
             }
-            else
+            catch (Exception e)
             {
                 UserDialogs.Instance.HideLoading();
-
-
-                await Application.Current.MainPage.DisplayAlert("Error", "Contacte al administrador", "Ok");
+                await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
 
             UserDialogs.Instance.HideLoading();
@@ -284,14 +304,22 @@ namespace Appointments.App.ViewModels.Appointments
             if (confirm)
             {
                 UserDialogs.Instance.ShowLoading();
-                var result = await _dataService.DeleteAppointment(Id);
-
-                if (result == 1)
+                try
                 {
-                    await DeleteExistingCalendarReminder(Id);
+                    var result = await _dataService.DeleteAppointment(Id);
 
-                    await Application.Current.MainPage.DisplayAlert("Éxito!", $"Cita eliminada.", "Ok");
-                    await Application.Current.MainPage.Navigation.PopAsync();
+                    if (result == 1)
+                    {
+                        await DeleteExistingCalendarReminder(Id);
+
+                        await Application.Current.MainPage.DisplayAlert("Éxito!", $"Cita eliminada.", "Ok");
+                        await Application.Current.MainPage.Navigation.PopAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+                    UserDialogs.Instance.HideLoading();
+                    await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
                 }
                 UserDialogs.Instance.Loading().Hide();
             }
@@ -416,8 +444,20 @@ namespace Appointments.App.ViewModels.Appointments
 
         public async Task Initialize(Models.DataModels.User user = null)
         {
-            await LoadUsers(user: user);
-            await InitializeAppointmentTypes();
+            UserDialogs.Instance.ShowLoading();
+
+            try
+            {
+                await LoadUsers(user: user);
+                await InitializeAppointmentTypes();
+            }
+            catch (Exception e)
+            {
+                UserDialogs.Instance.HideLoading();
+                await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
+            }
+
+            UserDialogs.Instance.HideLoading();
 
         }
 
@@ -458,26 +498,40 @@ namespace Appointments.App.ViewModels.Appointments
         {
             if (id != 0)
             {
-                var appointment = await _dataService.GetAppointment(id);
+                UserDialogs.Instance.ShowLoading();
 
-                Id = appointment.Id;
-                GivenDate = appointment.AppointmentDate.Date;
-                GivenTime = appointment.AppointmentDate.TimeOfDay;
-                var appointmentDuration = appointment.AppointmentEnd - appointment.AppointmentDate;
-                var appointmentDurationEnum = (AppointmentDurationEnum)appointmentDuration.TotalMinutes;
-                SelectedAppointmentDuration = AppointmentDurations.FirstOrDefault(t => t.Name == appointmentDurationEnum);
-
-                var typesFromAppointment = AppointmentTypes.Where(t => appointment.AppointmentTypes.Any(u => u.Id == t.Data.Id));
-
-                foreach (var appointmentType in typesFromAppointment)
+                try
                 {
-                    appointmentType.IsSelected = true;
-                    SelectedAppointmentTypes.Add(appointmentType.Data);
-                }
+                    var appointment = await _dataService.GetAppointment(id);
 
-                //var selectedUser = Users.FirstOrDefault(t => t.Id == appointment.UserId);
-                SelectedUser = Users.FirstOrDefault(t => t.Id == appointment.UserId);
-                IsEdit = true;
+                    Id = appointment.Id;
+                    GivenDate = appointment.AppointmentDate.Date;
+                    GivenTime = appointment.AppointmentDate.TimeOfDay;
+                    var appointmentDuration = appointment.AppointmentEnd - appointment.AppointmentDate;
+                    var appointmentDurationEnum = (AppointmentDurationEnum)appointmentDuration.TotalMinutes;
+                    SelectedAppointmentDuration = AppointmentDurations.FirstOrDefault(t => t.Name == appointmentDurationEnum);
+
+                    var typesFromAppointment = AppointmentTypes.Where(t => appointment.AppointmentTypes.Any(u => u.Id == t.Data.Id));
+
+                    foreach (var appointmentType in typesFromAppointment)
+                    {
+                        appointmentType.IsSelected = true;
+                        SelectedAppointmentTypes.Add(appointmentType.Data);
+                    }
+
+                    var selectedUser = Users.FirstOrDefault(t => t.Id == appointment.UserId);
+                    var selectedUserIndex = Users.IndexOf(selectedUser);
+
+                    SelectedUser = Users[selectedUserIndex];
+
+                    IsEdit = true;
+                }
+                catch (Exception e)
+                {
+                    UserDialogs.Instance.HideLoading();
+                    await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
+                }
+                UserDialogs.Instance.HideLoading();
             }
         }
     }

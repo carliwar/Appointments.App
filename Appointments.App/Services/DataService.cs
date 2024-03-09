@@ -21,6 +21,12 @@ namespace Appointments.App.Services
         {
             _database = new SQLiteAsyncConnection(AppConfiguration.DatabasePath, AppConfiguration.Flags);
 
+            _database.CreateTableAsync<Appointment>();
+            _database.CreateTableAsync<AppointmentType>();
+            _database.CreateTableAsync<AppointmentAppointmentType>();
+            _database.CreateTableAsync<CalendarEventLog>();
+            _database.CreateTableAsync<Setting>();
+
         }
 
         #region Users
@@ -429,7 +435,7 @@ namespace Appointments.App.Services
 
         public async Task<List<AppointmentType>> GetAppointmentTypes(string searchText = "")
         {
-            await _database.CreateTablesAsync<AppointmentType, AppointmentType>();
+            await _database.CreateTableAsync<AppointmentType>();
             var db = new Repository<AppointmentType>(_database);
             var appointmentTypes = await db.Get();
 
