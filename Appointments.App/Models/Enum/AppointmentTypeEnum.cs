@@ -2,42 +2,6 @@
 
 namespace Appointments.App.Models.Enum
 {
-    public enum AppointmentTypeEnum
-    {
-        [Description("Endodoncia")]
-        Endodoncia,
-        [Description("Ortodoncia")]
-        Ortodoncia,
-        [Description("Profilaxis")]
-        Profilaxis,
-        [Description("PPR")]
-        PPR,
-        [Description("PT")]
-        PT,
-        [Description("Perno")]
-        Perno,
-        [Description("Corona")]
-        Corona,
-        [Description("Incrustación")]
-        Incrustacion,
-        [Description("Exodoncia")]
-        Exodoncia,
-        [Description("Terceros")]
-        Terceros,
-        [Description("Raspado")]
-        Raspado,
-        [Description("Alargamiento")]
-        Alargamiento,
-        [Description("Restauración")]
-        Restauracion,
-        [Description("Restauración Interproximal")]
-        RestauracionInterproximal,
-        [Description("Diagnóstico")]
-        Diagnostico,
-        [Description("Blanqueamiento")]
-        Blanqueamiento,
-    }
-
     public enum UserTypeEnum
     {
         Doctor,

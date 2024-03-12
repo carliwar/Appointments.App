@@ -2,13 +2,11 @@
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Essentials;
 using Xamarin.Forms;
-using static Xamarin.Essentials.Permissions;
 
 namespace Appointments.App.ViewModels.Settings.Admin
 {
@@ -17,6 +15,19 @@ namespace Appointments.App.ViewModels.Settings.Admin
         public SettingViewModel()
         {
             _dataService = new DataService();
+
+            foreach (SettingCatalogEnum enumValue in Enum.GetValues(typeof(SettingCatalogEnum)))
+            {
+                string customString = Utils.EnumDescriptor.GetEnumDescription(enumValue);
+
+                var appointmentDuration = new SettingCatalogsEnumModel
+                {
+                    Name = enumValue,
+                    Description = customString
+                };
+
+                SettingCatalogs.Add(appointmentDuration);
+            }
         }
 
         #region Temp Properties
@@ -24,14 +35,16 @@ namespace Appointments.App.ViewModels.Settings.Admin
         private readonly IDataService _dataService;
 
         #endregion
-        
+
         #region Properties
 
-        private int _id;        
+        private int _id;
         private string _catalog;
         private string _name;
         private string _value;
         private bool _isEdit = false;
+        private SettingCatalogsEnumModel _selectedSettingCatalog;
+        private ObservableCollection<SettingCatalogsEnumModel> _settingCatalogs = new ObservableCollection<SettingCatalogsEnumModel>();
 
         public int Id
         {
@@ -61,11 +74,23 @@ namespace Appointments.App.ViewModels.Settings.Admin
             get => _isEdit;
             set => SetProperty(ref _isEdit, value);
         }
+
+        public ObservableCollection<SettingCatalogsEnumModel> SettingCatalogs
+        {
+            get => _settingCatalogs;
+            set => SetProperty(ref _settingCatalogs, value);
+        }
+
+        public SettingCatalogsEnumModel SelectedSettingCatalog
+        {
+            get => _selectedSettingCatalog;
+            set => SetProperty(ref _selectedSettingCatalog, value);
+        }
         #endregion
 
         #region Commands
 
-        public ICommand SaveSettingCommand => new Command(async () =>  await SaveSetting());
+        public ICommand SaveSettingCommand => new Command(async () => await SaveSetting());
 
         private async Task SaveSetting()
         {
@@ -74,7 +99,7 @@ namespace Appointments.App.ViewModels.Settings.Admin
                 Id = Id,
                 Name = Name,
                 Value = Value,
-                Catalog = Catalog
+                Catalog = SelectedSettingCatalog.Name.ToString(),
             };
 
             await _dataService.SaveSetting(setting);
@@ -91,7 +116,7 @@ namespace Appointments.App.ViewModels.Settings.Admin
                 if (setting != null)
                 {
                     Id = setting.Id;
-                    Catalog = setting.Catalog;
+                    SelectedSettingCatalog = SettingCatalogs.FirstOrDefault(t => t.Name == (SettingCatalogEnum)Enum.Parse(typeof(SettingCatalogEnum), setting.Catalog));
                     Name = setting.Name;
                     Value = setting.Value;
                     IsEdit = true;

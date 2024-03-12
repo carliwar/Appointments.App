@@ -1,10 +1,11 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace Appointments.App.Utils
 {
     public static class EnumDescriptor
     {
-        public static string GetEnumDescription(Models.Enum.AppointmentDurationEnum value)
+        public static string GetEnumDescription(Enum value)
         {
             var fieldInfo = value.GetType().GetField(value.ToString());
 

@@ -16,11 +16,18 @@
                 <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
                     <StackLayout>
                         <Label Text="Catálogo"></Label>
-                        <Entry x:Name="Catalog" Text="{Binding Catalog}"></Entry>
+                        <Picker 
+                            TextColor="{StaticResource Primary}"
+                            BackgroundColor="{StaticResource Tertiary}"
+                            Title="Escoja el tipo de configuración"
+                            ItemsSource="{Binding SettingCatalogs}"
+                            SelectedItem="{Binding SelectedSettingCatalog}"
+                            ItemDisplayBinding="{Binding Description}">
+                        </Picker>
                         <Label Text="Nombre"></Label>
                         <Entry x:Name="Name" Text="{Binding Name}"></Entry>
                         <Label Text="Valor"></Label>
-                        <Entry x:Name="Value" Text="{Binding Value}"></Entry>                        
+                        <Entry x:Name="Value" Text="{Binding Value}"></Entry>
                     </StackLayout>
                 </Frame>
             </ScrollView>

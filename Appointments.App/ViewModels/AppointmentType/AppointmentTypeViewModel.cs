@@ -24,7 +24,7 @@ namespace Appointments.App.ViewModels.AppointmentType
 
             foreach (AppointmentDurationEnum enumValue in Enum.GetValues(typeof(Models.Enum.AppointmentDurationEnum)))
             {
-                string customString = GetEnumDescription(enumValue);
+                string customString = Utils.EnumDescriptor.GetEnumDescription(enumValue);
 
                 var appointmentDuration = new Models.DataModels.AppointmentDuration
                 {
@@ -53,7 +53,7 @@ namespace Appointments.App.ViewModels.AppointmentType
         public int Id { get => _id; set => SetProperty(ref _id, value); }
         public string Name { get => _name; set => SetProperty(ref _name, value); }
         public string AppointmentTypeDescription { get => _description; set => SetProperty(ref _description, value); }
-        public Models.DataModels.AppointmentDuration SelectedAppointmentDuration { get => _selectedAppointmentDuration; set => SetProperty(ref _selectedAppointmentDuration, value); }
+        public AppointmentDuration SelectedAppointmentDuration { get => _selectedAppointmentDuration; set => SetProperty(ref _selectedAppointmentDuration, value); }
         public string Color { get => _color; set => SetProperty(ref _color, value); }
         public Color ColorApp { get => _colorApp; set => SetProperty(ref _colorApp, value); }
         public bool Enabled { get => _enabled; set => SetProperty(ref _enabled, value); }
@@ -150,15 +150,5 @@ namespace Appointments.App.ViewModels.AppointmentType
         }
 
         #endregion
-
-        private string GetEnumDescription(Models.Enum.AppointmentDurationEnum value)
-        {
-            var fieldInfo = value.GetType().GetField(value.ToString());
-
-            var attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(
-                typeof(DescriptionAttribute), false);
-
-            return attributes.Length > 0 ? attributes[0].Description : value.ToString();
-        }
     }
 }
