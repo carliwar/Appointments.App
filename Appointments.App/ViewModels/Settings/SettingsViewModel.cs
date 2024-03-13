@@ -1,4 +1,5 @@
-﻿using Appointments.App.Views.Settings;
+﻿using Acr.UserDialogs;
+using Appointments.App.Views.Settings;
 using Appointments.App.Views.Settings.Admin;
 using Appointments.App.Views.Users;
 using System;

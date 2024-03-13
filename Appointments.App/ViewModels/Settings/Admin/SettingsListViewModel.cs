@@ -1,4 +1,5 @@
-﻿using Appointments.App.Models.DataModels;
+﻿using Acr.UserDialogs;
+using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using Appointments.App.Views.Settings.Admin;
@@ -31,6 +32,7 @@ namespace Appointments.App.ViewModels.Settings.Admin
         private ObservableCollection<Setting> _settings = new ObservableCollection<Setting>();
         private ObservableCollection<string> _settingsCatalogs = new ObservableCollection<string>();
         private Setting _selectedSettingCatalog;
+        private bool _adminIn;
 
         public ObservableCollection<string> SettingCatalogs
         {
@@ -42,6 +44,12 @@ namespace Appointments.App.ViewModels.Settings.Admin
         {
             get => _settings;
             set => SetProperty(ref _settings, value);
+        }
+
+        public bool AdminIn
+        {
+            get => _adminIn;
+            set => SetProperty(ref _adminIn, value);
         }
 
         public Setting SelectedSettingCatalog
@@ -72,6 +80,20 @@ namespace Appointments.App.ViewModels.Settings.Admin
         #endregion
         public async Task InitializeSettings(object searchText = null)
         {
+            if (!AdminIn)
+            {
+                var admintAccessPromt = await UserDialogs.Instance.PromptAsync("Ingrese el código de administrador:", "Solo Administrador!", "Ok", "Salir");
+                if (admintAccessPromt != null && admintAccessPromt.Text == "4924")
+                {
+                    AdminIn = true;
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("Acceso Negado", $"Código inválido", "Regresar al Inicio");
+                    await Application.Current.MainPage.Navigation.PushAsync(new MainPage());
+                }
+            }
+
             Settings.Clear();
             SettingCatalogs.Clear();
 
