@@ -3,8 +3,10 @@ using Appointments.App.Models;
 using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
+using Appointments.App.ViewModels.Settings.Admin;
 using Appointments.App.Views.Appointments;
 using Appointments.App.Views.Settings;
+using Appointments.App.Views.Settings.Admin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,13 +113,15 @@ namespace Appointments.App.ViewModels
             if (item is EventModel eventModel)
             {
                 //create a list of strings
-                var options = new List<string> { ConstantValues.EDIT_APPOINTMENT, ConstantValues.MARK_NOT_ATTENDED_OPTION };
+                var options = new List<string> { ConstantValues.EDIT_APPOINTMENT };
 
                 if (eventModel.UserPhone != null)
                 {
                     options.Add(ConstantValues.CALL_OPTION);
                     options.Add(ConstantValues.CONTACT_WHATSAPP_OPTION);
                 }
+
+                options.Add(ConstantValues.MARK_NOT_ATTENDED_OPTION);
 
 
                 string action = await App.Current.MainPage.DisplayActionSheet($"{eventModel.AppointmentType} - {eventModel.UserInformation}", "", "Cerrar",
@@ -234,6 +238,8 @@ namespace Appointments.App.ViewModels
 
         public async Task GetEvents()
         {
+            await ValidateInitialization();
+
             UserDialogs.Instance.ShowLoading();
             try
             {
@@ -264,6 +270,44 @@ namespace Appointments.App.ViewModels
             }
 
             UserDialogs.Instance.HideLoading();
+        }
+
+        public async Task ValidateInitialization()
+        {
+            UserDialogs.Instance.ShowLoading();
+
+            try
+            {                
+                var settings = await _dataService.GetAllSettings();
+
+                if (settings == null || !settings.Any())
+                {
+                    UserDialogs.Instance.HideLoading();
+                    await Application.Current.MainPage.DisplayAlert("Inicializar App - Admin", $"Se debe agregar las configuraciones para email y brand!", "Ok");
+                    await Application.Current.MainPage.Navigation.PushAsync(new SettingsListPage());
+                }
+                else
+                {
+                    var appointmentTypes = await _dataService.GetAppointmentTypes();
+
+                    if (appointmentTypes == null || !appointmentTypes.Any())
+                    {
+                        UserDialogs.Instance.HideLoading();
+                        await Application.Current.MainPage.DisplayAlert("Inicializar App", $"Se debe agregar al menos 1 tipo de cita!", "Ok");
+                        await Application.Current.MainPage.Navigation.PushAsync(new AppointmentTypesPage());
+                    }
+                }                
+            }
+            catch (Exception e)
+            {
+                UserDialogs.Instance.HideLoading();
+                await Application.Current.MainPage.DisplayAlert("Error al Inicializar App", $"Contacte al administrador! Mensaje: {e.Message}", "Cerrar app");
+                throw;
+
+            }
+
+            UserDialogs.Instance.HideLoading();
+
         }
         #endregion
     }

@@ -23,20 +23,7 @@ namespace Appointments.App.ViewModels.Appointments
     {
         public AppointmentViewModel() : base()
         {
-            _dataService = new DataService();
-
-            foreach (AppointmentDurationEnum enumValue in Enum.GetValues(typeof(AppointmentDurationEnum)))
-            {
-                string customString = EnumDescriptor.GetEnumDescription(enumValue);
-
-                var appointmentDuration = new AppointmentDuration
-                {
-                    Name = enumValue,
-                    Description = customString
-                };
-                AppointmentDurations.Add(appointmentDuration);
-            }
-
+            _dataService = new DataService();            
             Users = new ObservableCollection<Models.DataModels.User>();
         }
         #region Temp Properties
@@ -50,16 +37,16 @@ namespace Appointments.App.ViewModels.Appointments
         private string _userFullName;
         private DateTime _givenDate;
         private TimeSpan _givenTime;
-        private ObservableCollection<Models.DataModels.User> _users = new ObservableCollection<Models.DataModels.User>();
-        private ObservableCollection<AppointmentDuration> _appointmentDurations = new ObservableCollection<AppointmentDuration>();
+        private ObservableCollection<Models.DataModels.User> _users = new ObservableCollection<Models.DataModels.User>();        
         private MultiSelectObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new MultiSelectObservableCollection<Models.DataModels.AppointmentType>();
         private ObservableCollection<Models.DataModels.AppointmentType> _filterAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
-        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
-        private AppointmentDuration _selectedAppointmentDuration;
+        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();        
         private Models.DataModels.User _selectedUser;
         private bool _showError = false;
         private bool _isEdit = false;
         private int _appointmentTypesHeight;
+        private int _appointmentHours;
+        private int _appointmentMinutes;
         private Models.DataModels.AppointmentType _selectedAppointmentTypeFilter;
 
         public int Id
@@ -91,12 +78,6 @@ namespace Appointments.App.ViewModels.Appointments
             get => _users;
             set => SetProperty(ref _users, value);
         }
-
-        public ObservableCollection<AppointmentDuration> AppointmentDurations
-        {
-            get => _appointmentDurations;
-            set => SetProperty(ref _appointmentDurations, value);
-        }
         public MultiSelectObservableCollection<Models.DataModels.AppointmentType> AppointmentTypes
         {
             get => _appointmentTypes;
@@ -113,12 +94,6 @@ namespace Appointments.App.ViewModels.Appointments
         {
             get => _selectedAppointmentTypes;
             set => SetProperty(ref _selectedAppointmentTypes, value);
-        }
-
-        public AppointmentDuration SelectedAppointmentDuration
-        {
-            get => _selectedAppointmentDuration;
-            set => SetProperty(ref _selectedAppointmentDuration, value);
         }
         public Models.DataModels.User SelectedUser
         {
@@ -137,6 +112,18 @@ namespace Appointments.App.ViewModels.Appointments
         {
             get => _appointmentTypesHeight;
             set => SetProperty(ref _appointmentTypesHeight, value);
+        }
+
+        public int AppointmentHours
+        {
+            get => _appointmentHours;
+            set => SetProperty(ref _appointmentHours, value);
+        }
+
+        public int AppointmentMinutes
+        {
+            get => _appointmentMinutes;
+            set => SetProperty(ref _appointmentMinutes, value);
         }
         public Models.DataModels.AppointmentType SelectedAppointmentTypeFilter
         {
@@ -199,35 +186,21 @@ namespace Appointments.App.ViewModels.Appointments
 
         private async Task SaveAppointment(object sender)
         {
-            if (SelectedUser == null)
-            {
-                ShowError = true;
-            }
-            else
-            {
-                ShowError = false;
-            }
+            ValidateRequired();
 
             if (ShowError)
             {
                 return;
             }
 
-            if (IsEdit)
-            {
-                var realSelectedUser = Users.IndexOf(SelectedUser);
-                if (realSelectedUser > 0)
-                {
-
-                }
-            }
+            var appointmentDuration = (AppointmentHours * 60) + AppointmentMinutes;
 
             var appointment = new Appointment
             {
                 Id = Id,
                 UserId = SelectedUser.Id,
                 AppointmentDate = GivenDate.Date.Add(GivenTime),
-                AppointmentEnd = GivenDate.Date.Add(GivenTime).AddMinutes((double)SelectedAppointmentDuration.Name),
+                AppointmentEnd = GivenDate.Date.Add(GivenTime).AddMinutes(appointmentDuration),
                 UserInformation = SelectedUser.UserFullName,
                 Attended = true,
                 AppointmentTypes = SelectedAppointmentTypes?.ToList(),
@@ -235,8 +208,6 @@ namespace Appointments.App.ViewModels.Appointments
             };
 
             UserDialogs.Instance.ShowLoading();
-
-
 
             try
             {
@@ -295,7 +266,7 @@ namespace Appointments.App.ViewModels.Appointments
             }
 
             UserDialogs.Instance.HideLoading();
-        }
+        }        
 
         private async Task DeleteAppointmentAction()
         {
@@ -329,7 +300,9 @@ namespace Appointments.App.ViewModels.Appointments
         {
             if (sender is Models.DataModels.AppointmentType selectedAppointmentType)
             {
-                SelectedAppointmentDuration = AppointmentDurations.SingleOrDefault(t => t.Name == selectedAppointmentType.DefaultDuration);
+                var totalAppointmentMinutes = selectedAppointmentType.DefaultDuration;
+
+                AssignAppointmentDurationFromEnum(totalAppointmentMinutes);
 
                 if (!SelectedAppointmentTypes.Any(t => t.Id == selectedAppointmentType.Id))
                 {
@@ -342,26 +315,20 @@ namespace Appointments.App.ViewModels.Appointments
 
                 if (SelectedAppointmentTypes.Any())
                 {
-                    SelectedAppointmentDuration = AppointmentDurations.SingleOrDefault(t => t.Name == SelectedAppointmentTypes.Max(u => u.DefaultDuration));
+                    var maxAppointmentDuration = SelectedAppointmentTypes.Max(u => u.DefaultDuration);
+                    AssignAppointmentDurationFromEnum(maxAppointmentDuration);
+
                 }
                 else
                 {
-                    SelectedAppointmentDuration = null;
+                    AppointmentHours = 0; AppointmentMinutes = 0;
                 }
 
             }
         }
+
         private async Task CreateDeviceAppointment(Appointment appointment)
         {
-
-            var account = await _dataService.GetSettingByNameAndCatalog("email", "basic");
-            var brandName = await _dataService.GetSettingByNameAndCatalog("brand", "basic");
-
-            if (account != null)
-            {
-                EmailAccount = account.Value;
-                BrandName = brandName.Value;
-            }
 
             IList<Calendar> calendars = await CrossCalendars.Current.GetCalendarsAsync();
 
@@ -412,6 +379,19 @@ namespace Appointments.App.ViewModels.Appointments
             }
         }
 
+        // Look if possible to move to a global context
+        private async Task InitializeSettings()
+        {
+            var account = await _dataService.GetSettingByNameAndCatalog("email", "basic");
+            var brandName = await _dataService.GetSettingByNameAndCatalog("brand", "basic");
+
+            if (account != null)
+            {
+                EmailAccount = account.Value;
+                BrandName = brandName.Value;
+            }
+        }
+
         private async Task DeleteExistingCalendarReminder(int appointmentId)
         {
             var existingReminders = await _dataService.GetCalendarEventLog(appointmentId);
@@ -450,6 +430,7 @@ namespace Appointments.App.ViewModels.Appointments
             {
                 await LoadUsers(user: user);
                 await InitializeAppointmentTypes();
+                await InitializeSettings();
             }
             catch (Exception e)
             {
@@ -508,8 +489,9 @@ namespace Appointments.App.ViewModels.Appointments
                     GivenDate = appointment.AppointmentDate.Date;
                     GivenTime = appointment.AppointmentDate.TimeOfDay;
                     var appointmentDuration = appointment.AppointmentEnd - appointment.AppointmentDate;
-                    var appointmentDurationEnum = (AppointmentDurationEnum)appointmentDuration.TotalMinutes;
-                    SelectedAppointmentDuration = AppointmentDurations.FirstOrDefault(t => t.Name == appointmentDurationEnum);
+                    var totalAppointmentMinutes = Convert.ToInt32(appointmentDuration.TotalMinutes);
+
+                    AssignAppointmentDuration(totalAppointmentMinutes);
 
                     var typesFromAppointment = AppointmentTypes.Where(t => appointment.AppointmentTypes.Any(u => u.Id == t.Data.Id));
 
@@ -533,6 +515,34 @@ namespace Appointments.App.ViewModels.Appointments
                 }
                 UserDialogs.Instance.HideLoading();
             }
+        }
+        private void ValidateRequired()
+        {
+            if (SelectedUser == null)
+            {
+                ShowError = true;
+            }
+            else
+            {
+
+                ShowError = false;
+            }
+
+            //todo validate time entry and mapping
+            if (AppointmentHours == 0 && AppointmentMinutes == 0)
+            {
+                ShowError = true;
+            }
+        }
+        private void AssignAppointmentDurationFromEnum(AppointmentDurationEnum appointmentDurationInMinutes)
+        {
+            AssignAppointmentDuration((int)appointmentDurationInMinutes);
+        }
+
+        private void AssignAppointmentDuration(int appointmentDurationInMinutes)
+        {
+            AppointmentHours = appointmentDurationInMinutes / 60;
+            AppointmentMinutes = appointmentDurationInMinutes % 60;
         }
     }
 }

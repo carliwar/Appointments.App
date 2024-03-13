@@ -57,16 +57,21 @@
                                 <lv:SelectedItemBehavior Command="{Binding FillSelectedAppointmentTypesCommand}"/>
                             </ListView.Behaviors>
                         </ListView>
-                        <Picker 
-                            TitleColor="{StaticResource Primary}"
-                            TextColor="{StaticResource Secondary}"
-                            BackgroundColor="{StaticResource Tertiary}"
-                            Title="Duración de la cita"
-                            ItemsSource="{Binding AppointmentDurations}"
-                            SelectedItem="{Binding SelectedAppointmentDuration}"
-                            ItemDisplayBinding="{Binding Description}">
-                        </Picker>
-
+                        <Label Padding="1" Text="Duración de la cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="2*" />                                
+                            </Grid.ColumnDefinitions>
+                            <Label Margin="0,10,0,0" Text="Horas" Grid.Column="0" FontSize="18"></Label>
+                            <Entry Keyboard="Numeric" Grid.Column="1" Text="{Binding AppointmentHours}"/>
+                            <Label Margin="0,10,0,0" Padding="1" Text="Minutos" Grid.Column="0" Grid.Row="1" FontSize="18"></Label>
+                            <Entry Keyboard="Numeric" Grid.Row="1" Grid.Column="1" Text="{Binding AppointmentMinutes}"/>
+                        </Grid>
                     </StackLayout>
                 </Frame>
                 <Frame BackgroundColor="{StaticResource Tertiary}" Margin="5,0,0,0" CornerRadius="0">
