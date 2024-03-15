@@ -21,10 +21,10 @@
                 <Frame BackgroundColor="{StaticResource Tertiary}" Margin="5,0,0,0" CornerRadius="0">
                     <StackLayout>
                         <Label Padding="1" Text="Datos de la Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
-                        <DatePicker
+                        <DatePicker                            
                             TextColor="{StaticResource Primary}"
                             Date="{Binding GivenDate}"
-                            MinimumDate="{Binding Today}"
+                            MinimumDate="{Binding Today}"                            
                             Format="MM/dd/yyyy">                            
                         </DatePicker>
                         <TimePicker
@@ -120,7 +120,7 @@
                                 <DataTemplate>
                                     <ViewCell>
                                         <StackLayout Orientation="Vertical" Padding="20,0,20,0">
-                                            <Label Text="{Binding UserFullName}" FontSize="17" TextColor="{StaticResource Primary}" VerticalTextAlignment="Center"></Label>
+                                            <Label Margin="0,10,0,0" Text="{Binding UserFullName}" FontSize="17" TextColor="{StaticResource Primary}" VerticalTextAlignment="Center"></Label>
                                         </StackLayout>
                                     </ViewCell>
                                 </DataTemplate>
