@@ -245,10 +245,27 @@ namespace Appointments.App.ViewModels
             {
                 Events.Clear();
 
-
                 var results = await _dataService.GetAppointments(DateTime.Today.AddMonths(-1), DateTime.Today.AddMonths(1));
 
                 var datesWithEvents = results.Select(x => x.AppointmentDate.Date).Distinct();
+
+                var tomorrowEvents = datesWithEvents.Where(t => t.Date == DateTime.Now.Date.AddDays(1)).ToList();
+
+                if(tomorrowEvents.Any())
+                {
+                    try
+                    {
+                        DependencyService.Get<INotificationService>().LocalNotification(
+                                        "Citas pendientes!",
+                                        $"Tienes {tomorrowEvents.Count} citas para mañana, presiona para revisarlas",
+                                        0, new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 18, 0, 0));
+                    }
+                    catch (Exception e)
+                    {
+
+                        throw;
+                    }
+                }
 
                 foreach (var groupDate in datesWithEvents)
                 {

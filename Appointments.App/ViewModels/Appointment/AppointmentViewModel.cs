@@ -398,7 +398,7 @@ namespace Appointments.App.ViewModels.Appointments
             if (existingReminders != null)
             {
                 await _dataService.DeleteCalendarEventLog(appointmentId);
-                await DependencyService.Get<IDeviceCalendarService>().DeleteEventFromCalendar(existingReminders);
+                await DependencyService.Get<IDeviceCalendarService>().DeleteEventFromCalendar(existingReminders);                
             }
         }
 
@@ -519,6 +519,7 @@ namespace Appointments.App.ViewModels.Appointments
         private void ValidateRequired()
         {
             if (SelectedUser == null)
+
             {
                 ShowError = true;
             }
