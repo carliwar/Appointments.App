@@ -15,7 +15,7 @@ namespace Appointments.App.Models
         public string Time 
         {   get 
             {
-                return EventDate.ToString("HH:mm");
+                return $"{EventDate.ToString("HH:mm")} - {EndDate.ToString("HH:mm")}";
             } 
         }
     }

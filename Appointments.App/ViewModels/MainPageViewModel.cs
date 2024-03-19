@@ -224,6 +224,7 @@ namespace Appointments.App.ViewModels
                     UserPhone = appointment.UserPhone,
                     AppointmentType = $"{appointmentTypeString} {attendedFlag}",
                     EventDate = appointment.AppointmentDate,
+                    EndDate = appointment.AppointmentEnd,
                     AppointmentColor = appointmentColor
                 });
             }

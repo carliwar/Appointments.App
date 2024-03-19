@@ -176,7 +176,7 @@
                             CornerRadius="10"
                             HeightRequest="10"
                             Text="{Binding AppointmentType}"
-                            TextColor="#fefefe" />
+                            TextColor="{StaticResource WhiteText}" />
                         <Label
                             FontAttributes="Bold"
                             FontSize="Medium"
@@ -211,6 +211,6 @@
             Command="{Binding ButtonClickCommand}"
             IsVisible="{Binding EnableAddAppointmentButton}"
             Text="{Binding AddAppointmentText}"
-            TextColor="#fefefe" />
+            TextColor="{StaticResource WhiteText}" />
     </StackLayout>
 </ContentPage>
