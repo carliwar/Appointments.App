@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
+﻿using Appointments.App.Models;
 using Foundation;
 using UIKit;
+using Xamarin.Forms;
 
 namespace Appointments.App.iOS
 {

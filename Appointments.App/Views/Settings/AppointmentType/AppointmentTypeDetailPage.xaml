@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"             
+             xmlns:model="clr-namespace:Appointments.App.ViewModels.AppointmentType"
+             x:Name="AppointmentTypeViewModel"
+             xmlns:cp="clr-namespace:Amporis.Xamarin.Forms.ColorPicker;assembly=Amporis.Xamarin.Forms.ColorPicker"
+             x:Class="Appointments.App.Views.Settings.AppointmentType.AppointmentTypeDetailPage">
+    <ContentPage.BindingContext>
+        <model:AppointmentTypeViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ScrollView Orientation="Vertical">
+                <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
+                    <StackLayout>
+                        <Label Text="Nombre"></Label>
+                        <Entry x:Name="Nombre" Text="{Binding Name}"></Entry>
+                        <Label Text="Descripción"></Label>
+                        <Entry x:Name="Description" Text="{Binding AppointmentTypeDescription}"></Entry>
+                        <Label Text="Duración"></Label>
+                        <Picker 
+                            TextColor="{StaticResource Primary}"
+                            BackgroundColor="{StaticResource Tertiary}"
+                            Title="Escoja el tiempo predeterminado"                    
+                            ItemsSource="{Binding AppointmentDurations}"
+                            SelectedItem="{Binding SelectedAppointmentDuration}"
+                            ItemDisplayBinding="{Binding Description}">
+                        </Picker>
+                        <Label Text="Color Representativo"></Label>
+                        <cp:ColorPickerMixer Color="{Binding ColorApp}" EditAlpha="False" EditorsColor="{StaticResource Primary}" />
+                    </StackLayout>
+                </Frame>
+            </ScrollView>
+
+            <Button
+                Grid.Row="1"
+                Command="{Binding SaveAppointmentTypeCommand}"
+                VerticalOptions="EndAndExpand"
+                Margin="5"
+                Text="Guardar">
+            </Button>
+        </Grid>
+
+    </ContentPage.Content>
+</ContentPage>

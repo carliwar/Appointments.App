@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:Appointments.App.ViewModels.Settings"
+             x:Class="Appointments.App.Views.Settings.SettingsPage">
+    <ContentPage.BindingContext>
+        <model:SettingsViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Configuraciones"
+                   HorizontalOptions="Center"
+                   TextColor="{StaticResource Secondary}"
+                   Padding="5,5,5,5"
+                   FontSize="Title"/>
+            <Button
+                CornerRadius="5"
+                Margin="2,2,2,2"
+                Text="Tipos de Citas"
+                CommandParameter="AppointmentTypes"
+                Command="{Binding NavigateToPage}"/>
+            <Button
+                CornerRadius="5"
+                Margin="2,2,2,2"
+                Text="Administrador"
+                CommandParameter="Admin Settings"
+                Command="{Binding NavigateToPage}"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

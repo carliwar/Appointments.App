@@ -10,6 +10,9 @@
             <Color x:Key="WhiteText">#fefefe</Color>
             <Color x:Key="BlackText">#0c0c0c</Color>
             <Color x:Key="DisabledText">#C0C0C0</Color>
+            <Color x:Key="ErrorText">#ff0000</Color>
+            <Color x:Key="Success">#4BB543</Color>
+
             <Style TargetType="Button">
                 <Setter Property="TextColor" Value="White"></Setter>
                 <Setter Property="VisualStateManager.VisualStateGroups">
@@ -31,6 +34,15 @@
                     </VisualStateGroupList>
                 </Setter>
             </Style>
-        </ResourceDictionary>
+            <Style TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold"></Setter>
+                <Setter Property="TextColor" Value="{StaticResource Secondary}"></Setter>
+            </Style>
+            
+
+            <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeSolid">
+                <On Platform="Android" Value="fa-regular-400" />
+            </OnPlatform>
+        </ResourceDictionary>        
     </Application.Resources>
 </Application>

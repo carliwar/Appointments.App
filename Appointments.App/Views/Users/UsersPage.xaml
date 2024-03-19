@@ -2,34 +2,66 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:model="clr-namespace:Appointments.App.ViewModels"
+             xmlns:local="clr-namespace:Appointments.App.Utils.ValueConverters"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
              x:Name="UserListViewModel"
              x:Class="Appointments.App.Views.Users.UsersPage">
     <ContentPage.BindingContext>
         <model:UserListViewModel />
     </ContentPage.BindingContext>
-
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:BackgroundColorValueConverter x:Key="backgroundColor" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <StackLayout>
-        <Entry x:Name="SearchUser"
-               PlaceholderColor="#5084ad"
-               Placeholder="CI ó Nombre ó Apellido"
-               ReturnCommand="{Binding SearchUserCommand}"
-               ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
-        </Entry>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Picker Grid.Column="0"
+                TitleColor="{StaticResource Secondary}"
+                Title="Filtrar por Especialidad"
+                ItemsSource="{Binding AppointmentTypes}"
+                SelectedItem="{Binding SelectedAppointmentType}"            
+                ItemDisplayBinding="{Binding Name}">
+             </Picker>
+            <Entry Grid.Column="1" x:Name="SearchUser"
+                   PlaceholderColor="{StaticResource Secondary}"
+                   Placeholder="Buscar por datos del Paciente"
+                   ReturnCommand="{Binding SearchUserCommand}"
+                   ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">    
+                <Entry.Behaviors>
+                    <xct:EventToCommandBehavior
+                    EventName="TextChanged"
+                    Command="{Binding SearchUserCommand}"
+                    />
+                </Entry.Behaviors>
+            </Entry>
+        </Grid>
+        
         <ListView x:Name="UsersListView"
-            ItemsSource="{Binding People}"
+            ItemsSource="{Binding Users}"
             CachingStrategy="RecycleElement">
             <!--Built in Cells-->
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Grid>
+                        <Grid  x:Name="User">
                             <Button
                                 CornerRadius="5"
                                 HeightRequest="5"
                                 Margin="2"
-                                BackgroundColor="{StaticResource Tertiary}"
+                                BackgroundColor="{Binding AppointmentType, Converter={StaticResource backgroundColor}}"
                                 TextColor="{StaticResource BlackText}"
-                                Text="{Binding PersonValue}" />
+                                Text="{Binding UserFullName}"
+                                Command="{Binding BindingContext.UserAppointmentsCommand, Source={x:Reference Name=UserListViewModel}}"                                
+                                CommandParameter="{Binding .}">                                
+                            </Button>
                         </Grid>                        
                         <!--<StackLayout.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.EventSelectedCommand, Source={x:Reference MainCalendarPage}}" CommandParameter="{Binding .}" />
