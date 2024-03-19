@@ -252,7 +252,7 @@ namespace Appointments.App.ViewModels
 
                 var tomorrowEvents = datesWithEvents.Where(t => t.Date == DateTime.Now.Date.AddDays(1)).ToList();
 
-                if(tomorrowEvents.Any())
+                if (tomorrowEvents.Any())
                 {
                     try
                     {
@@ -295,26 +295,42 @@ namespace Appointments.App.ViewModels
             UserDialogs.Instance.ShowLoading();
 
             try
-            {                
+            {
                 var settings = await _dataService.GetAllSettings();
 
-                if (settings == null || !settings.Any())
+                // brand setting
+                if (settings.Any(t => t.Name != "brand"))
+                {
+                    var brand = new Setting
+                    {
+                        Catalog = SettingCatalogEnum.basic.ToString(),
+                        Name = "brand",
+                        Value = ConstantValues.APPOINTMENT_BRAND
+                    };
+
+                    await _dataService.SaveSetting(brand);
+                }
+                if (settings.Any(t => t.Name != "email"))
+                {
+                    var brand = new Setting
+                    {
+                        Catalog = SettingCatalogEnum.basic.ToString(),
+                        Name = "email",
+                        Value = ConstantValues.APPOINTMENT_BRAND
+                    };
+
+                    await _dataService.SaveSetting(brand);
+                }
+
+                var appointmentTypes = await _dataService.GetAppointmentTypes();
+
+                if (appointmentTypes == null || !appointmentTypes.Any())
                 {
                     UserDialogs.Instance.HideLoading();
-                    await Application.Current.MainPage.DisplayAlert("Inicializar App - Admin", $"Se debe agregar las configuraciones para email y brand!", "Ok");
-                    await Application.Current.MainPage.Navigation.PushAsync(new SettingsListPage());
+                    await Application.Current.MainPage.DisplayAlert("Inicializar App", $"Se debe agregar al menos 1 tipo de cita!", "Ok");
+                    await Application.Current.MainPage.Navigation.PushAsync(new AppointmentTypesPage());
                 }
-                else
-                {
-                    var appointmentTypes = await _dataService.GetAppointmentTypes();
 
-                    if (appointmentTypes == null || !appointmentTypes.Any())
-                    {
-                        UserDialogs.Instance.HideLoading();
-                        await Application.Current.MainPage.DisplayAlert("Inicializar App", $"Se debe agregar al menos 1 tipo de cita!", "Ok");
-                        await Application.Current.MainPage.Navigation.PushAsync(new AppointmentTypesPage());
-                    }
-                }                
             }
             catch (Exception e)
             {

@@ -6,7 +6,7 @@ namespace Appointments.App.Models.DataModels
 {
     public static class ConstantValues
     {
-        public const string APPOINTMENT_BRAND = "JeDent";
+        public const string APPOINTMENT_BRAND = "AgDent";
         public const string BRAND_MAIN_COLOR = "#2196F3";
 
         public const string NOT_ATTENDED = "NO ASISTIÓ";
