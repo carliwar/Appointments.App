@@ -76,7 +76,7 @@
                 </Frame>
                 <Frame BackgroundColor="{StaticResource Tertiary}" Margin="5,0,0,0" CornerRadius="0">
                     <StackLayout>
-                        <Label Padding="1" Text="Datos del paciente" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
+                        <Label Padding="1" Text="{Binding ScreenTitle}" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
 
                         <Grid>
                             <Grid.RowDefinitions>
@@ -98,7 +98,7 @@
                                 Grid.Column="1"
                                 x:Name="SearchUser"
                                 PlaceholderColor="{StaticResource Secondary}"
-                                Placeholder="Filtrar por Paciente"
+                                Placeholder="{Binding SearchPlaceholder}"
                                 ReturnCommand="{Binding SearchUserCommand}"
                                 ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
                                 <Entry.Behaviors>

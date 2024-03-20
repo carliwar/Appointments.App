@@ -222,7 +222,7 @@ namespace Appointments.App.ViewModels
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error!", "El paciente no tiene número de contacto asignado.", "Ok");
+                    await Application.Current.MainPage.DisplayAlert("Error!", $"El {ConstantValues.USER_DENOMINATION} no tiene número de contacto asignado.", "Ok");
                 }
             }
         }

@@ -69,7 +69,7 @@ namespace Appointments.App.Services
             {
                 if (await UserByIdentification(user.Identification) != null)
                 {
-                    result.Errors.Add($"Ya existe un paciente con la Cédula/Identificación ingresada. Paciente: {user.UserFullName}");
+                    result.Errors.Add($"Ya existe un {ConstantValues.USER_DENOMINATION} con la Cédula/Identificación ingresada. Paciente: {user.UserFullName}");
                 }
             }
 
@@ -77,7 +77,7 @@ namespace Appointments.App.Services
             {
                 if (user.Phone.StartsWith("09") && user.Phone.Length < 10)
                 {
-                    result.Errors.Add($"Teléfono incorrecto. Paciente: {user.UserFullName}");
+                    result.Errors.Add($"Teléfono incorrecto. {ConstantValues.USER_DENOMINATION}: {user.UserFullName}");
                 }
             }
             return result;
@@ -406,7 +406,7 @@ namespace Appointments.App.Services
             appointments = appointments.Where(t => t.Catalog == catalog).ToList();
 
             return appointments;
-        }
+        }        
         #endregion
 
         #region User Appointments

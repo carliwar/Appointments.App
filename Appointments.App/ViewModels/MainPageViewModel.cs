@@ -299,7 +299,9 @@ namespace Appointments.App.ViewModels
                 var settings = await _dataService.GetAllSettings();
 
                 // brand setting
-                if (settings.Any(t => t.Name != "brand"))
+                var brandSetting = settings.FirstOrDefault(t => t.Name.ToLower() == "brand");
+
+                if (brandSetting == null)
                 {
                     var brand = new Setting
                     {
@@ -310,16 +312,19 @@ namespace Appointments.App.ViewModels
 
                     await _dataService.SaveSetting(brand);
                 }
-                if (settings.Any(t => t.Name != "email"))
+
+                var emailSetting = settings.FirstOrDefault(t => t.Name.ToLower() == "email");
+
+                if (emailSetting == null)
                 {
-                    var brand = new Setting
+                    var email = new Setting
                     {
                         Catalog = SettingCatalogEnum.basic.ToString(),
                         Name = "email",
                         Value = ConstantValues.APPOINTMENT_BRAND
                     };
 
-                    await _dataService.SaveSetting(brand);
+                    await _dataService.SaveSetting(email);
                 }
 
                 var appointmentTypes = await _dataService.GetAppointmentTypes();

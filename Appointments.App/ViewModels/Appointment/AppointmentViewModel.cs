@@ -61,6 +61,22 @@ namespace Appointments.App.ViewModels.Appointments
             set => SetProperty(ref _userFullName, value);
         }
 
+        public string ScreenTitle
+        {
+            get
+            {
+                return $"Datos del {ConstantValues.USER_DENOMINATION}";
+            }
+        }
+
+        public string SearchPlaceholder
+        {
+            get
+            {
+                return $"Buscar por {ConstantValues.USER_DENOMINATION}";
+            }
+        }
+
         public DateTime GivenDate
         {
             get => _givenDate;

@@ -4,7 +4,6 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:model="clr-namespace:Appointments.App.ViewModels"
-    xmlns:fontawesome="clr-namespace:Appointments.App.Utils"
     xmlns:plugin="clr-namespace:Xamarin.Plugin.Calendar.Controls;assembly=Xamarin.Plugin.Calendar"
     x:Name="MainCalendarPage">
     <ContentPage.BindingContext>
@@ -12,7 +11,6 @@
     </ContentPage.BindingContext>
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding TodayCommand}" Text="HOY" />
-        <ToolbarItem Command="{Binding SettingsCommand}" Order="Primary" IconImageSource="settings.png"/>
     </ContentPage.ToolbarItems>
     <StackLayout>
         <plugin:Calendar            
@@ -20,7 +18,7 @@
             DayTappedCommand="{Binding DaySelectedCommand}"
             DayViewCornerRadius="3"
             DayViewSize="30"            
-            EventIndicatorColor="#5084ad"
+            EventIndicatorColor="{StaticResource Secondary}"
             EventIndicatorSelectedColor="{StaticResource WhiteText}"
             Events="{Binding Events}"
             HorizontalOptions="FillAndExpand"
@@ -28,7 +26,7 @@
             SelectedDate="{Binding SelectedDate}"
             SelectedDayBackgroundColor="{StaticResource Primary}"
             SelectedDayTextColor="{StaticResource WhiteText}"
-            SelectedDateColor="#2196F3"
+            SelectedDateColor="{StaticResource Primary}"
             ShownDate="{Binding Today}"
             SwipeToChangeMonthEnabled="True"
             TodayFillColor="{StaticResource Tertiary}"
