@@ -4,9 +4,9 @@
              x:Class="Appointments.App.App">
     <Application.Resources>
         <ResourceDictionary>
-            <Color x:Key="Primary">#2196F3</Color>
-            <Color x:Key="Secondary">#5084ad</Color>
-            <Color x:Key="Tertiary">#c6e1f7</Color>
+            <Color x:Key="Primary">#2D2D2D</Color>
+            <Color x:Key="Secondary">#5B5B5B</Color>
+            <Color x:Key="Tertiary">#9A9A9A</Color>
             <Color x:Key="WhiteText">#fefefe</Color>
             <Color x:Key="BlackText">#0c0c0c</Color>
             <Color x:Key="DisabledText">#C0C0C0</Color>
@@ -20,14 +20,14 @@
                         <VisualStateGroup x:Name="States">
                             <VisualState x:Name="Normal">
                                 <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#2196F3" />
-                                    <Setter Property="TextColor" Value="#fefefe" />
+                                    <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                    <Setter Property="TextColor" Value="{StaticResource WhiteText}" />
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Disabled">
                                 <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#c6e1f7" />
-                                    <Setter Property="TextColor" Value="#5084ad" />
+                                    <Setter Property="BackgroundColor" Value="{StaticResource Tertiary}" />
+                                    <Setter Property="TextColor" Value="{StaticResource Secondary}" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="ListViewSelected">#96BCE3</color>
-	<color name="ListViewHighlighted">#96BCE3</color>
+	<color name="ListViewSelected">#9A9A9A</color>
+	<color name="ListViewHighlighted">#6b6b6b</color>
 	<color name="launcher_background">#FFFFFF</color>
-    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimary">#2D2D2D</color>
+    <color name="colorSecondary">#5B5B5B</color>
+    <color name="colorTertiary">#9A9A9A</color>
     <color name="colorPrimaryDark">#5084ad</color>
     <color name="colorAccent">#042a49</color>
     <color name="Descanso">#2196F3</color>

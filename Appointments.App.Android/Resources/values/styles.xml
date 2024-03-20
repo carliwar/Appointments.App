@@ -13,18 +13,18 @@
 		<!--<item name="colorPrimaryDark">#1976D2</item>-->
 		<!-- colorAccent is used as the default value for colorControlActivated
          which is used to tint widgets -->
-		<item name="colorAccent">#2196F3</item>
-		<item name="android:textColorPrimary">#2196F3</item>
+		<item name="colorAccent">@color/colorPrimary</item>
+		<item name="android:textColorPrimary">@color/colorPrimary</item>
 		<item name="android:datePickerDialogTheme">@style/AppCompatDialogStyle</item>
-		<item name="android:colorPressedHighlight">@color/ListViewSelected</item>
-		<item name="android:colorFocusedHighlight">@color/ListViewSelected</item>
-		<item name="android:colorActivatedHighlight">@color/ListViewSelected</item>
-		<item name="android:activatedBackgroundIndicator">@color/ListViewSelected</item>
+		<item name="android:colorPressedHighlight">@color/ListViewHighlighted</item>
+		<item name="android:colorFocusedHighlight">@color/ListViewHighlighted</item>
+		<item name="android:colorActivatedHighlight">@color/ListViewHighlighted</item>
+		<item name="android:activatedBackgroundIndicator">@color/ListViewHighlighted</item>
 		<item name="android:timePickerStyle">@style/SpinnerTimePicker</item>
 	</style>
 
 	<style name="AppCompatDialogStyle" parent="Theme.AppCompat.Light.Dialog">
-		<item name="colorAccent">#2196F3</item>
+		<item name="colorAccent">@color/colorPrimary</item>
 	</style>
 
 	<style name="SpinnerTimePicker" parent="android:Widget.Material.Light.TimePicker">

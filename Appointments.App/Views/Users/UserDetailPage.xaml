@@ -29,12 +29,12 @@
                         <Entry x:Name="LastName" Text="{Binding LastName}"></Entry>
                         <Label Text="Fecha de Nacimiento"></Label>
                         <DatePicker x:Name="BirthDate" MaximumDate="{Binding Today}" Date="{Binding BirthDate}"></DatePicker>
-                        <Label Text="Especialidad de Paciente"></Label>
+                        <Label Text="Especialidad de cliente"></Label>
                         <Picker 
                             TitleColor="{StaticResource Primary}"
                             TextColor="{StaticResource Secondary}"
                             BackgroundColor="{StaticResource Tertiary}"
-                            Title="Especialidad Paciente"
+                            Title="Especialidad Cliente"
                             ItemsSource="{Binding AppointmentTypes}"
                             SelectedItem="{Binding SelectedAppointmentType}"
                             ItemDisplayBinding="{Binding Name}">                            

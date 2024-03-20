@@ -7,11 +7,11 @@ using Android.App;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Dent Calendar")]
+[assembly: AssemblyTitle("Tattoo Calendar")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("devs")]
-[assembly: AssemblyProduct("Dent Calendar")]
+[assembly: AssemblyProduct("Tattoo Calendar")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
