@@ -6,8 +6,8 @@ namespace Appointments.App.Models.DataModels
 {
     public static class ConstantValues
     {
-        public const string APPOINTMENT_BRAND = "InkPlan";
-        public const string USER_DENOMINATION = "cliente";
+        public const string APPOINTMENT_BRAND = "AgDent";
+        public const string USER_DENOMINATION = "paciente";
 
         public const string NOT_ATTENDED = "NO ASISTIÓ";
         public const string MARK_NOT_ATTENDED_OPTION = "Marcar como No Asistido por el " + USER_DENOMINATION;
