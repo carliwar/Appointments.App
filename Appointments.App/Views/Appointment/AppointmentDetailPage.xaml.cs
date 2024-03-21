@@ -1,9 +1,5 @@
 ﻿using Appointments.App.Models.DataModels;
 using Appointments.App.ViewModels.Appointments;
-using System;
-using System.Linq;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace Appointments.App.Views.Appointments
 {

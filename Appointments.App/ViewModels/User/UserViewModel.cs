@@ -1,16 +1,9 @@
-﻿using Acr.UserDialogs;
-using Appointments.App.Models.DataModels;
-using Appointments.App.Models.Enum;
+﻿using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using System;
-using System.Collections.Generic;
+using Controls.UserDialogs.Maui;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Essentials;
-using Xamarin.Forms;
-using Xamarin.Forms.MultiSelectListView;
+using Communication = Microsoft.Maui.ApplicationModel.Communication;
 
 namespace Appointments.App.ViewModels.User
 {
@@ -120,7 +113,7 @@ namespace Appointments.App.ViewModels.User
 
             }
 
-            var contact = await Contacts.PickContactAsync();
+            var contact = await Communication.Contacts.Default.PickContactAsync();
             if (contact != null)
             {
                 FirstName = contact.GivenName;
@@ -181,7 +174,7 @@ namespace Appointments.App.ViewModels.User
 
                             if (status != PermissionStatus.Granted)
                             {
-                                UserDialogs.Instance.HideLoading();
+                                UserDialogs.Instance.Loading(show:false);
 
                                 var request = await Permissions.RequestAsync<Permissions.ContactsWrite>();
 
@@ -198,31 +191,31 @@ namespace Appointments.App.ViewModels.User
                     }
                     catch (Exception ex)
                     {
-                        UserDialogs.Instance.HideLoading();
+                        UserDialogs.Instance.Loading(show:false);
 
                         await Application.Current.MainPage.DisplayAlert("Alerta: ", "Creado correctamente en la App pero no en el Dispositivo.", "Ok");
                         await Application.Current.MainPage.Navigation.PopAsync();
                     }
 
-                    UserDialogs.Instance.HideLoading();
+                    UserDialogs.Instance.Loading(show:false);
 
                     await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Usuario creado", "Ok");
                     await Application.Current.MainPage.Navigation.PopAsync();
                 }
                 else
                 {
-                    UserDialogs.Instance.HideLoading();
+                    UserDialogs.Instance.Loading(show:false);
 
                     await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
                 }
             }
             catch (Exception e)
             {
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
                 await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
 
-            UserDialogs.Instance.HideLoading();
+            UserDialogs.Instance.Loading(show:false);
         }
 
         private string FormatPhone(string phone)
@@ -270,7 +263,7 @@ namespace Appointments.App.ViewModels.User
                     IsEdit = true;
                 }
 
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
             }
         }
 

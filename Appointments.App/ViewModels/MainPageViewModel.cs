@@ -1,21 +1,12 @@
-﻿using Acr.UserDialogs;
-using Appointments.App.Models;
+﻿using Appointments.App.Models;
 using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using Appointments.App.ViewModels.Settings.Admin;
 using Appointments.App.Views.Appointments;
 using Appointments.App.Views.Settings;
-using Appointments.App.Views.Settings.Admin;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Controls.UserDialogs.Maui;
+using Plugin.Maui.Calendar.Models;
 using System.Windows.Input;
-using Xamarin.Essentials;
-using Xamarin.Forms;
-using Xamarin.Plugin.Calendar.Models;
-using static Xamarin.Essentials.Permissions;
 
 namespace Appointments.App.ViewModels
 {
@@ -201,12 +192,12 @@ namespace Appointments.App.ViewModels
             var results = new List<EventModel>();
             foreach (Appointment appointment in appointments)
             {
-                var appointmentColor = Color.FromHex("#2196F3");
+                var appointmentColor = Color.FromArgb("#2196F3");
                 var attendedFlag = string.Empty;
                 if (!appointment.Attended)
                 {
                     attendedFlag = $" - {ConstantValues.NOT_ATTENDED}";
-                    appointmentColor = Color.FromHex("800000");
+                    appointmentColor = Color.FromArgb("800000");
                 }
 
                 var appointmentTypeString = string.Empty;
@@ -214,7 +205,7 @@ namespace Appointments.App.ViewModels
                 if (appointment.AppointmentTypes != null && appointment.AppointmentTypes.Any())
                 {
                     appointmentTypeString = string.Join(", ", appointment.AppointmentTypes.Select(c => c.Name));
-                    appointmentColor = Color.FromHex(appointment.AppointmentTypes.FirstOrDefault().ColorCode);
+                    appointmentColor = Color.FromArgb(appointment.AppointmentTypes.FirstOrDefault().ColorCode);
                 }
 
                 results.Add(new EventModel
@@ -283,11 +274,11 @@ namespace Appointments.App.ViewModels
             }
             catch (Exception e)
             {
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
                 await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
 
-            UserDialogs.Instance.HideLoading();
+            UserDialogs.Instance.Loading(show:false);
         }
 
         public async Task ValidateInitialization()
@@ -331,7 +322,7 @@ namespace Appointments.App.ViewModels
 
                 if (appointmentTypes == null || !appointmentTypes.Any())
                 {
-                    UserDialogs.Instance.HideLoading();
+                    UserDialogs.Instance.Loading(show:false);
                     await Application.Current.MainPage.DisplayAlert("Inicializar App", $"Se debe agregar al menos 1 tipo de cita!", "Ok");
                     await Application.Current.MainPage.Navigation.PushAsync(new AppointmentTypesPage());
                 }
@@ -339,13 +330,13 @@ namespace Appointments.App.ViewModels
             }
             catch (Exception e)
             {
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
                 await Application.Current.MainPage.DisplayAlert("Error al Inicializar App", $"Contacte al administrador! Mensaje: {e.Message}", "Cerrar app");
                 throw;
 
             }
 
-            UserDialogs.Instance.HideLoading();
+            UserDialogs.Instance.Loading(show:false);
 
         }
         #endregion

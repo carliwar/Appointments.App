@@ -1,16 +1,7 @@
-﻿using Appointments.App.Models.DataModels;
-using Appointments.App.Models.Enum;
+﻿using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using Appointments.App.Views.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Essentials;
-using Xamarin.Forms;
-using static SQLite.SQLite3;
+using Communication = Microsoft.Maui.ApplicationModel.Communication;
 
 namespace Appointments.App.ViewModels
 {
@@ -94,7 +85,7 @@ namespace Appointments.App.ViewModels
                     
             }
             
-            var contact = await Contacts.PickContactAsync();
+            var contact = await Communication.Contacts.Default.PickContactAsync();
             if (contact != null)
             {
                 FirstName = contact.GivenName;

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:model="clr-namespace:Appointments.App.ViewModels.Settings.Admin"
              x:Name="SettingsListViewModel"
              x:Class="Appointments.App.Views.Settings.Admin.SettingsListPage">
@@ -32,7 +32,7 @@
                 ReturnCommand="{Binding SearchSettingCommand}"
                 ReturnCommandParameter="{Binding Text, Source={x:Reference SearchSetting}}">
                 <Entry.Behaviors>
-                    <xct:EventToCommandBehavior
+                    <toolkit:EventToCommandBehavior
                         EventName="TextChanged"
                         Command="{Binding SearchSettingCommand}"/>
                 </Entry.Behaviors>

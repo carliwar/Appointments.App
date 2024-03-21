@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Xamarin.Essentials;
-
-namespace Appointments.App.Services
+﻿namespace Appointments.App.Services
 {
     public interface IDeviceContactService
     {

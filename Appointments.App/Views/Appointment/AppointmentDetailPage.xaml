@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:model="clr-namespace:Appointments.App.ViewModels.Appointments"             
-             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
-             xmlns:lv="clr-namespace:Xamarin.Forms.MultiSelectListView;assembly=Xamarin.Forms.MultiSelectListView"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:lv="clr-namespace:Bertuzzi.MAUI.MultiSelectListView;assembly=Bertuzzi.MAUI.MultiSelectListView"  Padding="0,20,0,0"
              x:Name="AppointmentViewModel"
              x:Class="Appointments.App.Views.Appointments.AppointmentDetailPage">
     <ContentPage.BindingContext>
@@ -102,7 +102,7 @@
                                 ReturnCommand="{Binding SearchUserCommand}"
                                 ReturnCommandParameter="{Binding Text, Source={x:Reference SearchUser}}">
                                 <Entry.Behaviors>
-                                    <xct:EventToCommandBehavior
+                                    <toolkit:EventToCommandBehavior
                                     EventName="TextChanged"
                                     Command="{Binding SearchUserCommand}"/>
                                 </Entry.Behaviors>

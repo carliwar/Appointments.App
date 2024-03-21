@@ -1,17 +1,9 @@
-﻿using Acr.UserDialogs;
-using Appointments.App.Models.DataModels;
+﻿using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using System;
-using System.Collections.Generic;
+using Controls.UserDialogs.Maui;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Forms;
-using static Xamarin.Forms.Device;
 
 namespace Appointments.App.ViewModels.AppointmentType
 {
@@ -89,7 +81,7 @@ namespace Appointments.App.ViewModels.AppointmentType
 
                 if (result.Success)
                 {
-                    UserDialogs.Instance.HideLoading();
+                    UserDialogs.Instance.Loading(show:false);
 
                     var tipoOperacion = IsEdit ? "actualizada" : "creada";
 
@@ -98,14 +90,14 @@ namespace Appointments.App.ViewModels.AppointmentType
                 }
                 else
                 {
-                    UserDialogs.Instance.HideLoading();
+                    UserDialogs.Instance.Loading(show:false);
 
                     await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
                 }
             }
             catch (Exception e)
             {
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
                 await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
         }
@@ -133,7 +125,7 @@ namespace Appointments.App.ViewModels.AppointmentType
                         AppointmentTypeDescription = AppointmentType.Description;
                         SelectedAppointmentDuration = AppointmentDurations.SingleOrDefault(t => t.Name == AppointmentType.DefaultDuration);
                         Color = AppointmentType.ColorCode;
-                        ColorApp = Xamarin.Forms.Color.FromHex(AppointmentType.ColorCode);
+                        ColorApp = Microsoft.Maui.Graphics.Color.FromArgb(AppointmentType.ColorCode);
                         Enabled = AppointmentType.Enabled;
 
                         IsEdit = true;
@@ -141,11 +133,11 @@ namespace Appointments.App.ViewModels.AppointmentType
                 }
                 catch (Exception e)
                 {
-                    UserDialogs.Instance.HideLoading();
+                    UserDialogs.Instance.Loading(show:false);
                     await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
                 }
 
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
             }
         }
 

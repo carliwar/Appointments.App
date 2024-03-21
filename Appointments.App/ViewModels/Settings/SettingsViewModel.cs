@@ -1,13 +1,7 @@
-﻿using Acr.UserDialogs;
-using Appointments.App.Views.Settings;
+﻿using Appointments.App.Views.Settings;
 using Appointments.App.Views.Settings.Admin;
-using Appointments.App.Views.Users;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Forms;
+
 
 namespace Appointments.App.ViewModels.Settings
 {

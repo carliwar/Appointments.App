@@ -1,20 +1,10 @@
-﻿using Acr.UserDialogs;
-using Appointments.App.Models;
-using Appointments.App.Models.DataModels;
-using Appointments.App.Models.Enum;
+﻿using Appointments.App.Models.DataModels;
 using Appointments.App.Services;
 using Appointments.App.Views.Appointments;
-using Appointments.App.Views.Settings.AppointmentType;
 using Appointments.App.Views.Users;
-using System;
-using System.Collections.Generic;
+using Controls.UserDialogs.Maui;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace Appointments.App.ViewModels
 {
@@ -165,11 +155,11 @@ namespace Appointments.App.ViewModels
 
                 foreach (var appointment in appointments)
                 {
-                    var appointmentColor = Color.FromHex("#2196F3");
+                    var appointmentColor = Color.FromArgb("#2196F3");
 
                     if (appointment.AppointmentTypes.Any())
                     {
-                        appointmentColor = Color.FromHex(appointment.AppointmentTypes.FirstOrDefault().ColorCode);
+                        appointmentColor = Color.FromArgb(appointment.AppointmentTypes.FirstOrDefault().ColorCode);
                     }
 
                     appointment.AppointmentColor = appointmentColor;
@@ -180,11 +170,11 @@ namespace Appointments.App.ViewModels
             }
             catch (Exception e)
             {
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
                 await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
 
-            UserDialogs.Instance.HideLoading();
+            UserDialogs.Instance.Loading(show:false);
         }
 
         public async Task NewAppointment()

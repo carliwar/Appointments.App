@@ -1,21 +1,11 @@
 ﻿using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using Plugin.Calendars;
-using System;
-using System.Collections.Generic;
+using Bertuzzi.MAUI.MultiSelectListView;
+using Controls.UserDialogs.Maui;
+using Plugin.Maui.CalendarStore;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Essentials;
-using Xamarin.Forms.MultiSelectListView;
-using Xamarin.Forms;
-using Plugin.Calendars.Abstractions;
-using Appointments.App.Utils;
-using Acr.UserDialogs;
-using Appointments.App.Views.Appointments;
-using static SQLite.SQLite3;
 
 namespace Appointments.App.ViewModels.Appointments
 {
@@ -29,6 +19,7 @@ namespace Appointments.App.ViewModels.Appointments
         #region Temp Properties
 
         private readonly IDataService _dataService;
+        private ICalendarStore _calendarStore;
         #endregion
 
         #region Properties
@@ -242,7 +233,7 @@ namespace Appointments.App.ViewModels.Appointments
                         }
                         else
                         {
-                            UserDialogs.Instance.HideLoading();
+                            UserDialogs.Instance.Loading(show:false);
 
                             var requestR = await Permissions.RequestAsync<Permissions.CalendarRead>();
                             var requestW = await Permissions.RequestAsync<Permissions.CalendarWrite>();
@@ -254,7 +245,7 @@ namespace Appointments.App.ViewModels.Appointments
                             }
                         }
 
-                        UserDialogs.Instance.HideLoading();
+                        UserDialogs.Instance.Loading(show:false);
 
                         var updatedMessage = IsEdit ? "actualizada" : "creada";
 
@@ -263,7 +254,7 @@ namespace Appointments.App.ViewModels.Appointments
                     }
                     else
                     {
-                        UserDialogs.Instance.HideLoading();
+                        UserDialogs.Instance.Loading(show:false);
 
                         // display all errors from list as a single string from result
                         await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
@@ -271,17 +262,17 @@ namespace Appointments.App.ViewModels.Appointments
                 }
                 else
                 {
-                    UserDialogs.Instance.HideLoading();
+                    UserDialogs.Instance.Loading(show:false);
                     await Application.Current.MainPage.DisplayAlert("Error", "Contacte al administrador", "Ok");
                 }
             }
             catch (Exception e)
             {
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
                 await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
 
-            UserDialogs.Instance.HideLoading();
+            UserDialogs.Instance.Loading(show:false);
         }        
 
         private async Task DeleteAppointmentAction()
@@ -305,7 +296,7 @@ namespace Appointments.App.ViewModels.Appointments
                 }
                 catch (Exception e)
                 {
-                    UserDialogs.Instance.HideLoading();
+                    UserDialogs.Instance.Loading(show:false);
                     await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
                 }
                 UserDialogs.Instance.Loading().Hide();
@@ -346,18 +337,18 @@ namespace Appointments.App.ViewModels.Appointments
         private async Task CreateDeviceAppointment(Appointment appointment)
         {
 
-            IList<Calendar> calendars = await CrossCalendars.Current.GetCalendarsAsync();
+            var calendars = await _calendarStore.GetCalendars();
 
             var appCalendar = calendars.FirstOrDefault(t => t.Name == EmailAccount);
 
             if (appCalendar == null)
             {
-                appCalendar = new Calendar
-                {
-                    AccountName = BrandName,
-                };
+                appCalendar = calendars.FirstOrDefault(t => t.Name == BrandName);
 
-                await CrossCalendars.Current.AddOrUpdateCalendarAsync(appCalendar);
+                if (appCalendar == null) 
+                {
+                    var newCalendar = await _calendarStore.CreateCalendar(BrandName);
+                }
 
                 appCalendar = calendars.FirstOrDefault(t => t.Name == BrandName);
             }
@@ -376,7 +367,7 @@ namespace Appointments.App.ViewModels.Appointments
                     Location = BrandName,
                     AppointmentTypes = appointmentTypes,
                     ReminderMinutes = 10,
-                    CalendarID = Convert.ToInt32(appCalendar.ExternalID)
+                    CalendarID = Convert.ToInt32(appCalendar.Id)
                 };
 
                 var result = await DependencyService.Get<IDeviceCalendarService>().AddEventToCalendar(androidAppointment);
@@ -438,23 +429,24 @@ namespace Appointments.App.ViewModels.Appointments
 
         }
 
-        public async Task Initialize(Models.DataModels.User user = null)
+        public async Task Initialize(Models.DataModels.User user = null, ICalendarStore calendarStore = null)
         {
             UserDialogs.Instance.ShowLoading();
 
             try
             {
+                _calendarStore = calendarStore;
                 await LoadUsers(user: user);
                 await InitializeAppointmentTypes();
                 await InitializeSettings();
             }
             catch (Exception e)
             {
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
                 await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
 
-            UserDialogs.Instance.HideLoading();
+            UserDialogs.Instance.Loading(show:false);
 
         }
 
@@ -526,10 +518,10 @@ namespace Appointments.App.ViewModels.Appointments
                 }
                 catch (Exception e)
                 {
-                    UserDialogs.Instance.HideLoading();
+                    UserDialogs.Instance.Loading(show:false);
                     await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
                 }
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
             }
         }
         private void ValidateRequired()

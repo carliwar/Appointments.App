@@ -1,10 +1,5 @@
-﻿using Appointments.App.Models.Enum;
-using SQLite;
+﻿using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Appointments.App.Models.DataModels
 {
@@ -48,10 +43,10 @@ namespace Appointments.App.Models.DataModels
         public string UserName { get; set; }
         
         [Ignore]
-        public System.Drawing.Color AppointmentColor { get; set; }
+        public Color AppointmentColor { get; set; }
 
         [Ignore]
-        public System.Drawing.Color TextColor { get; set; }
+        public Color TextColor { get; set; }
     }
 
     public class AndroidAppointment

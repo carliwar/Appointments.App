@@ -1,16 +1,10 @@
-﻿using Acr.UserDialogs;
-using Appointments.App.Models.DataModels;
-using Appointments.App.Models.Enum;
+﻿using Appointments.App.Models.Enum;
 using Appointments.App.Services;
-using Appointments.App.Views.Appointments;
 using Appointments.App.Views.UserAppointment;
 using Appointments.App.Views.Users;
-using System;
+using Controls.UserDialogs.Maui;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Forms;
 
 namespace Appointments.App.ViewModels
 {
@@ -128,7 +122,7 @@ namespace Appointments.App.ViewModels
             }
             catch (Exception e)
             {
-                UserDialogs.Instance.HideLoading();
+                UserDialogs.Instance.Loading(show:false);
                 await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
             }
 

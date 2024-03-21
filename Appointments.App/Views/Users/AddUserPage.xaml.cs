@@ -1,7 +1,7 @@
 ﻿using Appointments.App.Models;
 using Appointments.App.ViewModels;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+
+
 
 namespace Appointments.App.Views.Users
 {

@@ -2,8 +2,8 @@
 using System;
 using System.Threading.Tasks;
 
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+
+
 
 namespace Appointments.App.Views.Settings
 {

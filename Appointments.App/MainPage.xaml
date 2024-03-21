@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    x:Class="Appointments.App.MainPage"
-    xmlns="http://xamarin.com/schemas/2014/forms"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:model="clr-namespace:Appointments.App.ViewModels"
-    xmlns:plugin="clr-namespace:Xamarin.Plugin.Calendar.Controls;assembly=Xamarin.Plugin.Calendar"
-    x:Name="MainCalendarPage">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:Appointments.App.ViewModels"
+             xmlns:plugin="clr-namespace:Plugin.Maui.Calendar.Controls;assembly=Plugin.Maui.Calendar" 
+             x:Class="Appointments.App.MainPage">
+
     <ContentPage.BindingContext>
         <model:MainPageViewModel />
     </ContentPage.BindingContext>
@@ -14,33 +13,33 @@
     </ContentPage.ToolbarItems>
     <StackLayout>
         <plugin:Calendar            
-            Day="{Binding Day}"
-            DayTappedCommand="{Binding DaySelectedCommand}"
-            DayViewCornerRadius="3"
-            DayViewSize="30"            
-            EventIndicatorColor="{StaticResource Secondary}"
-            EventIndicatorSelectedColor="{StaticResource WhiteText}"
-            Events="{Binding Events}"
-            HorizontalOptions="FillAndExpand"
-            Month="{Binding Month}"
-            SelectedDate="{Binding SelectedDate}"
-            SelectedDayBackgroundColor="{StaticResource Primary}"
-            SelectedDayTextColor="{StaticResource WhiteText}"
-            SelectedDateColor="{StaticResource Primary}"
-            ShownDate="{Binding Today}"
-            SwipeToChangeMonthEnabled="True"
-            TodayFillColor="{StaticResource Tertiary}"
-            SelectedTodayTextColor="{StaticResource WhiteText}"
-            TodayOutlineColor="{StaticResource Tertiary}"
-            VerticalOptions="FillAndExpand"
-            Year="{Binding Year}">
+        Day="{Binding Day}"
+        DayTappedCommand="{Binding DaySelectedCommand}"
+        DayViewCornerRadius="3"
+        DayViewSize="30"            
+        EventIndicatorColor="{StaticResource Secondary}"
+        EventIndicatorSelectedColor="{StaticResource WhiteText}"
+        Events="{Binding Events}"
+        HorizontalOptions="FillAndExpand"
+        Month="{Binding Month}"
+        SelectedDate="{Binding SelectedDate}"
+        SelectedDayBackgroundColor="{StaticResource Primary}"
+        SelectedDayTextColor="{StaticResource WhiteText}"
+        SelectedDateColor="{StaticResource Primary}"
+        ShownDate="{Binding Today}"
+        SwipeToChangeMonthEnabled="True"
+        TodayFillColor="{StaticResource Tertiary}"
+        SelectedTodayTextColor="{StaticResource WhiteText}"
+        TodayOutlineColor="{StaticResource Tertiary}"
+        VerticalOptions="FillAndExpand"
+        Year="{Binding Year}">
             <plugin:Calendar.HeaderSectionTemplate>
                 <DataTemplate>
                     <Grid
-                        Margin="-5"
-                        Padding="1"
-                        HorizontalOptions="FillAndExpand"
-                        VerticalOptions="Start">
+                    Margin="-5"
+                    Padding="1"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Start">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
@@ -51,36 +50,36 @@
                         </Grid.ColumnDefinitions>
 
                         <Frame
-                            Grid.Column="0"
-                            Padding="0"
-                            BackgroundColor="{StaticResource Tertiary}"
-                            CornerRadius="18"
-                            HasShadow="True"
-                            
-                            HeightRequest="36"
-                            HorizontalOptions="CenterAndExpand"
-                            VerticalOptions="Center"
-                            WidthRequest="36">
+                        Grid.Column="0"
+                        Padding="0"
+                        BackgroundColor="{StaticResource Tertiary}"
+                        CornerRadius="18"
+                        HasShadow="True"
+                        
+                        HeightRequest="36"
+                        HorizontalOptions="CenterAndExpand"
+                        VerticalOptions="Center"
+                        WidthRequest="36">
                             <Label
-                                FontAttributes="Bold"
-                                FontSize="25"
-                                HorizontalOptions="CenterAndExpand"
-                                HorizontalTextAlignment="Center"
-                                TextColor="{StaticResource Primary}"
-                                Text="&lt;"
-                                VerticalOptions="CenterAndExpand"
-                                VerticalTextAlignment="Center" />
+                            FontAttributes="Bold"
+                            FontSize="25"
+                            HorizontalOptions="CenterAndExpand"
+                            HorizontalTextAlignment="Center"
+                            TextColor="{StaticResource Primary}"
+                            Text="&lt;"
+                            VerticalOptions="CenterAndExpand"
+                            VerticalTextAlignment="Center" />
                             <Frame.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding PrevLayoutUnitCommand}" />
                             </Frame.GestureRecognizers>
                         </Frame>
 
                         <Label
-                            Grid.Column="1"
-                            FontAttributes="Bold"
-                            FontSize="Small"
-                            HorizontalOptions="Center"
-                            VerticalOptions="Center">
+                        Grid.Column="1"
+                        FontAttributes="Bold"
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
                             <Label.FormattedText>
                                 <FormattedString>
                                     <Span Text="{Binding LayoutUnitText, Mode=TwoWay}" />
@@ -91,24 +90,24 @@
                         </Label>
 
                         <Frame
-                            Grid.Column="2"
-                            Padding="0"
-                            BackgroundColor="{StaticResource Tertiary}"
-                            CornerRadius="18"
-                            HasShadow="True"
-                            HeightRequest="36"
-                            HorizontalOptions="CenterAndExpand"
-                            VerticalOptions="CenterAndExpand"
-                            WidthRequest="36">
+                        Grid.Column="2"
+                        Padding="0"
+                        BackgroundColor="{StaticResource Tertiary}"
+                        CornerRadius="18"
+                        HasShadow="True"
+                        HeightRequest="36"
+                        HorizontalOptions="CenterAndExpand"
+                        VerticalOptions="CenterAndExpand"
+                        WidthRequest="36">
                             <Label
-                                FontAttributes="Bold"
-                                FontSize="25"
-                                HorizontalOptions="CenterAndExpand"
-                                HorizontalTextAlignment="Center"
-                                TextColor="{StaticResource Primary}"
-                                Text="&gt;"
-                                VerticalOptions="CenterAndExpand"
-                                VerticalTextAlignment="Center" />
+                            FontAttributes="Bold"
+                            FontSize="25"
+                            HorizontalOptions="CenterAndExpand"
+                            HorizontalTextAlignment="Center"
+                            TextColor="{StaticResource Primary}"
+                            Text="&gt;"
+                            VerticalOptions="CenterAndExpand"
+                            VerticalTextAlignment="Center" />
 
                             <Frame.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding NextLayoutUnitCommand}" />
@@ -120,37 +119,37 @@
             <plugin:Calendar.FooterSectionTemplate>
                 <DataTemplate>
                     <Grid
-                        HeightRequest="40"
-                        HorizontalOptions="FillAndExpand"
-                        VerticalOptions="FillAndExpand">    
+                    HeightRequest="40"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Label
-                            FontAttributes="Bold"
-                            FontSize="Medium"
-                            Text="{Binding SelectedDateText}"
-                            TextColor="{Binding SelectedDateColor}"
-                            VerticalOptions="CenterAndExpand"
-                            VerticalTextAlignment="Center" />
+                        FontAttributes="Bold"
+                        FontSize="Medium"
+                        Text="{Binding SelectedDateText}"
+                        TextColor="{Binding SelectedDateColor}"
+                        VerticalOptions="CenterAndExpand"
+                        VerticalTextAlignment="Center" />
                         <Label
-                            x:Name="showHideLabel"
-                            Grid.Column="1"
-                            Margin="0,0,15,0"
-                            BackgroundColor="Transparent"
-                            FontAttributes="Bold"
-                            FontSize="25"
-                            HorizontalOptions="End"
-                            Text="▲"
-                            TextColor="{StaticResource Primary}"
-                            VerticalOptions="CenterAndExpand"
-                            VerticalTextAlignment="Center"> 
+                        x:Name="showHideLabel"
+                        Grid.Column="1"
+                        Margin="0,0,15,0"
+                        BackgroundColor="Transparent"
+                        FontAttributes="Bold"
+                        FontSize="25"
+                        HorizontalOptions="End"
+                        Text="▲"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="CenterAndExpand"
+                        VerticalTextAlignment="Center">
                             <Label.Triggers>
                                 <DataTrigger
-                                    Binding="{Binding CalendarSectionShown}"
-                                    TargetType="Label"
-                                    Value="False">
+                                Binding="{Binding CalendarSectionShown}"
+                                TargetType="Label"
+                                Value="False">
                                     <Setter Property="Text" Value="▼" />
                                 </DataTrigger>
                             </Label.Triggers>
@@ -164,34 +163,34 @@
             <plugin:Calendar.EventTemplate>
                 <DataTemplate>
                     <StackLayout
-                        Margin="5"
-                        Padding="5"
-                        BackgroundColor="{StaticResource Tertiary}"
-                        HorizontalOptions="FillAndExpand"
-                        VerticalOptions="FillAndExpand">
+                    Margin="5"
+                    Padding="5"
+                    BackgroundColor="{StaticResource Tertiary}"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand">
                         <Button
-                            BackgroundColor="{Binding AppointmentColor}"
-                            CornerRadius="10"
-                            HeightRequest="10"
-                            Text="{Binding AppointmentType}"
-                            TextColor="{StaticResource WhiteText}" />
+                        BackgroundColor="{Binding AppointmentColor}"
+                        CornerRadius="10"
+                        HeightRequest="10"
+                        Text="{Binding AppointmentType}"
+                        TextColor="{StaticResource WhiteText}" />
                         <Label
-                            FontAttributes="Bold"
-                            FontSize="Medium"
-                            Text="{Binding AppointmentType}" />
+                        FontAttributes="Bold"
+                        FontSize="Medium"
+                        Text="{Binding AppointmentType}" />
                         <Label
-                            FontAttributes="Bold"
-                            FontSize="Medium"
-                            Text="{Binding Time}" />
+                        FontAttributes="Bold"
+                        FontSize="Medium"
+                        Text="{Binding Time}" />
                         <Label
-                            FontSize="Small"
-                            LineBreakMode="WordWrap"
-                            Text="{Binding UserInformation}" />
+                        FontSize="Small"
+                        LineBreakMode="WordWrap"
+                        Text="{Binding UserInformation}" />
                         <Label
-                            FontAttributes="Bold"
-                            FontSize="Small"
-                            LineBreakMode="WordWrap"
-                            Text="{Binding UserPhone}">
+                        FontAttributes="Bold"
+                        FontSize="Small"
+                        LineBreakMode="WordWrap"
+                        Text="{Binding UserPhone}">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding CallPhoneCommand}" CommandParameter="{Binding UserPhone}" />
                             </Label.GestureRecognizers>
@@ -204,11 +203,12 @@
             </plugin:Calendar.EventTemplate>
         </plugin:Calendar>
         <Button
-            x:Name="AddAppointmentButton"            
-            BackgroundColor="{StaticResource Primary}"
-            Command="{Binding ButtonClickCommand}"
-            IsVisible="{Binding EnableAddAppointmentButton}"
-            Text="{Binding AddAppointmentText}"
-            TextColor="{StaticResource WhiteText}" />
+        x:Name="AddAppointmentButton"            
+        BackgroundColor="{StaticResource Primary}"
+        Command="{Binding ButtonClickCommand}"
+        IsVisible="{Binding EnableAddAppointmentButton}"
+        Text="{Binding AddAppointmentText}"
+        TextColor="{StaticResource WhiteText}" />
     </StackLayout>
+
 </ContentPage>

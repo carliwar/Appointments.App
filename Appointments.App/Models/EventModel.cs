@@ -1,7 +1,4 @@
-﻿using System;
-using System.Drawing;
-
-namespace Appointments.App.Models
+﻿namespace Appointments.App.Models
 {
     public class EventModel
     {

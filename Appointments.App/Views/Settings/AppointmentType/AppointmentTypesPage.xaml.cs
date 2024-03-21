@@ -1,7 +1,7 @@
 ﻿using Appointments.App.ViewModels;
 using Appointments.App.ViewModels.AppointmentType;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+
+
 
 namespace Appointments.App.Views.Settings
 {

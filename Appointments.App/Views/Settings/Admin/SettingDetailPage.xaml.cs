@@ -1,6 +1,6 @@
 ﻿using Appointments.App.ViewModels.Settings.Admin;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+
+
 
 namespace Appointments.App.Views.Settings.Admin
 {

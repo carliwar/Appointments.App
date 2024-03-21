@@ -1,10 +1,12 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<Shell xmlns="http://xamarin.com/schemas/2014/forms"
-       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:users="clr-namespace:Appointments.App.Views.Users"
-       xmlns:settings="clr-namespace:Appointments.App.Views.Settings"
-       xmlns:calendar="clr-namespace:Appointments.App"
-       x:Class="Appointments.App.AppShell">
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Appointments.App.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:users="clr-namespace:Appointments.App.Views.Users"
+    xmlns:settings="clr-namespace:Appointments.App.Views.Settings"
+    xmlns:calendar="clr-namespace:Appointments.App">
+
     <Shell.Resources>
         <ResourceDictionary>
             <Style x:Key="BaseStyle" TargetType="Element">
@@ -23,8 +25,8 @@
                 <Setter Property="Shell.ForegroundColor" Value="#fefefe" />
                 <Setter Property="Shell.TitleColor" Value="#fefefe" />
                 <Setter Property="Shell.DisabledColor" Value="#c5c5c5" />
-            </Style>                            
-            
+            </Style>
+
             <Style TargetType="TabBar" BasedOn="{StaticResource TabBarStyle}" />
             <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}" />
         </ResourceDictionary>
@@ -36,11 +38,4 @@
         <ShellContent Title="Configuraciones" Icon="settings.png" ContentTemplate="{DataTemplate settings:SettingsPage}" />
     </TabBar>
 
-    <!--
-        If you would like to navigate to this content you can do so by calling
-        await Shell.Current.GoToAsync("//LoginPage");
-    -->
-    <!--<TabBar>
-        <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}" />
-    </TabBar>-->
 </Shell>
