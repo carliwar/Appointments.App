@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Controls.UserDialogs.Maui;
 using Microsoft.Extensions.Logging;
 using Plugin.Maui.CalendarStore;
 
@@ -11,6 +12,7 @@ namespace Appointments.App
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseUserDialogs()
                 .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
