@@ -21,10 +21,10 @@
                 <Setter Property="Shell.TabBarTitleColor" Value="White"/>
             </Style>
             <Style x:Key="TabBarStyle" TargetType="TabBar">
-                <Setter Property="Shell.BackgroundColor" Value="{StaticResource Secondary}" />
-                <Setter Property="Shell.ForegroundColor" Value="#fefefe" />
-                <Setter Property="Shell.TitleColor" Value="#fefefe" />
-                <Setter Property="Shell.DisabledColor" Value="#c5c5c5" />
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="Shell.ForegroundColor" Value="{StaticResource WhiteText}" />
+                <Setter Property="Shell.TitleColor" Value="{StaticResource WhiteText}" />
+                <Setter Property="Shell.DisabledColor" Value="{StaticResource DisabledText}" />
             </Style>
 
             <Style TargetType="TabBar" BasedOn="{StaticResource TabBarStyle}" />

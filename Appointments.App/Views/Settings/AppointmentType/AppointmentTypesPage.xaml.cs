@@ -15,7 +15,7 @@ namespace Appointments.App.Views.Settings
 
         protected override void OnAppearing()
         {
-            (BindingContext as AppointmentTypesListViewModel)?.InitializeAppointmentTypes();
+            Task.Run(() => (BindingContext as AppointmentTypesListViewModel)?.InitializeAppointmentTypes().Wait());           
         }
     }
 }

@@ -2,15 +2,18 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:model="clr-namespace:Appointments.App.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:plugin="clr-namespace:Plugin.Maui.Calendar.Controls;assembly=Plugin.Maui.Calendar" 
-             x:Class="Appointments.App.MainPage">
-
+             x:Class="Appointments.App.MainPage"             
+             Title="">
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="{StaticResource Primary}"  StatusBarStyle="LightContent">            
+        </toolkit:StatusBarBehavior>
+    </ContentPage.Behaviors>
     <ContentPage.BindingContext>
         <model:MainPageViewModel />
     </ContentPage.BindingContext>
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding TodayCommand}" Text="HOY" />
-    </ContentPage.ToolbarItems>
+  
     <StackLayout>
         <plugin:Calendar            
         Day="{Binding Day}"
@@ -203,12 +206,13 @@
             </plugin:Calendar.EventTemplate>
         </plugin:Calendar>
         <Button
-        x:Name="AddAppointmentButton"            
-        BackgroundColor="{StaticResource Primary}"
-        Command="{Binding ButtonClickCommand}"
-        IsVisible="{Binding EnableAddAppointmentButton}"
-        Text="{Binding AddAppointmentText}"
-        TextColor="{StaticResource WhiteText}" />
+            x:Name="AddAppointmentButton"
+            Margin="5"
+            BackgroundColor="{StaticResource Primary}"
+            Command="{Binding ButtonClickCommand}"
+            IsVisible="{Binding EnableAddAppointmentButton}"
+            Text="{Binding AddAppointmentText}"
+            TextColor="{StaticResource WhiteText}" />
     </StackLayout>
 
 </ContentPage>

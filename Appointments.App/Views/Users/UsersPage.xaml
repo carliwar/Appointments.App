@@ -5,7 +5,8 @@
              xmlns:local="clr-namespace:Appointments.App.Utils.ValueConverters"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Name="UserListViewModel"
-             x:Class="Appointments.App.Views.Users.UsersPage">
+             x:Class="Appointments.App.Views.Users.UsersPage"
+             Title="">
     <ContentPage.BindingContext>
         <model:UserListViewModel />
     </ContentPage.BindingContext>

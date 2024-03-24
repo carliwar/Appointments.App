@@ -1,10 +1,13 @@
-﻿using Appointments.App.Models.DataModels;
+﻿using Android.App;
+using Appointments.App.Models.DataModels;
 using Appointments.App.Services;
 using Appointments.App.Views.Settings.AppointmentType;
+using Controls.UserDialogs.Maui;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Application = Microsoft.Maui.Controls.Application;
 
 namespace Appointments.App.ViewModels.AppointmentType
 {
@@ -38,15 +41,21 @@ namespace Appointments.App.ViewModels.AppointmentType
 
         public async Task InitializeAppointmentTypes(string searchText = "")
         {
+            UserDialogs.Instance.ShowLoading();
             AppointmentTypes.Clear();
 
             var appointmentTypes = await _dataService.GetAppointmentTypes(searchText);
-            appointmentTypes = appointmentTypes.OrderBy(t => t.Name).ToList();
 
-            foreach (var user in appointmentTypes)
+            if (appointmentTypes.Any())
             {
-                AppointmentTypes.Add(user);
+                appointmentTypes = appointmentTypes.OrderBy(t => t.Name).ToList();
+                foreach (var appointmentType in appointmentTypes)
+                {
+                    AppointmentTypes.Add(appointmentType);
+                }
             }
+
+            UserDialogs.Instance.Loading(show:false);
         }
 
         private async Task SearchAppointmentTypeAsync(object sender)
