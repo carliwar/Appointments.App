@@ -244,14 +244,17 @@ namespace Appointments.App.ViewModels.Appointments
                     {
                         try
                         {
-                            var appointmentInformation = $"{appointment.AppointmentDate.ToString("dd - MM - yyyy")} a las {appointment.AppointmentDate.ToString("HH:mm")}";
-                            var notificacion = new AppEmail
+                            if (string.IsNullOrWhiteSpace(SelectedUser.Email))
                             {
-                                To = SelectedUser.Email,
-                                Subject = $"Cita Odontológica JEDENT: {appointmentInformation}",
+                                var appointmentInformation = $"{appointment.AppointmentDate.ToString("dd - MM - yyyy")} a las {appointment.AppointmentDate.ToString("HH:mm")}";
+                                var notificacion = new AppEmail
+                                {
+                                    To = SelectedUser.Email,
+                                    Subject = $"Cita Odontológica JEDENT: {appointmentInformation}",
                                     Body = $"Se ha agendado una cita en JeDent para el día {appointmentInformation}. Por favor, asista con anticipación. O comuníquese con la doctora para comunicar cambios o cancelaciones."
-                            };
-                            EmailService.Send(notificacion);
+                                };
+                                EmailService.Send(notificacion);
+                            }                            
                         }
                         catch (Exception ex)
                         {
