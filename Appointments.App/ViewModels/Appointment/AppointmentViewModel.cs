@@ -16,6 +16,7 @@ using Appointments.App.Utils;
 using Acr.UserDialogs;
 using Appointments.App.Views.Appointments;
 using static SQLite.SQLite3;
+using Appointments.App.Models;
 
 namespace Appointments.App.ViewModels.Appointments
 {
@@ -23,7 +24,7 @@ namespace Appointments.App.ViewModels.Appointments
     {
         public AppointmentViewModel() : base()
         {
-            _dataService = new DataService();            
+            _dataService = new DataService();
             Users = new ObservableCollection<Models.DataModels.User>();
         }
         #region Temp Properties
@@ -37,10 +38,11 @@ namespace Appointments.App.ViewModels.Appointments
         private string _userFullName;
         private DateTime _givenDate;
         private TimeSpan _givenTime;
-        private ObservableCollection<Models.DataModels.User> _users = new ObservableCollection<Models.DataModels.User>();        
+        private TimeSpan _endTime;
+        private ObservableCollection<Models.DataModels.User> _users = new ObservableCollection<Models.DataModels.User>();
         private MultiSelectObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new MultiSelectObservableCollection<Models.DataModels.AppointmentType>();
         private ObservableCollection<Models.DataModels.AppointmentType> _filterAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
-        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();        
+        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
         private Models.DataModels.User _selectedUser;
         private bool _showError = false;
         private bool _isEdit = false;
@@ -89,6 +91,12 @@ namespace Appointments.App.ViewModels.Appointments
             set => SetProperty(ref _givenTime, value);
         }
 
+        public TimeSpan EndTime
+        {
+            get => _endTime;
+            set => SetProperty(ref _endTime, value);
+        }
+
         public ObservableCollection<Models.DataModels.User> Users
         {
             get => _users;
@@ -114,7 +122,8 @@ namespace Appointments.App.ViewModels.Appointments
         public Models.DataModels.User SelectedUser
         {
             get => _selectedUser;
-            set {
+            set
+            {
                 SetProperty(ref _selectedUser, value);
             }
         }
@@ -216,7 +225,7 @@ namespace Appointments.App.ViewModels.Appointments
                 Id = Id,
                 UserId = SelectedUser.Id,
                 AppointmentDate = GivenDate.Date.Add(GivenTime),
-                AppointmentEnd = GivenDate.Date.Add(GivenTime).AddMinutes(appointmentDuration),
+                AppointmentEnd = GivenDate.Date.Add(EndTime),
                 UserInformation = SelectedUser.UserFullName,
                 Attended = true,
                 AppointmentTypes = SelectedAppointmentTypes?.ToList(),
@@ -233,6 +242,22 @@ namespace Appointments.App.ViewModels.Appointments
                 {
                     if (result.Success)
                     {
+                        try
+                        {
+                            var appointmentInformation = $"{appointment.AppointmentDate.ToString("dd - MM - yyyy")} a las {appointment.AppointmentDate.ToString("HH:mm")}";
+                            var notificacion = new AppEmail
+                            {
+                                To = SelectedUser.Email,
+                                Subject = $"Cita Odontológica JEDENT: {appointmentInformation}",
+                                    Body = $"Se ha agendado una cita en JeDent para el día {appointmentInformation}. Por favor, asista con anticipación. O comuníquese con la doctora para comunicar cambios o cancelaciones."
+                            };
+                            EmailService.Send(notificacion);
+                        }
+                        catch (Exception ex)
+                        {
+                            await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL.", "Ok");
+                        }
+
                         var statusRead = await Permissions.CheckStatusAsync<Permissions.CalendarRead>();
                         var statusWrite = await Permissions.CheckStatusAsync<Permissions.CalendarWrite>();
 
@@ -282,7 +307,7 @@ namespace Appointments.App.ViewModels.Appointments
             }
 
             UserDialogs.Instance.HideLoading();
-        }        
+        }
 
         private async Task DeleteAppointmentAction()
         {
@@ -401,6 +426,8 @@ namespace Appointments.App.ViewModels.Appointments
             var account = await _dataService.GetSettingByNameAndCatalog("email", "basic");
             var brandName = await _dataService.GetSettingByNameAndCatalog("brand", "basic");
 
+            EndTime = GivenTime.Add(TimeSpan.FromMinutes(30));
+
             if (account != null)
             {
                 EmailAccount = account.Value;
@@ -414,7 +441,7 @@ namespace Appointments.App.ViewModels.Appointments
             if (existingReminders != null)
             {
                 await _dataService.DeleteCalendarEventLog(appointmentId);
-                await DependencyService.Get<IDeviceCalendarService>().DeleteEventFromCalendar(existingReminders);                
+                await DependencyService.Get<IDeviceCalendarService>().DeleteEventFromCalendar(existingReminders);
             }
         }
 
@@ -560,6 +587,7 @@ namespace Appointments.App.ViewModels.Appointments
         {
             AppointmentHours = appointmentDurationInMinutes / 60;
             AppointmentMinutes = appointmentDurationInMinutes % 60;
+            EndTime = GivenTime.Add(TimeSpan.FromMinutes(AppointmentHours * 60 + appointmentDurationInMinutes));
         }
     }
 }

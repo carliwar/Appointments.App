@@ -28,6 +28,7 @@ namespace Appointments.App.ViewModels.User
         private string _phone;
         private string _firstName;
         private string _lastName;
+        private string _email;
         private DateTime _birthDate = DateTime.Today;
         private readonly IDataService _dataService;
         private UserTypeEnum _selectedUserType;
@@ -62,6 +63,11 @@ namespace Appointments.App.ViewModels.User
         {
             get => _lastName;
             set => SetProperty(ref _lastName, value);
+        }
+        public string Email
+        {
+            get => _email;
+            set => SetProperty(ref _email, value);
         }
         public DateTime BirthDate
         {
@@ -127,6 +133,7 @@ namespace Appointments.App.ViewModels.User
                 LastName = contact.FamilyName;
                 Phone = contact.Phones.FirstOrDefault()?.PhoneNumber?.Replace(" ", "");
                 IsImported = true;
+                Email = contact.Emails?.FirstOrDefault().EmailAddress;
             }
         }
         private void SelectUserType(object item)
@@ -143,6 +150,7 @@ namespace Appointments.App.ViewModels.User
                 Name = FirstName,
                 LastName = LastName,
                 BirthDate = BirthDate,
+                Email = Email,
                 Phone = FormatPhone(Phone),
                 UserType = UserTypeEnum.Paciente,
                 AppointmentType = SelectedAppointmentType,
@@ -165,12 +173,12 @@ namespace Appointments.App.ViewModels.User
                         GivenName = FirstName,
                         FamilyName = LastName,
                         Phones = new List<ContactPhone>
-                    {
-                        new ContactPhone
                         {
-                            PhoneNumber = user.Phone
+                            new ContactPhone
+                            {
+                                PhoneNumber = user.Phone
+                            }
                         }
-                    }
                     };
 
                     try
@@ -206,7 +214,7 @@ namespace Appointments.App.ViewModels.User
 
                     UserDialogs.Instance.HideLoading();
 
-                    await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Usuario creado", "Ok");
+                    await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Paciente guardado.", "Ok");
                     await Application.Current.MainPage.Navigation.PopAsync();
                 }
                 else

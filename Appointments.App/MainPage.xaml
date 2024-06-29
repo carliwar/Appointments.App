@@ -53,7 +53,7 @@
                         <Frame
                             Grid.Column="0"
                             Padding="0"
-                            BackgroundColor="{StaticResource Tertiary}"
+                            BackgroundColor="{StaticResource Primary}"
                             CornerRadius="18"
                             HasShadow="True"
                             
@@ -66,7 +66,7 @@
                                 FontSize="25"
                                 HorizontalOptions="CenterAndExpand"
                                 HorizontalTextAlignment="Center"
-                                TextColor="{StaticResource Primary}"
+                                TextColor="{StaticResource WhiteText}"
                                 Text="&lt;"
                                 VerticalOptions="CenterAndExpand"
                                 VerticalTextAlignment="Center" />
@@ -93,7 +93,7 @@
                         <Frame
                             Grid.Column="2"
                             Padding="0"
-                            BackgroundColor="{StaticResource Tertiary}"
+                            BackgroundColor="{StaticResource Primary}"
                             CornerRadius="18"
                             HasShadow="True"
                             HeightRequest="36"
@@ -105,7 +105,7 @@
                                 FontSize="25"
                                 HorizontalOptions="CenterAndExpand"
                                 HorizontalTextAlignment="Center"
-                                TextColor="{StaticResource Primary}"
+                                TextColor="{StaticResource WhiteText}"
                                 Text="&gt;"
                                 VerticalOptions="CenterAndExpand"
                                 VerticalTextAlignment="Center" />
@@ -204,11 +204,9 @@
             </plugin:Calendar.EventTemplate>
         </plugin:Calendar>
         <Button
-            x:Name="AddAppointmentButton"            
-            BackgroundColor="{StaticResource Primary}"
+            x:Name="AddAppointmentButton"
             Command="{Binding ButtonClickCommand}"
             IsVisible="{Binding EnableAddAppointmentButton}"
-            Text="{Binding AddAppointmentText}"
-            TextColor="{StaticResource WhiteText}" />
+            Text="{Binding AddAppointmentText}" />
     </StackLayout>
 </ContentPage>

@@ -13,7 +13,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <ScrollView Orientation="Vertical">
-                <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
+                <Frame BackgroundColor="Transparent" Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
                     <StackLayout>
                         <Label Text="Catálogo"></Label>
                         <Picker 

@@ -44,9 +44,18 @@ namespace Appointments.App.ViewModels.AppointmentType
             var appointmentTypes = await _dataService.GetAppointmentTypes(searchText);
             appointmentTypes = appointmentTypes.OrderBy(t => t.Name).ToList();
 
-            foreach (var user in appointmentTypes)
+            foreach (var appointmentType in appointmentTypes)
             {
-                AppointmentTypes.Add(user);
+                var appointmentColor = Color.FromHex("#2196F3");
+
+                if (!string.IsNullOrWhiteSpace(appointmentType.ColorCode))
+                {
+                    appointmentColor = Color.FromHex(appointmentType.ColorCode);
+                }
+
+                appointmentType.AppointmentColor = appointmentColor;
+
+                AppointmentTypes.Add(appointmentType);
             }
         }
 

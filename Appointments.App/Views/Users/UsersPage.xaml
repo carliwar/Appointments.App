@@ -73,8 +73,7 @@
         <Button
             x:Name="AddUserButton"
             Margin="5"
-            Text="Nuevo Paciente +"
-            
+            Text="Nuevo Paciente +"                        
             Command="{Binding CreateUserCommand}">
         </Button>
     </StackLayout>

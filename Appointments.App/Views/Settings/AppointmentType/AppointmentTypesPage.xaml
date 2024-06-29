@@ -22,9 +22,8 @@
             </Entry.Behaviors>
         </Entry>
         <ListView x:Name="AppointmentTypesListView"
-                  ItemsSource="{Binding AppointmentTypes}"
-                  CachingStrategy="RecycleElement">
-            
+                  ItemsSource="{Binding AppointmentTypes}"                  
+                  CachingStrategy="RecycleElement">            
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
@@ -33,7 +32,7 @@
                             CornerRadius="5"
                             HeightRequest="5"
                             Margin="2"
-                            BackgroundColor="{StaticResource Tertiary}"
+                            BackgroundColor="{Binding AppointmentColor}"
                             TextColor="{StaticResource BlackText}"
                             Text="{Binding Name}"
                             Command="{Binding BindingContext.EditAppointmentTypeCommand, Source={x:Reference Name=AppointmentTypesListViewModel}}"                                

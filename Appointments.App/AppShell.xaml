@@ -8,21 +8,21 @@
     <Shell.Resources>
         <ResourceDictionary>
             <Style x:Key="BaseStyle" TargetType="Element">
-                <Setter Property="Shell.BackgroundColor" Value="{StaticResource Primary}" />
-                <Setter Property="Shell.ForegroundColor" Value="White" />
-                <Setter Property="Shell.TitleColor" Value="White" />
-                <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
-                <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
-                <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource Primary}" />
-                <Setter Property="Shell.TabBarForegroundColor" Value="White"/>
-                <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF"/>
-                <Setter Property="Shell.TabBarTitleColor" Value="White"/>
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource WhiteText}" />
+                <Setter Property="Shell.ForegroundColor" Value="{StaticResource WhiteText}" />
+                <Setter Property="Shell.TitleColor" Value="{StaticResource Primary}" />
+                <Setter Property="Shell.DisabledColor" Value="{StaticResource DisabledText}" />
+                <Setter Property="Shell.UnselectedColor" Value="{StaticResource DisabledText}" />
+                <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource WhiteText}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource WhiteText}"/>
+                <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource Disabled}"/>
+                <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource Primary}"/>
             </Style>
             <Style x:Key="TabBarStyle" TargetType="TabBar">
-                <Setter Property="Shell.BackgroundColor" Value="{StaticResource Secondary}" />
-                <Setter Property="Shell.ForegroundColor" Value="#fefefe" />
-                <Setter Property="Shell.TitleColor" Value="#fefefe" />
-                <Setter Property="Shell.DisabledColor" Value="#c5c5c5" />
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource WhiteText}" />
+                <Setter Property="Shell.ForegroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="Shell.TitleColor" Value="{StaticResource ActionActive}" />
+                <Setter Property="Shell.DisabledColor" Value="{StaticResource Disabled}" />
             </Style>                            
             
             <Style TargetType="TabBar" BasedOn="{StaticResource TabBarStyle}" />

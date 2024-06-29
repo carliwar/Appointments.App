@@ -37,7 +37,7 @@ namespace Appointments.App.Models.DataModels
                     appointmentTypes = string.Join(", ", AppointmentTypes.Select(t => t.Name));
                 }
 
-                return $"{attendedFlag} {AppointmentDate:dd/MM/yyyy} {AppointmentDate:HH:mm} - {appointmentTypes}"; 
+                return $"{attendedFlag} {AppointmentDate:dd/MM/yyyy} {AppointmentDate:HH:mm} - {AppointmentEnd:HH:mm} > {appointmentTypes}"; 
             } 
         }
 
