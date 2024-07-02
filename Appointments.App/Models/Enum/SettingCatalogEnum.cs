@@ -9,5 +9,7 @@ namespace Appointments.App.Models.Enum
         basic,
         [Description("Manejo de errores")]
         validation,
+        [Description("Firma")]
+        signature,
     }
 }

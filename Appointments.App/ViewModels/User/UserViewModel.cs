@@ -266,6 +266,7 @@ namespace Appointments.App.ViewModels.User
                     Identification = user.Identification;
                     FirstName = user.Name;
                     LastName = user.LastName;
+                    Email = user.Email;
                     Phone = user.Phone;
                     BirthDate = user.BirthDate ?? DateTime.UtcNow;
                     SelectedUserType = user.UserType;

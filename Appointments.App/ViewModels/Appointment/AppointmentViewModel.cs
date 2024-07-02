@@ -12,16 +12,14 @@ using Xamarin.Essentials;
 using Xamarin.Forms.MultiSelectListView;
 using Xamarin.Forms;
 using Plugin.Calendars.Abstractions;
-using Appointments.App.Utils;
 using Acr.UserDialogs;
-using Appointments.App.Views.Appointments;
-using static SQLite.SQLite3;
 using Appointments.App.Models;
 
 namespace Appointments.App.ViewModels.Appointments
 {
     public class AppointmentViewModel : BasePageViewModel
     {
+        readonly System.Globalization.CultureInfo cultureInfo = new System.Globalization.CultureInfo("es-EC");
         public AppointmentViewModel() : base()
         {
             _dataService = new DataService();
@@ -88,7 +86,19 @@ namespace Appointments.App.ViewModels.Appointments
         public TimeSpan GivenTime
         {
             get => _givenTime;
-            set => SetProperty(ref _givenTime, value);
+            set
+            {
+                SetProperty(ref _givenTime, value);
+                if (SelectedAppointmentTypes.Any())
+                {
+                    var maxAppointmentDuration = SelectedAppointmentTypes.Max(u => u.DefaultDuration);
+                    AssignAppointmentDurationFromEnum(maxAppointmentDuration);
+                }
+                else
+                {
+                    EndTime = GivenTime.Add(TimeSpan.FromMinutes(30));
+                }
+            }
         }
 
         public TimeSpan EndTime
@@ -241,25 +251,8 @@ namespace Appointments.App.ViewModels.Appointments
                 if (result != null)
                 {
                     if (result.Success)
-                    {
-                        try
-                        {
-                            if (string.IsNullOrWhiteSpace(SelectedUser.Email))
-                            {
-                                var appointmentInformation = $"{appointment.AppointmentDate.ToString("dd - MM - yyyy")} a las {appointment.AppointmentDate.ToString("HH:mm")}";
-                                var notificacion = new AppEmail
-                                {
-                                    To = SelectedUser.Email,
-                                    Subject = $"Cita Odontológica JEDENT: {appointmentInformation}",
-                                    Body = $"Se ha agendado una cita en JeDent para el día {appointmentInformation}. Por favor, asista con anticipación. O comuníquese con la doctora para comunicar cambios o cancelaciones."
-                                };
-                                EmailService.Send(notificacion);
-                            }                            
-                        }
-                        catch (Exception ex)
-                        {
-                            await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL.", "Ok");
-                        }
+                    {                        
+                        await SendAppointmentNotification(appointment);
 
                         var statusRead = await Permissions.CheckStatusAsync<Permissions.CalendarRead>();
                         var statusWrite = await Permissions.CheckStatusAsync<Permissions.CalendarWrite>();
@@ -310,6 +303,65 @@ namespace Appointments.App.ViewModels.Appointments
             }
 
             UserDialogs.Instance.HideLoading();
+        }
+
+        private async Task SendAppointmentNotification(Appointment appointment)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(SelectedUser.Email))
+                {
+                    var appointmentInformation = $"{appointment.AppointmentDate.ToString("dd-MMMM-yyyy", cultureInfo)} a las {appointment.AppointmentDate.ToString("HH:mm")}";
+
+                    var password = await _dataService.GetSettingByNameAndCatalog("password", "basic");
+                    var email = await _dataService.GetSettingByNameAndCatalog("email", "basic");
+                    var signatureData = await _dataService.GetSettingsByCatalog("signature");
+                    var brand = await _dataService.GetSettingByNameAndCatalog("brand", "basic");
+
+                    if (password != null && email != null)
+                    {
+                        string estadoCita = "agendado";
+                        if (IsEdit)
+                        {
+                            estadoCita = "modificado";
+                        }
+
+                        var notification = new AppEmail
+                        {
+                            To = SelectedUser.Email,
+                            Subject = $"Cita Odontológica JEDENT: {appointmentInformation}",
+                            Body = $"Se ha <strong>{estadoCita}</strong> su cita en JeDent para el día <strong>{appointmentInformation}</strong>. Por favor, asista con anticipación. <br><br>Comuníquese con la doctora para comunicar cambios o cancelaciones.",
+                            Sender = email.Value,
+                            Password = password.Value
+                        };
+
+                        try
+                        {
+                            var signatureModel = new SignatureModel
+                            {
+                                Name = signatureData.FirstOrDefault(t => t.Name == "Name").Value,
+                                Title = signatureData.FirstOrDefault(t => t.Name == "Title").Value,
+                                Email = email.Value,
+                                Phone = signatureData.FirstOrDefault(t => t.Name == "Phone").Value,
+                                Address = signatureData.FirstOrDefault(t => t.Name == "Address").Value,
+                                Facebook = signatureData.FirstOrDefault(t => t.Name == "Facebook").Value,
+                                Website = signatureData.FirstOrDefault(t => t.Name == "Website").Value,
+                                Company = brand.Value
+                            };
+
+                            EmailService.Send(notification, signatureModel);
+                        }
+                        catch (Exception ex)
+                        {
+                            await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL.", "Ok");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL.", "Ok");
+            }
         }
 
         private async Task DeleteAppointmentAction()
