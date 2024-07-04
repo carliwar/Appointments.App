@@ -126,14 +126,26 @@ namespace Appointments.App.ViewModels.User
 
             }
 
-            var contact = await Contacts.PickContactAsync();
-            if (contact != null)
+            try
             {
-                FirstName = contact.GivenName;
-                LastName = contact.FamilyName;
-                Phone = contact.Phones.FirstOrDefault()?.PhoneNumber?.Replace(" ", "");
-                IsImported = true;
-                Email = contact.Emails?.FirstOrDefault().EmailAddress;
+                var contact = await Contacts.PickContactAsync();
+                if (contact != null)
+                {
+                    FirstName = contact.GivenName;
+                    LastName = contact.FamilyName;
+                    Phone = contact.Phones.FirstOrDefault()?.PhoneNumber?.Replace(" ", "");
+                    IsImported = true;
+                    Email = contact.Emails?.FirstOrDefault()?.EmailAddress;
+                }
+            }
+            catch (TaskCanceledException)
+            {
+
+            }
+            catch (Exception)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error:", "Contacte al administrador.", "Ok");
+                throw;
             }
         }
         private void SelectUserType(object item)

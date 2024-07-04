@@ -16,5 +16,10 @@
         public const string SIGNATURE_NAME = "DOCTOR";
         public const string SPECIALIST_TITLE = "DR. CHANGE ME";
         public const string PHONE = "0983129292";
+
+        public const string BUTTON_PRIMARY_COLOR = "#00ADB5";
+        public const string BASIC_SETTING_COLOR = "#00ADB5";
+        public const string SIGNATURE_SETTING_COLOR = "#A0ACC1";
+        public const string NOTIFICATION_SETTING_COLOR = "#4BB543";
     }
 }

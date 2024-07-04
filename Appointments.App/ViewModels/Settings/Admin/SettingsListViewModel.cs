@@ -31,7 +31,7 @@ namespace Appointments.App.ViewModels.Settings.Admin
         #region Properties
         private ObservableCollection<Setting> _settings = new ObservableCollection<Setting>();
         private ObservableCollection<string> _settingsCatalogs = new ObservableCollection<string>();
-        private Setting _selectedSettingCatalog;
+        private string _selectedSettingCatalog;
 
         public ObservableCollection<string> SettingCatalogs
         {
@@ -45,7 +45,7 @@ namespace Appointments.App.ViewModels.Settings.Admin
             set => SetProperty(ref _settings, value);
         }
 
-        public Setting SelectedSettingCatalog
+        public string SelectedSettingCatalog
         {
             get => _selectedSettingCatalog;
             set
@@ -54,9 +54,9 @@ namespace Appointments.App.ViewModels.Settings.Admin
 
                 var searchValue = string.Empty;
 
-                if (SelectedSettingCatalog.Id != 0)
+                if (value.ToLower() != "todos")
                 {
-                    searchValue = SelectedSettingCatalog.Catalog;
+                    searchValue = _selectedSettingCatalog;
                 }
 
                 InitializeSettings(searchValue).ConfigureAwait(false);
@@ -74,7 +74,6 @@ namespace Appointments.App.ViewModels.Settings.Admin
         public async Task InitializeSettings(object searchText = null)
         {
             Settings.Clear();
-            SettingCatalogs.Clear();
 
             var settings = await _dataService.GetAllSettings((string)searchText);
             settings = settings.OrderBy(t => t.Name).ToList();
@@ -84,14 +83,18 @@ namespace Appointments.App.ViewModels.Settings.Admin
                 Settings.Add(setting);
             }
 
-            var catalogs = settings.Select(t => t.Catalog).Distinct();
-
-            SettingCatalogs.Add("Todos");
-
-            foreach (var catalog in catalogs)
+            if (!SettingCatalogs.Any())
             {
-                SettingCatalogs.Add(catalog);
-            }
+                var allSettings = await _dataService.GetAllSettings();
+                var catalogs = allSettings.Select(t => t.Catalog).Distinct();
+
+                SettingCatalogs.Add("Todos");
+
+                foreach (var catalog in catalogs)
+                {
+                    SettingCatalogs.Add(catalog);
+                }
+            }            
         }
 
         private async Task CreateSetting()

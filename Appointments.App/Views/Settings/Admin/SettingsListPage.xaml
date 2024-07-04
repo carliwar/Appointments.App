@@ -23,7 +23,7 @@
                 Title="Filtrar por Catálogo"
                 ItemsSource="{Binding SettingCatalogs}"
                 SelectedItem="{Binding SelectedSettingCatalog}"
-                ItemDisplayBinding="{Binding Catalog}">                
+                ItemDisplayBinding="{Binding .}">                
             </Picker>
             <Entry 
                 Grid.Column="1" x:Name="SearchSetting"
@@ -51,8 +51,9 @@
                                 CornerRadius="5"
                                 HeightRequest="5"
                                 Margin="2"
+                                BackgroundColor="{Binding SettingColor}"
                                 TextColor="{StaticResource WhiteText}"
-                                Text="{Binding Name}"
+                                Text="{Binding DisplayName}"
                                 Command="{Binding BindingContext.LoadSettingCommand, Source={x:Reference Name=SettingsListViewModel}}"                                
                                 CommandParameter="{Binding .}">
                             </Button>

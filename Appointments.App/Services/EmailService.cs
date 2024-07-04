@@ -4,6 +4,8 @@ using MimeKit;
 using MailKit.Net.Smtp;
 using MimeKit.Text;
 using Appointments.App.Utils.Templates;
+using Appointments.App.Models.Enum;
+using Appointments.App.Models.DataModels;
 
 namespace Appointments.App.Services
 {
@@ -19,7 +21,7 @@ namespace Appointments.App.Services
             }
 
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("JeDent", email.Sender));
+            message.From.Add(new MailboxAddress(DefaultValues.APPOINTMENT_BRAND, email.Sender));
             message.To.Add(new MailboxAddress(email.To, email.To));
             message.Subject = email.Subject;
 
