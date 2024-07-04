@@ -14,6 +14,7 @@ using Xamarin.Forms;
 using Plugin.Calendars.Abstractions;
 using Acr.UserDialogs;
 using Appointments.App.Models;
+using Plugin.LocalNotification;
 
 namespace Appointments.App.ViewModels.Appointments
 {
@@ -65,7 +66,7 @@ namespace Appointments.App.ViewModels.Appointments
         {
             get
             {
-                return $"Datos del {ConstantValues.USER_DENOMINATION}";
+                return $"Datos del {DefaultValues.USER_DENOMINATION}";
             }
         }
 
@@ -73,7 +74,7 @@ namespace Appointments.App.ViewModels.Appointments
         {
             get
             {
-                return $"Buscar por {ConstantValues.USER_DENOMINATION}";
+                return $"Buscar por {DefaultValues.USER_DENOMINATION}";
             }
         }
 
@@ -251,7 +252,7 @@ namespace Appointments.App.ViewModels.Appointments
                 if (result != null)
                 {
                     if (result.Success)
-                    {                        
+                    {
                         await SendAppointmentNotification(appointment);
 
                         var statusRead = await Permissions.CheckStatusAsync<Permissions.CalendarRead>();
@@ -309,6 +310,7 @@ namespace Appointments.App.ViewModels.Appointments
         {
             try
             {
+                await SetDeviceNotification();
                 if (!string.IsNullOrWhiteSpace(SelectedUser.Email))
                 {
                     var appointmentInformation = $"{appointment.AppointmentDate.ToString("dd-MMMM-yyyy", cultureInfo)} a las {appointment.AppointmentDate.ToString("HH:mm")}";
@@ -343,10 +345,11 @@ namespace Appointments.App.ViewModels.Appointments
                                 Title = signatureData.FirstOrDefault(t => t.Name == "Title").Value,
                                 Email = email.Value,
                                 Phone = signatureData.FirstOrDefault(t => t.Name == "Phone").Value,
+                                Company = brand.Value,
+                                // These settings can be optional
                                 Address = signatureData.FirstOrDefault(t => t.Name == "Address").Value,
                                 Facebook = signatureData.FirstOrDefault(t => t.Name == "Facebook").Value,
-                                Website = signatureData.FirstOrDefault(t => t.Name == "Website").Value,
-                                Company = brand.Value
+                                Website = signatureData.FirstOrDefault(t => t.Name == "Website").Value,                                
                             };
 
                             EmailService.Send(notification, signatureModel);
@@ -361,6 +364,59 @@ namespace Appointments.App.ViewModels.Appointments
             catch (Exception ex)
             {
                 await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL.", "Ok");
+            }
+        }
+
+        private async Task SetDeviceNotification()
+        {
+            //CHECK IF THERE IS AN EXISTENT NOTIFICATION FOR GIVEN DATE
+            try
+            {
+                IList<NotificationRequest> currentNotifications = await LocalNotificationCenter.Current.GetPendingNotificationList();
+
+                currentNotifications = currentNotifications.Where(t => t.Schedule.NotifyTime.Value.Date == GivenDate.Date).ToList();
+
+                if (!currentNotifications.Any())
+                {
+                    if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
+                    {
+                        await LocalNotificationCenter.Current.RequestNotificationPermission();
+                    }
+
+                    var notificationDay = await _dataService.GetSettingByNameAndCatalog("notification_time", SettingCatalogEnum.notifications.ToString());
+                    var notificationTime = await _dataService.GetSettingByNameAndCatalog("notification_day_to_show", SettingCatalogEnum.notifications.ToString());
+
+                    var notifyTime = GivenDate.AddHours(Convert.ToInt32(DefaultValues.NOTIFICATION_TIME));
+                    var notificationDayIndicator = "hoy";
+
+                    if (notificationDay != null && notificationDay.Value != DefaultValues.PHONE)
+                    {
+                        notifyTime = notifyTime.AddDays(-1);
+                        notificationDayIndicator = "mañana";
+                    }
+
+                    if (notificationTime != null && notificationTime.Value != DefaultValues.NOTIFICATION_TIME)
+                    {
+                        notifyTime = notifyTime.Date.AddHours(Convert.ToInt32(notificationTime.Value.Trim()));
+                    }
+
+                    var notification = new NotificationRequest
+                    {
+                        NotificationId = 100,
+                        Title = "CITAS",
+                        Description = $"Tiene citas pendientes para {notificationDayIndicator}! Ingrese para ver su calendario.",
+                        //ReturningData = "Dummy data", // Returning data when tapped on notification.
+                        Schedule =
+                    {
+                        NotifyTime = notifyTime // Used for Scheduling local notification, if not specified notification will show immediately.
+                    }
+                    };
+                    await LocalNotificationCenter.Current.Show(notification);
+                }
+            }
+            catch (Exception)
+            {
+
             }
         }
 

@@ -69,7 +69,7 @@ namespace Appointments.App.Services
             {
                 if (await UserByIdentification(user.Identification) != null)
                 {
-                    result.Errors.Add($"Ya existe un {ConstantValues.USER_DENOMINATION} con la Cédula/Identificación ingresada. Paciente: {user.UserFullName}");
+                    result.Errors.Add($"Ya existe un {DefaultValues.USER_DENOMINATION} con la Cédula/Identificación ingresada. Paciente: {user.UserFullName}");
                 }
             }
 
@@ -77,7 +77,7 @@ namespace Appointments.App.Services
             {
                 if (user.Phone.StartsWith("09") && user.Phone.Length < 10)
                 {
-                    result.Errors.Add($"Teléfono incorrecto. {ConstantValues.USER_DENOMINATION}: {user.UserFullName}");
+                    result.Errors.Add($"Teléfono incorrecto. {DefaultValues.USER_DENOMINATION}: {user.UserFullName}");
                 }
             }
             return result;
@@ -381,19 +381,75 @@ namespace Appointments.App.Services
         {
             await _database.CreateTableAsync<Setting>();
             var db = new Repository<Setting>(_database);
-            var appointments = await db.Get();
+            var settings = await db.Get();
 
             var formattedSearch = searchText?.ToLower();
 
             if (!string.IsNullOrWhiteSpace(formattedSearch))
             {
-                appointments = appointments.Where(
+                settings = settings.Where(
                     t => (t.Name != null && t.Name.ToLower().Contains(formattedSearch))
                     || (t.Catalog != null && t.Catalog.ToLower().Contains(formattedSearch))
                 ).ToList();
             }
 
-            return appointments;
+            return settings;
+        }
+
+        public async Task<List<Setting>> GetBasicSettings()
+        {
+            await _database.CreateTableAsync<Setting>();
+            var db = new Repository<Setting>(_database);
+            var settings = await db.Get();
+
+            var coreSettings = new List<Setting>
+            {
+                // basic settings
+                new Setting
+                {
+                    Name = "brand",
+                    Catalog = SettingCatalogEnum.basic.ToString()
+                },
+                new Setting
+                {
+                    Name = "email",
+                    Catalog = SettingCatalogEnum.basic.ToString()
+                },
+                // Notifications settings
+                new Setting
+                {
+                    Name = "notification_time",
+                    Catalog = SettingCatalogEnum.notifications.ToString()
+                },
+                new Setting
+                {
+                    Name = "notification_day_to_show",
+                    Catalog = SettingCatalogEnum.notifications.ToString()
+                },
+                // Signature settings
+                new Setting
+                {
+                    Name = "Name",
+                    Catalog = SettingCatalogEnum.signature.ToString()
+                },
+                new Setting
+                {
+                    Name = "Title",
+                    Catalog = SettingCatalogEnum.signature.ToString()
+                },
+                new Setting
+                {
+                    Name = "Phone",
+                    Catalog = SettingCatalogEnum.signature.ToString()
+                },
+            };
+
+            var missingSettings = coreSettings
+                   .Where(s => !settings
+                   .Any(cs => cs.Name.ToLower() == s.Name.ToLower() && cs.Catalog.ToLower() == s.Catalog.ToLower()))
+                   .ToList();
+
+            return missingSettings;
         }
 
         public async Task<List<Setting>> GetSettingsByCatalog(string catalog)
@@ -406,7 +462,17 @@ namespace Appointments.App.Services
             appointments = appointments.Where(t => t.Catalog == catalog).ToList();
 
             return appointments;
-        }        
+        }
+
+        public async Task<int> DeleteSetting(int settingId)
+        {
+            await _database.CreateTableAsync<Setting>();
+            var db = new Repository<Setting>(_database);
+
+            var setting = await db.Get(settingId);
+
+            return await db.Delete(setting);
+        }
         #endregion
 
         #region User Appointments

@@ -1,4 +1,5 @@
-﻿using Appointments.App.Models.DataModels;
+﻿using Acr.UserDialogs;
+using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using System;
@@ -91,6 +92,7 @@ namespace Appointments.App.ViewModels.Settings.Admin
         #region Commands
 
         public ICommand SaveSettingCommand => new Command(async () => await SaveSetting());
+        public ICommand DeleteSettingCommand => new Command(async () => await DeleteSetting());
 
         private async Task SaveSetting()
         {
@@ -105,6 +107,33 @@ namespace Appointments.App.ViewModels.Settings.Admin
             await _dataService.SaveSetting(setting);
 
             await Application.Current.MainPage.Navigation.PopAsync();
+        }
+
+        private async Task DeleteSetting() {
+            
+
+            var confirm = await UserDialogs.Instance.ConfirmAsync("Desea eliminar la configuración?", null, "Si", "No");
+
+            if (confirm)
+            {
+                UserDialogs.Instance.ShowLoading();
+                try
+                {
+                    var result = await _dataService.DeleteSetting(Id);
+
+                    if (result == 1)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Éxito!", $"Configuración eliminada.", "Ok");
+                        await Application.Current.MainPage.Navigation.PopAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+                    UserDialogs.Instance.HideLoading();
+                    await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
+                }
+                UserDialogs.Instance.Loading().Hide();
+            }
         }
 
         public async Task LoadSetting(int id)

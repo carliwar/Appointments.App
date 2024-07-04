@@ -23,7 +23,7 @@
                 Title="Filtrar por Catálogo"
                 ItemsSource="{Binding SettingCatalogs}"
                 SelectedItem="{Binding SelectedSettingCatalog}"
-                ItemDisplayBinding="{Binding .}">                
+                ItemDisplayBinding="{Binding Catalog}">                
             </Picker>
             <Entry 
                 Grid.Column="1" x:Name="SearchSetting"

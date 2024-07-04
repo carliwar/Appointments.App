@@ -28,20 +28,20 @@ namespace Appointments.App.Droid.Receivers
                 .SetSound(RingtoneManager.GetDefaultUri(RingtoneType.Ringtone))
                 .SetAutoCancel(true);
 
-            var resultIntent = AndroidNotificationService.GetLauncherActivity();
-            resultIntent.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask);
-            var stackBuilder = AndroidX.Core.App.TaskStackBuilder.Create(Application.Context);
-            stackBuilder.AddNextIntent(resultIntent);
+            //var resultIntent = AndroidNotificationService.GetLauncherActivity();
+            //resultIntent.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask);
+            //var stackBuilder = AndroidX.Core.App.TaskStackBuilder.Create(Application.Context);
+            //stackBuilder.AddNextIntent(resultIntent);
 
-            Random random = new Random();
-            int randomNumber = random.Next(9999 - 1000) + 1000;
+            //Random random = new Random();
+            //int randomNumber = random.Next(9999 - 1000) + 1000;
 
-            var resultPendingIntent =
-                stackBuilder.GetPendingIntent(randomNumber, (int)PendingIntentFlags.Immutable);
-            builder.SetContentIntent(resultPendingIntent);
-            // Sending notification      
-            var notificationManager = NotificationManagerCompat.From(Application.Context);
-            notificationManager.Notify(randomNumber, builder.Build());
+            //var resultPendingIntent =
+            //    stackBuilder.GetPendingIntent(randomNumber, (int)PendingIntentFlags.Immutable);
+            //builder.SetContentIntent(resultPendingIntent);
+            //// Sending notification      
+            //var notificationManager = NotificationManagerCompat.From(Application.Context);
+            //notificationManager.Notify(randomNumber, builder.Build());
         }
 
         private AppNotification DeserializeNotification(string notificationString)

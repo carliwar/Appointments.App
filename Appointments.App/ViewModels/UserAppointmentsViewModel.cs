@@ -202,7 +202,7 @@ namespace Appointments.App.ViewModels
 
                 if (SelectedUser.Phone != null)
                 {
-                    options = new List<string> { ConstantValues.CALL_OPTION, ConstantValues.CONTACT_WHATSAPP_OPTION };
+                    options = new List<string> { DefaultValues.CALL_OPTION, DefaultValues.CONTACT_WHATSAPP_OPTION };
 
                     string action = await App.Current.MainPage.DisplayActionSheet($"{SelectedUser.UserFullName}", "", "Cerrar",
                     options.ToArray());
@@ -212,17 +212,17 @@ namespace Appointments.App.ViewModels
 
                     switch (action)
                     {
-                        case ConstantValues.CONTACT_WHATSAPP_OPTION:
+                        case DefaultValues.CONTACT_WHATSAPP_OPTION:
                             await Browser.OpenAsync(new Uri($"https://wa.me/{phone}"), BrowserLaunchMode.SystemPreferred);
                             break;
-                        case ConstantValues.CALL_OPTION:
+                        case DefaultValues.CALL_OPTION:
                             PhoneDialer.Open(phone);
                             break;
                     }
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error!", $"El {ConstantValues.USER_DENOMINATION} no tiene número de contacto asignado.", "Ok");
+                    await Application.Current.MainPage.DisplayAlert("Error!", $"El {DefaultValues.USER_DENOMINATION} no tiene número de contacto asignado.", "Ok");
                 }
             }
         }

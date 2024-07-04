@@ -10,8 +10,6 @@ namespace Appointments.App.Services
     public static class EmailService
     {
         private const string _smtpServer = "smtp.gmail.com";
-        //private const int _smtpPort = 465;
-
 
         public static void Send(AppEmail email, SignatureModel signatureModel)
         {

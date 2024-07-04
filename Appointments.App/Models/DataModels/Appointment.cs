@@ -30,7 +30,7 @@ namespace Appointments.App.Models.DataModels
 
                 if (!Attended)
                 {
-                    attendedFlag = $"{ConstantValues.NOT_ATTENDED} **";
+                    attendedFlag = $"{DefaultValues.NOT_ATTENDED} **";
                 }
                 if(AppointmentTypes != null && AppointmentTypes.Any())
                 {

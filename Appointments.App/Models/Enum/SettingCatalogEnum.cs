@@ -11,5 +11,7 @@ namespace Appointments.App.Models.Enum
         validation,
         [Description("Firma")]
         signature,
+        [Description("Notificaciones")]
+        notifications,
     }
 }
