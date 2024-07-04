@@ -57,6 +57,11 @@ namespace Appointments.App.ViewModels.AppointmentType
 
                 AppointmentTypes.Add(appointmentType);
             }
+
+            if (!AppointmentTypes.Any() && string.IsNullOrWhiteSpace(searchText))
+            {
+                await Application.Current.MainPage.DisplayAlert("IMPORANTE!", "Aquí deberás crear los tipos de citas que tenga tu consultorio!", "Ok");
+            }
         }
 
         private async Task SearchAppointmentTypeAsync(object sender)

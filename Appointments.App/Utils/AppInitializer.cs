@@ -33,6 +33,9 @@ namespace Appointments.App.Utils
                     case "email":
                         setting.Value = DefaultValues.APPOINTMENT_BRAND;
                         break;
+                    case "password":
+                        setting.Value = DefaultValues.APPLICATION_PASSWORD;
+                        break;
                 }
 
                 await _dataService.SaveSetting(setting);                
@@ -66,10 +69,20 @@ namespace Appointments.App.Utils
                     case "Phone":
                         setting.Value = DefaultValues.PHONE;
                         break;
+                    case "Address":
+                        setting.Value = DefaultValues.ADDRESS;
+                        break;
+                    case "Facebook":
+                        setting.Value = DefaultValues.FACEBOOK;
+                        break;
+                    case "Website":
+                        setting.Value = DefaultValues.WEBSITE;
+                        break;
                 }
 
                 await _dataService.SaveSetting(setting);
             }
         }
+        
     }
 }

@@ -415,6 +415,11 @@ namespace Appointments.App.Services
                     Name = "email",
                     Catalog = SettingCatalogEnum.basic.ToString()
                 },
+                new Setting
+                {
+                    Name = "password",
+                    Catalog = SettingCatalogEnum.basic.ToString()
+                },
                 // Notifications settings
                 new Setting
                 {
@@ -442,6 +447,22 @@ namespace Appointments.App.Services
                     Name = "Phone",
                     Catalog = SettingCatalogEnum.signature.ToString()
                 },
+                new Setting
+                {
+                    Name = "Address",
+                    Catalog = SettingCatalogEnum.signature.ToString()
+                },
+                new Setting
+                {
+                    Name = "Facebook",
+                    Catalog = SettingCatalogEnum.signature.ToString()
+                },
+                new Setting
+                {
+                    Name = "Website",
+                    Catalog = SettingCatalogEnum.signature.ToString()
+                },
+
             };
 
             var missingSettings = coreSettings

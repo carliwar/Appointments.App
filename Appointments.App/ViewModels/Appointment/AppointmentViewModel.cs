@@ -341,29 +341,29 @@ namespace Appointments.App.ViewModels.Appointments
                         {
                             var signatureModel = new SignatureModel
                             {
-                                Name = signatureData.FirstOrDefault(t => t.Name == "Name").Value,
-                                Title = signatureData.FirstOrDefault(t => t.Name == "Title").Value,
+                                Name = signatureData.FirstOrDefault(t => t.Name == "Name")?.Value,
+                                Title = signatureData.FirstOrDefault(t => t.Name == "Title")?.Value,
                                 Email = email.Value,
-                                Phone = signatureData.FirstOrDefault(t => t.Name == "Phone").Value,
+                                Phone = signatureData.FirstOrDefault(t => t.Name == "Phone")?.Value,
                                 Company = brand.Value,
                                 // These settings can be optional
-                                Address = signatureData.FirstOrDefault(t => t.Name == "Address").Value,
-                                Facebook = signatureData.FirstOrDefault(t => t.Name == "Facebook").Value,
-                                Website = signatureData.FirstOrDefault(t => t.Name == "Website").Value,                                
+                                Address = signatureData.FirstOrDefault(t => t.Name == "Address")?.Value,
+                                Facebook = signatureData.FirstOrDefault(t => t.Name == "Facebook")?.Value,
+                                Website = signatureData.FirstOrDefault(t => t.Name == "Website")?.Value,                                
                             };
 
                             EmailService.Send(notification, signatureModel);
                         }
                         catch (Exception ex)
                         {
-                            await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL.", "Ok");
+                            await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL." + ex.Message, "Ok");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL.", "Ok");
+                await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL." + ex.Message, "Ok");
             }
         }
 
@@ -382,14 +382,14 @@ namespace Appointments.App.ViewModels.Appointments
                     {
                         await LocalNotificationCenter.Current.RequestNotificationPermission();
                     }
-
-                    var notificationDay = await _dataService.GetSettingByNameAndCatalog("notification_time", SettingCatalogEnum.notifications.ToString());
-                    var notificationTime = await _dataService.GetSettingByNameAndCatalog("notification_day_to_show", SettingCatalogEnum.notifications.ToString());
+                    
+                    var notificationDay = await _dataService.GetSettingByNameAndCatalog("notification_day_to_show", SettingCatalogEnum.notifications.ToString());
+                    var notificationTime = await _dataService.GetSettingByNameAndCatalog("notification_time", SettingCatalogEnum.notifications.ToString());
 
                     var notifyTime = GivenDate.AddHours(Convert.ToInt32(DefaultValues.NOTIFICATION_TIME));
                     var notificationDayIndicator = "hoy";
 
-                    if (notificationDay != null && notificationDay.Value != DefaultValues.PHONE)
+                    if (notificationDay != null && notificationDay.Value != DefaultValues.NOTIFICATION_DAY)
                     {
                         notifyTime = notifyTime.AddDays(-1);
                         notificationDayIndicator = "mañana";
