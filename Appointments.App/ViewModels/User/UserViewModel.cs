@@ -192,13 +192,12 @@ namespace Appointments.App.ViewModels.User
                 ContificoId = ContificoId
             };
 
-            UserDialogs.Instance.ShowLoading();
-
-            
+            UserDialogs.Instance.ShowLoading();            
 
             try
             {
                 var result = await _userService.SaveUser(user);
+
                 if (result.Success)
                 {
                     await Application.Current.MainPage.DisplayAlert(
@@ -232,6 +231,7 @@ namespace Appointments.App.ViewModels.User
             UserDialogs.Instance.HideLoading();
         }
 
+        // TODO Use this just for sending to whatsapp not to send to db
         private string FormatPhone(string phone)
         {
             if (phone == null)
