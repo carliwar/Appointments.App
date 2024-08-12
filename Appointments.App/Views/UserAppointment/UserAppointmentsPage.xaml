@@ -81,7 +81,7 @@
                                 Command="{Binding BindingContext.SelectAppointmentCommand, Source={x:Reference Name=UserAppointmentsViewModel}}"    
                                 CommandParameter="{Binding .}"
                                 BackgroundColor="{Binding AppointmentColor}"
-                                TextColor="{Binding TextColor}"
+                                TextColor="{StaticResource Primary}"
                                 Text="{Binding AppointmentInformation}" />
                         </Grid>
                         <!--<StackLayout.GestureRecognizers>

@@ -18,14 +18,14 @@
             DayTappedCommand="{Binding DaySelectedCommand}"
             DayViewCornerRadius="3"
             DayViewSize="30"            
-            EventIndicatorColor="{StaticResource Secondary}"
+            EventIndicatorColor="{StaticResource WhiteText}"
             EventIndicatorSelectedColor="{StaticResource WhiteText}"
+            SelectedDayBackgroundColor="{StaticResource ActionActive}"
+            SelectedDayTextColor="{StaticResource WhiteText}"
             Events="{Binding Events}"
             HorizontalOptions="FillAndExpand"
             Month="{Binding Month}"
-            SelectedDate="{Binding SelectedDate}"
-            SelectedDayBackgroundColor="{StaticResource Primary}"
-            SelectedDayTextColor="{StaticResource WhiteText}"
+            SelectedDate="{Binding SelectedDate}"            
             SelectedDateColor="{StaticResource Primary}"
             ShownDate="{Binding Today}"
             SwipeToChangeMonthEnabled="True"
@@ -49,11 +49,11 @@
                             <ColumnDefinition Width="3*" />
                             <ColumnDefinition Width="1*" />
                         </Grid.ColumnDefinitions>
-
+                        <!--LEFT ARROW BUTTON-->
                         <Frame
                             Grid.Column="0"
                             Padding="0"
-                            BackgroundColor="{StaticResource Tertiary}"
+                            BackgroundColor="{StaticResource Primary}"
                             CornerRadius="18"
                             HasShadow="True"
                             
@@ -66,7 +66,7 @@
                                 FontSize="25"
                                 HorizontalOptions="CenterAndExpand"
                                 HorizontalTextAlignment="Center"
-                                TextColor="{StaticResource Primary}"
+                                TextColor="{StaticResource WhiteText}"
                                 Text="&lt;"
                                 VerticalOptions="CenterAndExpand"
                                 VerticalTextAlignment="Center" />
@@ -89,11 +89,11 @@
                                 </FormattedString>
                             </Label.FormattedText>
                         </Label>
-
+                        <!--RIGHT ARROW BUTTON-->
                         <Frame
                             Grid.Column="2"
                             Padding="0"
-                            BackgroundColor="{StaticResource Tertiary}"
+                            BackgroundColor="{StaticResource Primary}"
                             CornerRadius="18"
                             HasShadow="True"
                             HeightRequest="36"
@@ -105,7 +105,7 @@
                                 FontSize="25"
                                 HorizontalOptions="CenterAndExpand"
                                 HorizontalTextAlignment="Center"
-                                TextColor="{StaticResource Primary}"
+                                TextColor="{StaticResource WhiteText}"
                                 Text="&gt;"
                                 VerticalOptions="CenterAndExpand"
                                 VerticalTextAlignment="Center" />
@@ -166,7 +166,7 @@
                     <StackLayout
                         Margin="5"
                         Padding="5"
-                        BackgroundColor="{StaticResource Tertiary}"
+                        BackgroundColor="{StaticResource Secondary}"
                         HorizontalOptions="FillAndExpand"
                         VerticalOptions="FillAndExpand">
                         <Button
@@ -178,17 +178,21 @@
                         <Label
                             FontAttributes="Bold"
                             FontSize="Medium"
+                            TextColor="{StaticResource WhiteText}"
                             Text="{Binding AppointmentType}" />
                         <Label
                             FontAttributes="Bold"
                             FontSize="Medium"
+                            TextColor="{StaticResource WhiteText}"
                             Text="{Binding Time}" />
                         <Label
                             FontSize="Small"
+                            TextColor="{StaticResource WhiteText}"
                             LineBreakMode="WordWrap"
                             Text="{Binding UserInformation}" />
                         <Label
                             FontAttributes="Bold"
+                            TextColor="{StaticResource WhiteText}"
                             FontSize="Small"
                             LineBreakMode="WordWrap"
                             Text="{Binding UserPhone}">
@@ -204,11 +208,9 @@
             </plugin:Calendar.EventTemplate>
         </plugin:Calendar>
         <Button
-            x:Name="AddAppointmentButton"            
-            BackgroundColor="{StaticResource Primary}"
+            x:Name="AddAppointmentButton"
             Command="{Binding ButtonClickCommand}"
             IsVisible="{Binding EnableAddAppointmentButton}"
-            Text="{Binding AddAppointmentText}"
-            TextColor="{StaticResource WhiteText}" />
+            Text="{Binding AddAppointmentText}" />
     </StackLayout>
 </ContentPage>

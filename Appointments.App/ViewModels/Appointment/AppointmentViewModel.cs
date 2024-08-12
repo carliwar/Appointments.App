@@ -12,18 +12,18 @@ using Xamarin.Essentials;
 using Xamarin.Forms.MultiSelectListView;
 using Xamarin.Forms;
 using Plugin.Calendars.Abstractions;
-using Appointments.App.Utils;
 using Acr.UserDialogs;
-using Appointments.App.Views.Appointments;
-using static SQLite.SQLite3;
+using Appointments.App.Models;
+using Plugin.LocalNotification;
 
 namespace Appointments.App.ViewModels.Appointments
 {
     public class AppointmentViewModel : BasePageViewModel
     {
+        readonly System.Globalization.CultureInfo cultureInfo = new System.Globalization.CultureInfo("es-EC");
         public AppointmentViewModel() : base()
         {
-            _dataService = new DataService();            
+            _dataService = new DataService();
             Users = new ObservableCollection<Models.DataModels.User>();
         }
         #region Temp Properties
@@ -37,10 +37,11 @@ namespace Appointments.App.ViewModels.Appointments
         private string _userFullName;
         private DateTime _givenDate;
         private TimeSpan _givenTime;
-        private ObservableCollection<Models.DataModels.User> _users = new ObservableCollection<Models.DataModels.User>();        
+        private TimeSpan _endTime;
+        private ObservableCollection<Models.DataModels.User> _users = new ObservableCollection<Models.DataModels.User>();
         private MultiSelectObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new MultiSelectObservableCollection<Models.DataModels.AppointmentType>();
         private ObservableCollection<Models.DataModels.AppointmentType> _filterAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
-        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();        
+        private ObservableCollection<Models.DataModels.AppointmentType> _selectedAppointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
         private Models.DataModels.User _selectedUser;
         private bool _showError = false;
         private bool _isEdit = false;
@@ -65,7 +66,7 @@ namespace Appointments.App.ViewModels.Appointments
         {
             get
             {
-                return $"Datos del {ConstantValues.USER_DENOMINATION}";
+                return $"Datos del {DefaultValues.USER_DENOMINATION}";
             }
         }
 
@@ -73,7 +74,7 @@ namespace Appointments.App.ViewModels.Appointments
         {
             get
             {
-                return $"Buscar por {ConstantValues.USER_DENOMINATION}";
+                return $"Buscar por {DefaultValues.USER_DENOMINATION}";
             }
         }
 
@@ -86,7 +87,25 @@ namespace Appointments.App.ViewModels.Appointments
         public TimeSpan GivenTime
         {
             get => _givenTime;
-            set => SetProperty(ref _givenTime, value);
+            set
+            {
+                SetProperty(ref _givenTime, value);
+                if (SelectedAppointmentTypes.Any())
+                {
+                    var maxAppointmentDuration = SelectedAppointmentTypes.Max(u => u.DefaultDuration);
+                    AssignAppointmentDurationFromEnum(maxAppointmentDuration);
+                }
+                else
+                {
+                    EndTime = GivenTime.Add(TimeSpan.FromMinutes(30));
+                }
+            }
+        }
+
+        public TimeSpan EndTime
+        {
+            get => _endTime;
+            set => SetProperty(ref _endTime, value);
         }
 
         public ObservableCollection<Models.DataModels.User> Users
@@ -114,7 +133,8 @@ namespace Appointments.App.ViewModels.Appointments
         public Models.DataModels.User SelectedUser
         {
             get => _selectedUser;
-            set {
+            set
+            {
                 SetProperty(ref _selectedUser, value);
             }
         }
@@ -216,7 +236,7 @@ namespace Appointments.App.ViewModels.Appointments
                 Id = Id,
                 UserId = SelectedUser.Id,
                 AppointmentDate = GivenDate.Date.Add(GivenTime),
-                AppointmentEnd = GivenDate.Date.Add(GivenTime).AddMinutes(appointmentDuration),
+                AppointmentEnd = GivenDate.Date.Add(EndTime),
                 UserInformation = SelectedUser.UserFullName,
                 Attended = true,
                 AppointmentTypes = SelectedAppointmentTypes?.ToList(),
@@ -233,6 +253,8 @@ namespace Appointments.App.ViewModels.Appointments
                 {
                     if (result.Success)
                     {
+                        await SendAppointmentNotification(appointment);
+
                         var statusRead = await Permissions.CheckStatusAsync<Permissions.CalendarRead>();
                         var statusWrite = await Permissions.CheckStatusAsync<Permissions.CalendarWrite>();
 
@@ -282,7 +304,121 @@ namespace Appointments.App.ViewModels.Appointments
             }
 
             UserDialogs.Instance.HideLoading();
-        }        
+        }
+
+        private async Task SendAppointmentNotification(Appointment appointment)
+        {
+            try
+            {
+                await SetDeviceNotification();
+                if (!string.IsNullOrWhiteSpace(SelectedUser.Email))
+                {
+                    var appointmentInformation = $"{appointment.AppointmentDate.ToString("dd-MMMM-yyyy", cultureInfo)} a las {appointment.AppointmentDate.ToString("HH:mm")}";
+
+                    var password = await _dataService.GetSettingByNameAndCatalog("password", "basic");
+                    var email = await _dataService.GetSettingByNameAndCatalog("email", "basic");
+                    var signatureData = await _dataService.GetSettingsByCatalog("signature");
+                    var brand = await _dataService.GetSettingByNameAndCatalog("brand", "basic");
+
+                    if (password != null && email != null)
+                    {
+                        string estadoCita = "agendado";
+                        if (IsEdit)
+                        {
+                            estadoCita = "modificado";
+                        }
+
+                        var notification = new AppEmail
+                        {
+                            To = SelectedUser.Email,
+                            Subject = $"Cita Odontológica JEDENT: {appointmentInformation}",
+                            Body = $"Se ha <strong>{estadoCita}</strong> su cita en JeDent para el día <strong>{appointmentInformation}</strong>. Por favor, asista con anticipación. <br><br>Comuníquese con la doctora para comunicar cambios o cancelaciones.",
+                            Sender = email.Value,
+                            Password = password.Value
+                        };
+
+                        try
+                        {
+                            var signatureModel = new SignatureModel
+                            {
+                                Name = signatureData.FirstOrDefault(t => t.Name == "Name")?.Value,
+                                Title = signatureData.FirstOrDefault(t => t.Name == "Title")?.Value,
+                                Email = email.Value,
+                                Phone = signatureData.FirstOrDefault(t => t.Name == "Phone")?.Value,
+                                Company = brand.Value,
+                                // These settings can be optional
+                                Address = signatureData.FirstOrDefault(t => t.Name == "Address")?.Value,
+                                Facebook = signatureData.FirstOrDefault(t => t.Name == "Facebook")?.Value,
+                                Website = signatureData.FirstOrDefault(t => t.Name == "Website")?.Value,                                
+                            };
+
+                            EmailService.Send(notification, signatureModel);
+                        }
+                        catch (Exception ex)
+                        {
+                            await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL." + ex.Message, "Ok");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Notificación", $"No se pudo enviar la notificación por EMAIL." + ex.Message, "Ok");
+            }
+        }
+
+        private async Task SetDeviceNotification()
+        {
+            //CHECK IF THERE IS AN EXISTENT NOTIFICATION FOR GIVEN DATE
+            try
+            {
+                IList<NotificationRequest> currentNotifications = await LocalNotificationCenter.Current.GetPendingNotificationList();
+
+                currentNotifications = currentNotifications.Where(t => t.Schedule.NotifyTime.Value.Date == GivenDate.Date).ToList();
+
+                if (!currentNotifications.Any())
+                {
+                    if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
+                    {
+                        await LocalNotificationCenter.Current.RequestNotificationPermission();
+                    }
+                    
+                    var notificationDay = await _dataService.GetSettingByNameAndCatalog("notification_day_to_show", SettingCatalogEnum.notifications.ToString());
+                    var notificationTime = await _dataService.GetSettingByNameAndCatalog("notification_time", SettingCatalogEnum.notifications.ToString());
+
+                    var notifyTime = GivenDate.AddHours(Convert.ToInt32(DefaultValues.NOTIFICATION_TIME));
+                    var notificationDayIndicator = "hoy";
+
+                    if (notificationDay != null && notificationDay.Value != DefaultValues.NOTIFICATION_DAY)
+                    {
+                        notifyTime = notifyTime.AddDays(-1);
+                        notificationDayIndicator = "mañana";
+                    }
+
+                    if (notificationTime != null && notificationTime.Value != DefaultValues.NOTIFICATION_TIME)
+                    {
+                        notifyTime = notifyTime.Date.AddHours(Convert.ToInt32(notificationTime.Value.Trim()));
+                    }
+
+                    var notification = new NotificationRequest
+                    {
+                        NotificationId = 100,
+                        Title = "CITAS",
+                        Description = $"Tiene citas pendientes para {notificationDayIndicator}! Ingrese para ver su calendario.",
+                        //ReturningData = "Dummy data", // Returning data when tapped on notification.
+                        Schedule =
+                    {
+                        NotifyTime = notifyTime // Used for Scheduling local notification, if not specified notification will show immediately.
+                    }
+                    };
+                    await LocalNotificationCenter.Current.Show(notification);
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
 
         private async Task DeleteAppointmentAction()
         {
@@ -401,6 +537,8 @@ namespace Appointments.App.ViewModels.Appointments
             var account = await _dataService.GetSettingByNameAndCatalog("email", "basic");
             var brandName = await _dataService.GetSettingByNameAndCatalog("brand", "basic");
 
+            EndTime = GivenTime.Add(TimeSpan.FromMinutes(30));
+
             if (account != null)
             {
                 EmailAccount = account.Value;
@@ -414,7 +552,7 @@ namespace Appointments.App.ViewModels.Appointments
             if (existingReminders != null)
             {
                 await _dataService.DeleteCalendarEventLog(appointmentId);
-                await DependencyService.Get<IDeviceCalendarService>().DeleteEventFromCalendar(existingReminders);                
+                await DependencyService.Get<IDeviceCalendarService>().DeleteEventFromCalendar(existingReminders);
             }
         }
 
@@ -560,6 +698,7 @@ namespace Appointments.App.ViewModels.Appointments
         {
             AppointmentHours = appointmentDurationInMinutes / 60;
             AppointmentMinutes = appointmentDurationInMinutes % 60;
+            EndTime = GivenTime.Add(TimeSpan.FromMinutes(AppointmentHours * 60 + appointmentDurationInMinutes));
         }
     }
 }

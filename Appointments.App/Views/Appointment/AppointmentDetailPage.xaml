@@ -12,27 +12,14 @@
     <StackLayout>
         <ScrollView>
             <StackLayout>
-                <Frame BackgroundColor="{StaticResource Primary}" Padding="10" CornerRadius="0">
-                    <Label Text="Nueva Cita" HorizontalTextAlignment="Start" TextColor="{StaticResource WhiteText}" FontSize="18"/>
-                </Frame>
                 <Frame BackgroundColor="{StaticResource ErrorText}" IsVisible="{Binding ShowError}">
                     <Label Text="Por favor llena todos los campos requeridos!" HorizontalTextAlignment="Start" TextColor="{StaticResource WhiteText}" FontSize="18"/>
                 </Frame>
-                <Frame BackgroundColor="{StaticResource Tertiary}" Margin="5,0,0,0" CornerRadius="0">
+                <Frame Margin="5,0,0,0" CornerRadius="0">
                     <StackLayout>
                         <Label Padding="1" Text="Datos de la Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
-                        <DatePicker                            
-                            TextColor="{StaticResource Primary}"
-                            Date="{Binding GivenDate}"
-                            MinimumDate="{Binding Today}"                            
-                            Format="MM/dd/yyyy">                            
-                        </DatePicker>
-                        <TimePicker
-                        Time="{Binding GivenTime}"
-                        TextColor="{StaticResource Primary}">
-                        </TimePicker>
                         <Label Padding="1" Text="Tipos de Cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
-                        <ListView 
+                        <ListView
                             BackgroundColor="{StaticResource Tertiary}"
                             HeightRequest="100"
                             HasUnevenRows="true"
@@ -57,24 +44,36 @@
                                 <lv:SelectedItemBehavior Command="{Binding FillSelectedAppointmentTypesCommand}"/>
                             </ListView.Behaviors>
                         </ListView>
-                        <Label Padding="1" Text="Duración de la cita" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
+                        <DatePicker                            
+                            TextColor="{StaticResource Primary}"
+                            Date="{Binding GivenDate}"
+                            MinimumDate="{Binding Today}"                            
+                            Format="MM/dd/yyyy">
+                        </DatePicker>
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="2*" />                                
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Label Margin="0,10,0,0" Text="Horas" Grid.Column="0" FontSize="18"></Label>
-                            <Entry Keyboard="Numeric" Grid.Column="1" Text="{Binding AppointmentHours}"/>
-                            <Label Margin="0,10,0,0" Padding="1" Text="Minutos" Grid.Column="0" Grid.Row="1" FontSize="18"></Label>
-                            <Entry Keyboard="Numeric" Grid.Row="1" Grid.Column="1" Text="{Binding AppointmentMinutes}"/>
-                        </Grid>
+                            <Label Grid.Column="0" Padding="-5">Inicio</Label>
+                            <TimePicker
+                                Grid.Column="0"
+                                Time="{Binding GivenTime}"
+                                TextColor="{StaticResource Primary}">
+                            </TimePicker>
+                            <Label Grid.Column="1" Padding="-5">Fin</Label>
+                            <TimePicker
+                                Grid.Column="1"
+                                Time="{Binding EndTime}"
+                                TextColor="{StaticResource Primary}">
+                            </TimePicker>
+                        </Grid>                        
                     </StackLayout>
                 </Frame>
-                <Frame BackgroundColor="{StaticResource Tertiary}" Margin="5,0,0,0" CornerRadius="0">
+                <Frame Margin="5,0,0,0" CornerRadius="0">
                     <StackLayout>
                         <Label Padding="1" Text="{Binding ScreenTitle}" FontAttributes="Bold" HorizontalTextAlignment="Start" TextColor="{StaticResource Secondary}" FontSize="18"></Label>
 
@@ -110,8 +109,7 @@
                         </Grid>
 
                         <ListView 
-                            x:Name="UsersListView"
-                            BackgroundColor="{StaticResource Tertiary}"                            
+                            x:Name="UsersListView"                            
                             HeightRequest="100"                            
                             SeparatorVisibility="Default"
                             ItemsSource="{Binding Users}"
@@ -158,8 +156,6 @@
                 x:Name="SaveAppointmentButton"
                 Margin="5,0,5,0"
                 Text="Guardar Cita" 
-                BackgroundColor="{StaticResource Primary}"
-                TextColor="{StaticResource WhiteText}"
                 Command="{Binding SaveAppointmentCommand}"
                 VerticalOptions="EndAndExpand"/>
             <Button
@@ -169,7 +165,7 @@
                 BackgroundColor="{StaticResource ErrorText}"
                 TextColor="{StaticResource WhiteText}"
                 Command="{Binding DeleteAppointmentCommand}"
-                VerticalOptions="EndAndExpand"/>    
+                VerticalOptions="EndAndExpand"/>
 
         </StackLayout>
     </StackLayout>

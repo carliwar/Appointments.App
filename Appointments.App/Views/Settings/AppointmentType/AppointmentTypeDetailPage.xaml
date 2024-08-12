@@ -15,23 +15,22 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <ScrollView Orientation="Vertical">
-                <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
+                <Frame Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
                     <StackLayout>
                         <Label Text="Nombre"></Label>
                         <Entry x:Name="Nombre" Text="{Binding Name}"></Entry>
                         <Label Text="Descripción"></Label>
                         <Entry x:Name="Description" Text="{Binding AppointmentTypeDescription}"></Entry>
-                        <Label Text="Duración"></Label>
+                        <Label Text="Duración Por Defecto"></Label>
                         <Picker 
                             TextColor="{StaticResource Primary}"
-                            BackgroundColor="{StaticResource Tertiary}"
                             Title="Escoja el tiempo predeterminado"                    
                             ItemsSource="{Binding AppointmentDurations}"
                             SelectedItem="{Binding SelectedAppointmentDuration}"
-                            ItemDisplayBinding="{Binding Description}">
+                            ItemDisplayBinding="{Binding Description}">                            
                         </Picker>
                         <Label Text="Color Representativo"></Label>
-                        <cp:ColorPickerMixer Color="{Binding ColorApp}" EditAlpha="False" EditorsColor="{StaticResource Primary}" />
+                        <cp:ColorPickerMixer Color="{Binding ColorApp}" EditAlpha="False" />
                     </StackLayout>
                 </Frame>
             </ScrollView>

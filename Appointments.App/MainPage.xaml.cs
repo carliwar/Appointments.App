@@ -11,7 +11,7 @@ namespace Appointments.App
     {
         public MainPage()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
 
         protected override void OnAppearing()

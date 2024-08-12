@@ -17,10 +17,12 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <ScrollView Orientation="Vertical">
-                <Frame BackgroundColor="{StaticResource Tertiary}" Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
+                <Frame Margin="1,1,1,1" CornerRadius="0" Grid.Row="0">
                     <StackLayout>
                         <Label Text="CI o Pasaporte"></Label>
                         <Entry x:Name="Identificacion" Text="{Binding Identification}"></Entry>
+                        <Label Text="Email"></Label>
+                        <Entry x:Name="Email" Text="{Binding Email}"></Entry>
                         <Label Text="Teléfono"></Label>
                         <Entry x:Name="Phone" Text="{Binding Phone}"></Entry>
                         <Label Text="Nombre"></Label>
@@ -32,8 +34,7 @@
                         <Label Text="Especialidad de Paciente"></Label>
                         <Picker 
                             TitleColor="{StaticResource Primary}"
-                            TextColor="{StaticResource Secondary}"
-                            BackgroundColor="{StaticResource Tertiary}"
+                            TextColor="{StaticResource Primary}"
                             Title="Especialidad Paciente"
                             ItemsSource="{Binding AppointmentTypes}"
                             SelectedItem="{Binding SelectedAppointmentType}"

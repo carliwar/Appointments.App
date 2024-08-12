@@ -3,10 +3,12 @@ using Appointments.App.Models;
 using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
+using Appointments.App.Utils;
 using Appointments.App.ViewModels.Settings.Admin;
 using Appointments.App.Views.Appointments;
 using Appointments.App.Views.Settings;
 using Appointments.App.Views.Settings.Admin;
+using Plugin.LocalNotification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,12 +26,14 @@ namespace Appointments.App.ViewModels
         #region Temp Properties
 
         private readonly IDataService _dataService;
+        private readonly AppInitializer _appInitializer;
 
         #endregion
 
         public MainPageViewModel() : base()
         {
             _dataService = new DataService();
+            _appInitializer = new AppInitializer();
             Events = new EventCollection();
             SelectedDate = DateTime.Today;
             EnableAddAppointmentButton = true;
@@ -113,15 +117,15 @@ namespace Appointments.App.ViewModels
             if (item is EventModel eventModel)
             {
                 //create a list of strings
-                var options = new List<string> { ConstantValues.EDIT_APPOINTMENT };
+                var options = new List<string> { DefaultValues.EDIT_APPOINTMENT };
 
                 if (eventModel.UserPhone != null)
                 {
-                    options.Add(ConstantValues.CALL_OPTION);
-                    options.Add(ConstantValues.CONTACT_WHATSAPP_OPTION);
+                    options.Add(DefaultValues.CALL_OPTION);
+                    options.Add(DefaultValues.CONTACT_WHATSAPP_OPTION);
                 }
 
-                options.Add(ConstantValues.MARK_NOT_ATTENDED_OPTION);
+                options.Add(DefaultValues.MARK_NOT_ATTENDED_OPTION);
 
 
                 string action = await App.Current.MainPage.DisplayActionSheet($"{eventModel.AppointmentType} - {eventModel.UserInformation}", "", "Cerrar",
@@ -132,16 +136,16 @@ namespace Appointments.App.ViewModels
 
                 switch (action)
                 {
-                    case ConstantValues.EDIT_APPOINTMENT:
+                    case DefaultValues.EDIT_APPOINTMENT:
                         await Application.Current.MainPage.Navigation.PushAsync(new AppointmentDetailPage(SelectedDate.Value, appointmentId: eventModel.Id));
                         break;
-                    case ConstantValues.CONTACT_WHATSAPP_OPTION:
+                    case DefaultValues.CONTACT_WHATSAPP_OPTION:
                         await Browser.OpenAsync(new Uri($"https://wa.me/{phone}"), BrowserLaunchMode.SystemPreferred);
                         break;
-                    case ConstantValues.CALL_OPTION:
+                    case DefaultValues.CALL_OPTION:
                         PhoneDialer.Open(phone);
                         break;
-                    case ConstantValues.MARK_NOT_ATTENDED_OPTION:
+                    case DefaultValues.MARK_NOT_ATTENDED_OPTION:
                         var appointment = await _dataService.GetAppointment(eventModel.Id);
                         appointment.Attended = false;
                         await _dataService.UpdateAppointment(appointment);
@@ -205,7 +209,7 @@ namespace Appointments.App.ViewModels
                 var attendedFlag = string.Empty;
                 if (!appointment.Attended)
                 {
-                    attendedFlag = $" - {ConstantValues.NOT_ATTENDED}";
+                    attendedFlag = $" - {DefaultValues.NOT_ATTENDED}";
                     appointmentColor = Color.FromHex("800000");
                 }
 
@@ -256,10 +260,11 @@ namespace Appointments.App.ViewModels
                 {
                     try
                     {
-                        DependencyService.Get<INotificationService>().LocalNotification(
-                                        "Citas pendientes!",
-                                        $"Tienes {tomorrowEvents.Count} citas para mañana, presiona para revisarlas",
-                                        0, new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 18, 0, 0));
+                        // TODO
+                        //DependencyService.Get<INotificationService>().LocalNotification(
+                        //                "Citas pendientes!",
+                        //                $"Tienes {tomorrowEvents.Count} citas para mañana, presiona para revisarlas",
+                        //                0, new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 18, 0, 0));
                     }
                     catch (Exception e)
                     {
@@ -296,36 +301,7 @@ namespace Appointments.App.ViewModels
 
             try
             {
-                var settings = await _dataService.GetAllSettings();
-
-                // brand setting
-                var brandSetting = settings.FirstOrDefault(t => t.Name.ToLower() == "brand");
-
-                if (brandSetting == null)
-                {
-                    var brand = new Setting
-                    {
-                        Catalog = SettingCatalogEnum.basic.ToString(),
-                        Name = "brand",
-                        Value = ConstantValues.APPOINTMENT_BRAND
-                    };
-
-                    await _dataService.SaveSetting(brand);
-                }
-
-                var emailSetting = settings.FirstOrDefault(t => t.Name.ToLower() == "email");
-
-                if (emailSetting == null)
-                {
-                    var email = new Setting
-                    {
-                        Catalog = SettingCatalogEnum.basic.ToString(),
-                        Name = "email",
-                        Value = ConstantValues.APPOINTMENT_BRAND
-                    };
-
-                    await _dataService.SaveSetting(email);
-                }
+                await _appInitializer.InitializeApp();
 
                 var appointmentTypes = await _dataService.GetAppointmentTypes();
 
@@ -346,7 +322,7 @@ namespace Appointments.App.ViewModels
             }
 
             UserDialogs.Instance.HideLoading();
-
+            
         }
         #endregion
     }

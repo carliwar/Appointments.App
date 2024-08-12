@@ -12,7 +12,6 @@ namespace Appointments.App
         public App()
         {
             InitializeComponent();
-
             SetupServices();
 
             MainPage = new AppShell();

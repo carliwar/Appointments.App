@@ -20,5 +20,8 @@ namespace Appointments.App.Models.DataModels
 
         [OneToMany]
         public List<User> Users { get; set; }
+
+        [Ignore]
+        public System.Drawing.Color AppointmentColor { get; set; }
     }
 }

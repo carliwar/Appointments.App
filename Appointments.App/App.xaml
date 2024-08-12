@@ -4,30 +4,33 @@
              x:Class="Appointments.App.App">
     <Application.Resources>
         <ResourceDictionary>
-            <Color x:Key="Primary">#2196F3</Color>
-            <Color x:Key="Secondary">#5084ad</Color>
-            <Color x:Key="Tertiary">#c6e1f7</Color>
-            <Color x:Key="WhiteText">#fefefe</Color>
+            <Color x:Key="Primary">#222831</Color>
+            <Color x:Key="Secondary">#393E46</Color>
+            <Color x:Key="Tertiary">#A0ACC1</Color>
+            <Color x:Key="WhiteText">#EEEEEE</Color>
             <Color x:Key="BlackText">#0c0c0c</Color>
+            <Color x:Key="Disabled">#7E8694</Color>
             <Color x:Key="DisabledText">#C0C0C0</Color>
             <Color x:Key="ErrorText">#ff0000</Color>
             <Color x:Key="Success">#4BB543</Color>
+            <Color x:Key="ActionActive">#00ADB5</Color>
+            <Color x:Key="defaultBackbuttonColor">#222831</Color>
 
             <Style TargetType="Button">
-                <Setter Property="TextColor" Value="White"></Setter>
+                <Setter Property="TextColor" Value="{StaticResource WhiteText}"></Setter>
                 <Setter Property="VisualStateManager.VisualStateGroups">
                     <VisualStateGroupList>
                         <VisualStateGroup x:Name="States">
                             <VisualState x:Name="Normal">
                                 <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#2196F3" />
-                                    <Setter Property="TextColor" Value="#fefefe" />
+                                    <Setter Property="BackgroundColor" Value="{StaticResource ActionActive}" />
+                                    <Setter Property="TextColor" Value="{StaticResource WhiteText}" />
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Disabled">
                                 <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#c6e1f7" />
-                                    <Setter Property="TextColor" Value="#5084ad" />
+                                    <Setter Property="BackgroundColor" Value="{StaticResource Disabled}" />
+                                    <Setter Property="TextColor" Value="{StaticResource DisabledText}" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>

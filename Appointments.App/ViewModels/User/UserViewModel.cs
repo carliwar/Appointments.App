@@ -31,6 +31,7 @@ namespace Appointments.App.ViewModels.User
         private string _phone;
         private string _firstName;
         private string _lastName;
+        private string _email;
         private DateTime _birthDate = DateTime.Today;
         private readonly IDataService _dataService;
         private readonly IUserService _userService;
@@ -71,6 +72,11 @@ namespace Appointments.App.ViewModels.User
         {
             get => _lastName;
             set => SetProperty(ref _lastName, value);
+        }
+        public string Email
+        {
+            get => _email;
+            set => SetProperty(ref _email, value);
         }
         public DateTime BirthDate
         {
@@ -133,13 +139,26 @@ namespace Appointments.App.ViewModels.User
                 }
             }
 
-            var contact = await Contacts.PickContactAsync();
-            if (contact != null)
+            try
             {
-                FirstName = contact.GivenName;
-                LastName = contact.FamilyName;
-                Phone = contact.Phones.FirstOrDefault()?.PhoneNumber?.Replace(" ", "");
-                IsImported = true;
+                var contact = await Contacts.PickContactAsync();
+                if (contact != null)
+                {
+                    FirstName = contact.GivenName;
+                    LastName = contact.FamilyName;
+                    Phone = contact.Phones.FirstOrDefault()?.PhoneNumber?.Replace(" ", "");
+                    IsImported = true;
+                    Email = contact.Emails?.FirstOrDefault()?.EmailAddress;
+                }
+            }
+            catch (TaskCanceledException)
+            {
+
+            }
+            catch (Exception)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error:", "Contacte al administrador.", "Ok");
+                throw;
             }
         }
 
@@ -157,6 +176,7 @@ namespace Appointments.App.ViewModels.User
                 Name = FirstName,
                 LastName = LastName,
                 BirthDate = BirthDate,
+                Email = Email,
                 Phone = FormatPhone(Phone),
                 UserType = UserTypeEnum.Paciente,
                 AppointmentType = SelectedAppointmentType,
@@ -292,6 +312,7 @@ namespace Appointments.App.ViewModels.User
                     Identification = user.Identification;
                     FirstName = user.Name;
                     LastName = user.LastName;
+                    Email = user.Email;
                     Phone = user.Phone;
                     BirthDate = user.BirthDate ?? DateTime.UtcNow;
                     SelectedUserType = user.UserType;
