@@ -9,8 +9,14 @@ namespace Appointments.App.Models.TransactionModels
         {
             Errors = new List<string>();
         }
+
         public List<string> Errors { get; set; }
 
-        public bool Success { get => !Errors.Any(); }
+        public bool Success
+        {
+            get => !Errors.Any();
+        }
+        public int LocalDbId { get; set; }
+        public string ContificoId { get; set; }
     }
 }

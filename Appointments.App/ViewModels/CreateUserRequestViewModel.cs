@@ -155,7 +155,7 @@ namespace Appointments.App.ViewModels
                             
                         }
 
-                        DependencyService.Get<IDeviceContactService>().CreateContact(deviceContact);
+                        DependencyService.Get<IDeviceContactService>().SaveDeviceContact(deviceContact);
                     }
                 }
                 catch (Exception ex)

@@ -27,6 +27,7 @@ namespace Appointments.App.ViewModels.User
         #region Properties
         private int _id;
         private string _contificoId;
+        private string _deviceContactId;
         private string _identification;
         private string _phone;
         private string _firstName;
@@ -51,6 +52,11 @@ namespace Appointments.App.ViewModels.User
         {
             get => _contificoId;
             set => SetProperty(ref _contificoId, value);
+        }
+        public string DeviceContactId
+        {
+            get => _deviceContactId;
+            set => SetProperty(ref _deviceContactId, value);
         }
         public string Identification
         {
@@ -144,6 +150,7 @@ namespace Appointments.App.ViewModels.User
                 var contact = await Contacts.PickContactAsync();
                 if (contact != null)
                 {
+                    DeviceContactId = contact.Id;
                     FirstName = contact.GivenName;
                     LastName = contact.FamilyName;
                     Phone = contact.Phones.FirstOrDefault()?.PhoneNumber?.Replace(" ", "");
@@ -173,6 +180,7 @@ namespace Appointments.App.ViewModels.User
             {
                 Id = Id,
                 Identification = Identification,
+                DeviceContactId = DeviceContactId,
                 Name = FirstName,
                 LastName = LastName,
                 BirthDate = BirthDate,
@@ -186,68 +194,13 @@ namespace Appointments.App.ViewModels.User
 
             UserDialogs.Instance.ShowLoading();
 
-            var result = await _dataService.SaveUser(user);
+            
 
             try
             {
+                var result = await _userService.SaveUser(user);
                 if (result.Success)
                 {
-                    //create user as a new phone contact
-                    var deviceContact = new Contact
-                    {
-                        NamePrefix = UserTypeEnum.Paciente.ToString(),
-                        GivenName = FirstName,
-                        FamilyName = LastName,
-                        Phones = new List<ContactPhone>
-                        {
-                            new ContactPhone { PhoneNumber = user.Phone }
-                        }
-                    };
-
-                    try
-                    {
-                        if (!IsImported && Id == 0)
-                        {
-                            var status =
-                                await Permissions.CheckStatusAsync<Permissions.ContactsWrite>();
-
-                            if (status != PermissionStatus.Granted)
-                            {
-                                UserDialogs.Instance.HideLoading();
-
-                                var request =
-                                    await Permissions.RequestAsync<Permissions.ContactsWrite>();
-
-                                if (request != PermissionStatus.Granted)
-                                {
-                                    await Application.Current.MainPage.DisplayAlert(
-                                        "Error:",
-                                        "No se puede crear contactos. Por favor, agrega el permiso desde la Configuración > Apps.",
-                                        "Ok"
-                                    );
-                                }
-                            }
-
-                            UserDialogs.Instance.ShowLoading();
-                            DependencyService
-                                .Get<IDeviceContactService>()
-                                .CreateContact(deviceContact);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        UserDialogs.Instance.HideLoading();
-
-                        await Application.Current.MainPage.DisplayAlert(
-                            "Alerta: ",
-                            "Creado correctamente en la App pero no en el Dispositivo.",
-                            "Ok"
-                        );
-                        await Application.Current.MainPage.Navigation.PopAsync();
-                    }
-
-                    UserDialogs.Instance.HideLoading();
-
                     await Application.Current.MainPage.DisplayAlert(
                         "Operación Exitosa!",
                         "Usuario creado",

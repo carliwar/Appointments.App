@@ -5,6 +5,7 @@ using Appointments.App.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Essentials;
 
 
@@ -13,7 +14,7 @@ namespace Appointments.App.Droid.Services
 {
     public class AndroidContactService : IDeviceContactService
     {
-        public void CreateContact(Contact contact)
+        public async Task SaveDeviceContact(Contact contact)
         {
 
             List<ContentProviderOperation> ops = new List<ContentProviderOperation>();
@@ -47,6 +48,7 @@ namespace Appointments.App.Droid.Services
             try
             {
                 Android.App.Application.Context.ContentResolver.ApplyBatch(ContactsContract.Authority, ops);
+                // TODO: Return the newly created contact ID
             }
             catch (Exception ex)
             {

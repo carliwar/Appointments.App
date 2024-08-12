@@ -4,7 +4,9 @@ namespace Appointments.App.Models.Enum
 {
     public enum UserTypeEnum
     {
+        [Description("dr")]
         Doctor,
+        [Description("pc")]
         Paciente
     }
 

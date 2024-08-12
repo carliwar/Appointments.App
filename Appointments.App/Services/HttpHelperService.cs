@@ -43,7 +43,7 @@ namespace Appointments.App.Services
             }
         }
 
-        public async Task<T> PutAsync<T>(string client, string method, string command, object body)
+        public async Task<T> PutAsync<T>(string client, string method, object body)
         {
             using (StringContent jsonContent = new StringContent(Serialize(body), System.Text.Encoding.UTF8, "application/json"))
             {
