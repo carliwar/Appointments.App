@@ -13,9 +13,10 @@ namespace Appointments.App.Services
     {
         Task<IEnumerable<PersonType>> GetPersonTypes();
         Task<User> GetUser(int userId);
-        Task<UserCreationResponse> SaveUser(User user);
+        Task<UserSaveResponse> SaveUser(User user);
         Task<IEnumerable<User>> GetUsers();
         Task<IEnumerable<User>> GetUsersByType(UserTypeEnum userType, string searchText="");
+        Task<User> GetUserByContificoId(string contificoId);
 
         // Appointment
         Task<Appointment> GetAppointment(int id);

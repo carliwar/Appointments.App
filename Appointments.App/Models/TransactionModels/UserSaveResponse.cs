@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace Appointments.App.Models.TransactionModels
 {
-    public class UserCreationResponse
+    public class UserSaveResponse
     {
-        public UserCreationResponse()
+        public UserSaveResponse()
         {
             Errors = new List<string>();
         }

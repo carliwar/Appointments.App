@@ -1,13 +1,14 @@
-﻿using Acr.UserDialogs;
-using Appointments.App.Models.DataModels;
-using Appointments.App.Models.Enum;
-using Appointments.App.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Acr.UserDialogs;
+using Appointments.App.Models.DataModels;
+using Appointments.App.Models.Enum;
+using Appointments.App.Services;
+using Appointments.App.Services.VMServices;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.MultiSelectListView;
@@ -16,31 +17,39 @@ namespace Appointments.App.ViewModels.User
 {
     public class UserViewModel : BasePageViewModel
     {
-        public UserViewModel()
+        public UserViewModel(IUserService userService)
         {
             //UserTypes = new ObservableCollection<UserType>(Enum.GetValues(typeof(UserType)).OfType<UserType>().ToList());
             _dataService = new DataService();
+            _userService = userService;
         }
 
         #region Properties
         private int _id;
+        private string _contificoId;
         private string _identification;
         private string _phone;
         private string _firstName;
         private string _lastName;
         private DateTime _birthDate = DateTime.Today;
         private readonly IDataService _dataService;
+        private readonly IUserService _userService;
         private UserTypeEnum _selectedUserType;
         private bool _isImported = false;
         private bool _isEdit = false;
-        private ObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes = new ObservableCollection<Models.DataModels.AppointmentType>();
+        private ObservableCollection<Models.DataModels.AppointmentType> _appointmentTypes =
+            new ObservableCollection<Models.DataModels.AppointmentType>();
         private Models.DataModels.AppointmentType _selectedAppointmentType;
-
 
         public int Id
         {
             get => _id;
             set => SetProperty(ref _id, value);
+        }
+        public string ContificoId
+        {
+            get => _contificoId;
+            set => SetProperty(ref _contificoId, value);
         }
         public string Identification
         {
@@ -103,7 +112,8 @@ namespace Appointments.App.ViewModels.User
         #region Commands
         public ICommand SaveUserCommand => new Command((item) => SaveUser(item));
         public ICommand SelectUserTypeCommand => new Command((item) => SelectUserType(item));
-        public ICommand ImportContactCommand => new Command(async (item) => await ImportContactAsync(item));
+        public ICommand ImportContactCommand =>
+            new Command(async (item) => await ImportContactAsync(item));
 
         private async Task ImportContactAsync(object item)
         {
@@ -115,9 +125,12 @@ namespace Appointments.App.ViewModels.User
 
                 if (request != PermissionStatus.Granted)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error:", "No se puede acceder a los contactos. Por favor, agrega el permiso desde la Configuración > Apps.", "Ok");
+                    await Application.Current.MainPage.DisplayAlert(
+                        "Error:",
+                        "No se puede acceder a los contactos. Por favor, agrega el permiso desde la Configuración > Apps.",
+                        "Ok"
+                    );
                 }
-
             }
 
             var contact = await Contacts.PickContactAsync();
@@ -129,6 +142,7 @@ namespace Appointments.App.ViewModels.User
                 IsImported = true;
             }
         }
+
         private void SelectUserType(object item)
         {
             SelectedUserType = (UserTypeEnum)item;
@@ -146,8 +160,8 @@ namespace Appointments.App.ViewModels.User
                 Phone = FormatPhone(Phone),
                 UserType = UserTypeEnum.Paciente,
                 AppointmentType = SelectedAppointmentType,
-                AppointmentTypeId = SelectedAppointmentType?.Id
-
+                AppointmentTypeId = SelectedAppointmentType?.Id,
+                ContificoId = ContificoId
             };
 
             UserDialogs.Instance.ShowLoading();
@@ -165,61 +179,81 @@ namespace Appointments.App.ViewModels.User
                         GivenName = FirstName,
                         FamilyName = LastName,
                         Phones = new List<ContactPhone>
-                    {
-                        new ContactPhone
                         {
-                            PhoneNumber = user.Phone
+                            new ContactPhone { PhoneNumber = user.Phone }
                         }
-                    }
                     };
 
                     try
                     {
                         if (!IsImported && Id == 0)
                         {
-                            var status = await Permissions.CheckStatusAsync<Permissions.ContactsWrite>();
+                            var status =
+                                await Permissions.CheckStatusAsync<Permissions.ContactsWrite>();
 
                             if (status != PermissionStatus.Granted)
                             {
                                 UserDialogs.Instance.HideLoading();
 
-                                var request = await Permissions.RequestAsync<Permissions.ContactsWrite>();
+                                var request =
+                                    await Permissions.RequestAsync<Permissions.ContactsWrite>();
 
                                 if (request != PermissionStatus.Granted)
                                 {
-                                    await Application.Current.MainPage.DisplayAlert("Error:", "No se puede crear contactos. Por favor, agrega el permiso desde la Configuración > Apps.", "Ok");
+                                    await Application.Current.MainPage.DisplayAlert(
+                                        "Error:",
+                                        "No se puede crear contactos. Por favor, agrega el permiso desde la Configuración > Apps.",
+                                        "Ok"
+                                    );
                                 }
-
                             }
 
                             UserDialogs.Instance.ShowLoading();
-                            DependencyService.Get<IDeviceContactService>().CreateContact(deviceContact);
+                            DependencyService
+                                .Get<IDeviceContactService>()
+                                .CreateContact(deviceContact);
                         }
                     }
                     catch (Exception ex)
                     {
                         UserDialogs.Instance.HideLoading();
 
-                        await Application.Current.MainPage.DisplayAlert("Alerta: ", "Creado correctamente en la App pero no en el Dispositivo.", "Ok");
+                        await Application.Current.MainPage.DisplayAlert(
+                            "Alerta: ",
+                            "Creado correctamente en la App pero no en el Dispositivo.",
+                            "Ok"
+                        );
                         await Application.Current.MainPage.Navigation.PopAsync();
                     }
 
                     UserDialogs.Instance.HideLoading();
 
-                    await Application.Current.MainPage.DisplayAlert("Operación Exitosa!", "Usuario creado", "Ok");
+                    await Application.Current.MainPage.DisplayAlert(
+                        "Operación Exitosa!",
+                        "Usuario creado",
+                        "Ok"
+                    );
                     await Application.Current.MainPage.Navigation.PopAsync();
                 }
                 else
                 {
                     UserDialogs.Instance.HideLoading();
 
-                    await Application.Current.MainPage.DisplayAlert("Errores: ", string.Join(" / ", result.Errors), "Ok");
+                    await Application.Current.MainPage.DisplayAlert(
+                        "Errores: ",
+                        string.Join(" / ", result.Errors),
+                        "Ok"
+                    );
                 }
             }
             catch (Exception e)
             {
                 UserDialogs.Instance.HideLoading();
-                await Application.Current.MainPage.DisplayAlert("Error", $"Contacte al administrador: {e.Message}", "Ok");
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    $"Contacte al administrador: {e.Message}",
+                    "Ok"
+                );
             }
 
             UserDialogs.Instance.HideLoading();
@@ -246,11 +280,11 @@ namespace Appointments.App.ViewModels.User
 
         public async Task LoadUser(int id)
         {
-            if(id != 0)
+            if (id != 0)
             {
                 UserDialogs.Instance.ShowLoading();
 
-                var user = await _dataService.GetUser(id);
+                var user = await _userService.GetUser(id);
 
                 if (user != null)
                 {
@@ -264,7 +298,9 @@ namespace Appointments.App.ViewModels.User
 
                     if (user.AppointmentType != null)
                     {
-                        SelectedAppointmentType = AppointmentTypes.Single(t => t.Id == user.AppointmentType.Id);
+                        SelectedAppointmentType = AppointmentTypes.Single(t =>
+                            t.Id == user.AppointmentType.Id
+                        );
                     }
 
                     IsEdit = true;

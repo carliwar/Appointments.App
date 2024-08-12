@@ -1,5 +1,5 @@
-﻿using Acr.UserDialogs;
-using Appointments.App.Services;
+﻿using Appointments.App.Services;
+using Appointments.App.Services.VMServices;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xamarin.Forms;
@@ -35,8 +35,20 @@ namespace Appointments.App
         #region Private Methods
         private void SetupServices()
         {
-            
-        } 
+            var serviceCollection =  new ServiceCollection();
+
+            serviceCollection.AddScoped<IHttpHelperService, HttpHelperService>();
+            serviceCollection.AddScoped<IDataService, DataService>();
+            serviceCollection.AddScoped<IUserService, UserService>();
+
+            serviceCollection.AddHttpClient("CONTIFICO", client =>
+            {
+                client.BaseAddress = new Uri("https://ms-contifico-integration.us-east-1.elasticbeanstalk.com/");                
+            });
+
+            ServiceProvider = serviceCollection.BuildServiceProvider();
+
+        }
         #endregion
     }
 }

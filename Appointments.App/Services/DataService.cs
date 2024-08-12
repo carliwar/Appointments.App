@@ -38,7 +38,14 @@ namespace Appointments.App.Services
             return await db.Get(id);
         }
 
-        public async Task<UserCreationResponse> SaveUser(User user)
+        public async Task<User> GetUserByContificoId(string contificoId)
+        {
+            await _database.CreateTableAsync<User>();
+            var db = new Repository<User>(_database);
+            return await db.AsQueryable().FirstOrDefaultAsync(t => t.ContificoId.Equals(contificoId));
+        }
+
+        public async Task<UserSaveResponse> SaveUser(User user)
         {
             var result = await ValidateUser(user);
 
@@ -60,9 +67,9 @@ namespace Appointments.App.Services
             return result;
         }
 
-        private async Task<UserCreationResponse> ValidateUser(User user)
+        private async Task<UserSaveResponse> ValidateUser(User user)
         {
-            var result = new UserCreationResponse();
+            var result = new UserSaveResponse();
 
             // validate if user exists in _database.User
             if (string.IsNullOrWhiteSpace(user.Identification))
