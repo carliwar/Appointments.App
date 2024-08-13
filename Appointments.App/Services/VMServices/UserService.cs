@@ -83,29 +83,29 @@ namespace Appointments.App.Services.VMServices
         private async Task<UserSaveResponse> GetContificoSaveResult(User user)
         {
             var result = new UserSaveResponse();
+            var contificoResponse = new ContificoTransactionResponse();
 
-            if (user.ContificoId == null)
+            var contificoSaveRequest = new ContificoPersonSaveRequest
+            {
+                id = user.ContificoId,
+                razon_social = user.UserFullName,
+                telefonos = user.Phone,
+                cedula = user.Identification,
+                email = user.Email,
+                direccion = user.Address,
+                es_extranjero = false,
+                es_vendedor = false,
+                es_empleado = false,
+                es_proveedor = false,
+                es_cliente = true
+            };
+
+            if (string.IsNullOrWhiteSpace(contificoSaveRequest.id))
             {
                 var contificoUser = await _httpHelperService.GetAsync<ContificoPerson>(
                     "CONTIFICO",
                     $"people/?identificacion={user.Identification}"
                 );
-
-                var contificoSaveRequest = new ContificoPersonSaveRequest
-                {
-                    razon_social = user.UserFullName,
-                    telefonos = user.Phone,
-                    cedula = user.Identification,
-                    email = user.Email,
-                    direccion = user.Address,
-                    es_extranjero = false,
-                    es_vendedor = false,
-                    es_empleado = false,
-                    es_proveedor = false,
-                    es_cliente = true
-                };
-
-                var contificoResponse = new ContificoTransactionResponse();
 
                 // if null then create with new contifico person
                 if (contificoUser == null)
@@ -131,13 +131,33 @@ namespace Appointments.App.Services.VMServices
                         );
                 }
 
-                if (!contificoResponse.IsValid)
-                {
-                    result.Errors.Add(contificoResponse.Error.Mensaje);
-                }
+                SetResultsFromContificoOperation(result, contificoResponse);
+            }
+            else
+            {                
+
+                contificoResponse = await _httpHelperService.PutAsync<ContificoTransactionResponse>(
+                    "CONTIFICO",
+                    "people",
+                    contificoSaveRequest
+                );
+
+                SetResultsFromContificoOperation(result, contificoResponse);
             }
 
             return result;
+        }
+
+        private static void SetResultsFromContificoOperation(UserSaveResponse result, ContificoTransactionResponse contificoResponse)
+        {
+            if (!contificoResponse.IsValid)
+            {
+                result.Errors.Add(contificoResponse.Error.Mensaje);
+            }
+            else
+            {
+                result.ContificoId = contificoResponse.ObjectId;
+            }
         }
     }
 }

@@ -28,8 +28,10 @@ namespace Appointments.App.Models.ContificoModels.Responses
         {
             get => Error == null;
         }
-
         [JsonPropertyName("statusCode")]
         public int StatusCode { get; set; } = 200;
+
+        [JsonPropertyName("objectId")]
+        public string ObjectId { get; set; }
     }
 }
