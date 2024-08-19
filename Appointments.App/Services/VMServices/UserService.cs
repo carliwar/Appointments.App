@@ -39,33 +39,17 @@ namespace Appointments.App.Services.VMServices
 
             if (localDbSaveResult.Success)
             {
-                // TODO Add Id to response
                 var resultFromSaveInContifico = await GetContificoSaveResult(user);
 
                 // Get contifico User
                 if (resultFromSaveInContifico.Success)
                 {
-                    var deviceContact = new Contact
-                    {
-                        Id = user.DeviceContactId,
-                        NamePrefix = UserTypeEnum.Paciente.ToString(),
-                        GivenName = user.UserFullName,
-                        Phones = new List<ContactPhone>
-                        {
-                            new ContactPhone { PhoneNumber = user.Phone }
-                        }
-                    };
-
-                    await _deviceContactService.SaveDeviceContact(deviceContact);
-
-                    if (isNewUser)
-                    {
-                        // Get user from localDB to update the contifico & device ids
-                        var localDbUser = await _dataService.GetUser(localDbSaveResult.LocalDbId);
-                        localDbUser.ContificoId = resultFromSaveInContifico.ContificoId;
-                        localDbUser.DeviceContactId = deviceContact.Id;
-                        localDbSaveResult = await _dataService.SaveUser(user);
-                    }
+                    await SaveDeviceContact(
+                        user,
+                        isNewUser,
+                        localDbSaveResult,
+                        resultFromSaveInContifico
+                    );
                 }
                 else
                 {
@@ -78,6 +62,36 @@ namespace Appointments.App.Services.VMServices
             }
 
             return result;
+        }
+
+        private async Task<UserSaveResponse> SaveDeviceContact(
+            User user,
+            bool isNewUser,
+            UserSaveResponse localDbSaveResult,
+            UserSaveResponse resultFromSaveInContifico
+        )
+        {
+            var deviceContact = new Contact
+            {
+                Id = user.DeviceContactId,
+                NamePrefix = UserTypeEnum.Paciente.ToString(),
+                GivenName = $"{user.Name} {user.LastName}",
+                Phones = new List<ContactPhone> { new ContactPhone { PhoneNumber = user.Phone } }
+            };
+
+            // TODO check if contact exists in device
+            await _deviceContactService.SaveDeviceContact(deviceContact);
+
+            if (isNewUser)
+            {
+                // Get user from localDB to update the contifico & device ids
+                var localDbUser = await _dataService.GetUser(localDbSaveResult.LocalDbId);
+                localDbUser.ContificoId = resultFromSaveInContifico.ContificoId;
+                localDbUser.DeviceContactId = deviceContact.Id;
+                localDbSaveResult = await _dataService.SaveUser(user);
+            }
+
+            return localDbSaveResult;
         }
 
         private async Task<UserSaveResponse> GetContificoSaveResult(User user)
@@ -134,8 +148,7 @@ namespace Appointments.App.Services.VMServices
                 SetResultsFromContificoOperation(result, contificoResponse);
             }
             else
-            {                
-
+            {
                 contificoResponse = await _httpHelperService.PutAsync<ContificoTransactionResponse>(
                     "CONTIFICO",
                     "people",
@@ -148,7 +161,10 @@ namespace Appointments.App.Services.VMServices
             return result;
         }
 
-        private static void SetResultsFromContificoOperation(UserSaveResponse result, ContificoTransactionResponse contificoResponse)
+        private static void SetResultsFromContificoOperation(
+            UserSaveResponse result,
+            ContificoTransactionResponse contificoResponse
+        )
         {
             if (!contificoResponse.IsValid)
             {

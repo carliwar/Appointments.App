@@ -1,14 +1,11 @@
 ﻿using Acr.UserDialogs;
 using Appointments.App.Models;
 using Appointments.App.Models.DataModels;
-using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using Appointments.App.Utils;
-using Appointments.App.ViewModels.Settings.Admin;
+using Appointments.App.Utils.Extensions;
 using Appointments.App.Views.Appointments;
 using Appointments.App.Views.Settings;
-using Appointments.App.Views.Settings.Admin;
-using Plugin.LocalNotification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +14,7 @@ using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Plugin.Calendar.Models;
-using static Xamarin.Essentials.Permissions;
+using static Appointments.App.Utils.Extensions.StringExtensions;
 
 namespace Appointments.App.ViewModels
 {
@@ -122,7 +119,10 @@ namespace Appointments.App.ViewModels
                 if (eventModel.UserPhone != null)
                 {
                     options.Add(DefaultValues.CALL_OPTION);
-                    options.Add(DefaultValues.CONTACT_WHATSAPP_OPTION);
+                    if (eventModel.UserPhone.Contains("09"))
+                    {
+                        options.Add(DefaultValues.CONTACT_WHATSAPP_OPTION);
+                    }                    
                 }
 
                 options.Add(DefaultValues.MARK_NOT_ATTENDED_OPTION);
@@ -193,8 +193,8 @@ namespace Appointments.App.ViewModels
 
         private async Task CallPhoneClicked(object phone)
         {
-            phone = new string(phone.ToString().Where(c => char.IsDigit(c)).ToArray());
-            await Browser.OpenAsync(new Uri($"https://wa.me/{phone}"), BrowserLaunchMode.SystemPreferred);
+            var formattedPhone = new string(phone.ToString().Where(c => char.IsDigit(c)).ToArray());
+            await Browser.OpenAsync(new Uri($"https://wa.me/{formattedPhone.FormatPhoneForWhatsapp()}"), BrowserLaunchMode.SystemPreferred);
         }
         #endregion
 

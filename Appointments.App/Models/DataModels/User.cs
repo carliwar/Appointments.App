@@ -1,16 +1,19 @@
-﻿using Appointments.App.Models.Enum;
+﻿using System;
+using Appointments.App.Models.Enum;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System;
 
 namespace Appointments.App.Models.DataModels
 {
     public class User
     {
-        public string UserFullName { get; set; }
+        public string UserFullName
+        {
+            get { return $"{Name} {LastName} "; }
+        }
 
         [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }        
+        public int Id { get; set; }
         public string ContificoId { get; set; }
         public string DeviceContactId { get; set; }
         public string Identification { get; set; }

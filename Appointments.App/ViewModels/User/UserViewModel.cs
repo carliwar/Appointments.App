@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Acr.UserDialogs;
-using Appointments.App.Models.DataModels;
 using Appointments.App.Models.Enum;
 using Appointments.App.Services;
 using Appointments.App.Services.VMServices;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using Xamarin.Forms.MultiSelectListView;
 
 namespace Appointments.App.ViewModels.User
 {
@@ -19,7 +16,6 @@ namespace Appointments.App.ViewModels.User
     {
         public UserViewModel(IUserService userService)
         {
-            //UserTypes = new ObservableCollection<UserType>(Enum.GetValues(typeof(UserType)).OfType<UserType>().ToList());
             _dataService = new DataService();
             _userService = userService;
         }
@@ -181,15 +177,15 @@ namespace Appointments.App.ViewModels.User
                 Id = Id,
                 Identification = Identification,
                 DeviceContactId = DeviceContactId,
+                ContificoId = ContificoId,
                 Name = FirstName,
                 LastName = LastName,
                 BirthDate = BirthDate,
                 Email = Email,
-                Phone = FormatPhone(Phone),
+                Phone = Phone,
                 UserType = UserTypeEnum.Paciente,
                 AppointmentType = SelectedAppointmentType,
-                AppointmentTypeId = SelectedAppointmentType?.Id,
-                ContificoId = ContificoId
+                AppointmentTypeId = SelectedAppointmentType?.Id
             };
 
             UserDialogs.Instance.ShowLoading();            
@@ -231,26 +227,6 @@ namespace Appointments.App.ViewModels.User
             UserDialogs.Instance.HideLoading();
         }
 
-        // TODO Use this just for sending to whatsapp not to send to db
-        private string FormatPhone(string phone)
-        {
-            if (phone == null)
-                return string.Empty;
-
-            string formattedString = phone.Trim();
-
-            if (formattedString.Length > 0)
-            {
-                // if phone starts with 09 replace that with +5939
-                if (phone.StartsWith("09"))
-                {
-                    formattedString = "+5939" + phone.Substring(2);
-                    Console.WriteLine(formattedString);
-                }
-            }
-            return formattedString;
-        }
-
         public async Task LoadUser(int id)
         {
             if (id != 0)
@@ -262,6 +238,8 @@ namespace Appointments.App.ViewModels.User
                 if (user != null)
                 {
                     Id = user.Id;
+                    DeviceContactId = user.DeviceContactId;
+                    ContificoId = user.ContificoId;
                     Identification = user.Identification;
                     FirstName = user.Name;
                     LastName = user.LastName;
@@ -293,11 +271,6 @@ namespace Appointments.App.ViewModels.User
                 AppointmentTypes.Add(appointmentType);
             }
         }
-        #endregion
-
-        #region Private Methods
-
-
         #endregion
     }
 }
