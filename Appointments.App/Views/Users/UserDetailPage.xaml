@@ -4,9 +4,6 @@
              xmlns:model="clr-namespace:Appointments.App.ViewModels.User"
              x:Name="UserViewModel"
              x:Class="Appointments.App.Views.Users.UserDetailPage">
-    <ContentPage.BindingContext>
-        <model:UserViewModel />
-    </ContentPage.BindingContext>
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding ImportContactCommand}" Text="Importar Contacto" />
     </ContentPage.ToolbarItems>

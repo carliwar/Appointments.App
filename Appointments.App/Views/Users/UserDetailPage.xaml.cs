@@ -9,6 +9,7 @@ namespace Appointments.App.Views.Users
     public partial class UserDetailPage : ContentPage
     {
         public int UserId { get; set; }
+        public UserViewModel ViewModel => BindingContext as UserViewModel;
         public UserDetailPage(int userId)
         {
             InitializeComponent();
@@ -17,8 +18,8 @@ namespace Appointments.App.Views.Users
 
         protected override async void OnAppearing()
         {
-            await (BindingContext as UserViewModel)?.InitializeAppointmentTypes();
-            await (BindingContext as UserViewModel)?.LoadUser(UserId);
+            await ViewModel.InitializeAppointmentTypes();
+            await ViewModel.LoadUser(UserId);
         }
     }
 }

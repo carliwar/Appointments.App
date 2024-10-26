@@ -1,5 +1,6 @@
 ﻿using Appointments.App.Services;
 using Appointments.App.Services.VMServices;
+using Appointments.App.ViewModels.User;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xamarin.Forms;
@@ -39,6 +40,8 @@ namespace Appointments.App
             serviceCollection.AddScoped<IHttpHelperService, HttpHelperService>();
             serviceCollection.AddScoped<IDataService, DataService>();
             serviceCollection.AddScoped<IUserService, UserService>();
+
+            serviceCollection.AddSingleton<UserViewModel>();
 
             serviceCollection.AddHttpClient("CONTIFICO", client =>
             {
